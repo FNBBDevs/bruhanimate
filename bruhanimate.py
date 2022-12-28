@@ -15,26 +15,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-import os
-import signal
-import struct
 import sys
-import time
-from abc import ABCMeta, abstractmethod
-from functools import update_wrapper, partial
-from locale import getlocale, getdefaultlocale
-from logging import getLogger
-from math import sqrt
-from builtins import object
-from builtins import range
-from builtins import ord
-from builtins import chr
-from builtins import str
-from future.utils import with_metaclass
-from future.moves.itertools import zip_longest
-from wcwidth import wcwidth, wcswidth
-sys.path.append('C:\\Users\\ethan\\OneDrive\\Desktop\\VSCode\\BRUH2.0\\')
-from shell import sleep
 ENABLE_EXTENDED_FLAGS = 0x0080
 ENABLE_QUICK_EDIT_MODE = 0x0040
 
