@@ -23,6 +23,9 @@ if sys.platform == 'win32':
     import pywintypes
 
     class WinScreen:
+        """
+        Class for creating and managing a terminal screen in a WINDOWS OS terminal
+        """
         def __init__(self, stdout, stdin, old_out, old_in):
             info = stdout.GetConsoleScreenBufferInfo()['Window']
             self.width = info.Right - info.Left + 1

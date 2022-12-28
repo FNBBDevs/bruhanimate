@@ -81,17 +81,17 @@ hey = [
 def render(screen, frames, time, background, img):
 
     # Create the renderer
-    renderer = CenterRenderer(screen, frames, time, background, img)
+    renderer = PanRenderer(screen, frames, time, background, img)
 
     # Edit the exit messages
     renderer.set_exit_stats(msg1="  Animation is Complete  ", msg2="  Press [Enter] to Exit  ", wipe=False)
 
     # Set the padding on the image
-    renderer.set_padding([4, 2])
+    renderer.set_padding([100, 100])
 
     # Run the frames
     renderer.run()
     
 
 
-WinScreen.wrapper(render, args=(20, 0.2, "bruh2.0", bruh2_0_2))
+WinScreen.wrapper(render, args=(10, 0.2, "*", None))
