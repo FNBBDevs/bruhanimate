@@ -1,4 +1,5 @@
 from bruhanimate import WinScreen
+from bruhffer import Buffer
 import sys
 import os
 import time
@@ -61,60 +62,6 @@ computer = [
     f"                      `!^\"'                                        "
 ]
 
-class Buffer:
-    def __init__(self, height, width):
-        self._height = height
-        self._width = width
-        line = [u" " for _ in range(self._width)]
-        self.buffer = [line[:] for _ in range(self._height)]
-    
-
-    def get_buffer_changes(self, in_buf):
-        """
-        General application is front.get_changes(back)
-        """
-        res = []
-        if  self._height != len(in_buf.buffer) or self._width != len(in_buf.buffer[0]):
-            return None
-        for y in range(self._height):
-            for x in range(self._width):
-                if self.buffer[y][x] != in_buf.buffer[y][x]:
-                    res.append((x, y, in_buf.buffer[y][x]))
-        return res
-
-    def clear_buffer(self, x=0, y=0, w=None, h=None):
-        width = w if w else self._width
-        height = h if h else self._height
-        line = [u" " for _ in range(width)]
-
-        if x == 0 and y == 0 and not w and not y:
-            self.buffer = [line[:] for _ in range(height)]
-        else:
-            for i in range(y, y + height):
-                self.buffer[i][x:x + width] = line[:]
-
-    def get_char(self, x, y):
-        return self.buffer[y][x]
-
-    def put_char(self, x, y, val):
-        if 0 <= y < self._height and 0 <= x < self._width:
-            self.buffer[y][x] = val
-        else:
-            return
-
-    def grab_chunk(self, x, y, width):
-        return self.buffer[y][x:x+width]
-
-    def sync_with(self, in_buf):
-        self.buffer = [line[:] for line in in_buf.buffer]
-
-    def height(self):
-        return self._height
-
-    def width(self):
-        return self._width
-
-
 def center_renderer(screen, frames, time, background, img):
     width, height = screen.width, screen.height
     img_width, img_height = len(img[0]), len(img)
@@ -133,8 +80,9 @@ def center_renderer(screen, frames, time, background, img):
             for update in updates:
                 screen.print_at(update[2], update[0], update[1], 1)
             front.sync_with(back)
+    front.clear_buffer()
     
     screen.print_center("Frames Are Done - Press Enter", screen.height - 2, len("Frames Are Done - Press Enter"))
 
 
-WinScreen.wrapper(center_renderer, args=(50, 0.2, "#", computer,))
+WinScreen.wrapper(center_renderer, args=(20, 0.2, "#", computer,))
