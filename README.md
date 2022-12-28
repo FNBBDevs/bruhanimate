@@ -2,7 +2,7 @@
 bruhanimate offers a series of files to aid in rendering out animations in the terminal. This is heavily inspisred by the <a href="https://github.com/peterbrittain/asciimatics">Asciimatics</a> package. While this package does everyething you would want one to do, I figured it would be good practice to go ahead and attempt something like this myself.
 
 # Usage
-This is no where near complete, but does offer the ability to render out static images in the center of the screen. This could look something like this . . . <br/><br/>
+This is no where near complete, but does offer the ability to render out static images in the center of the screen. This would look something like this . . . <br/><br/>
 ```py
 
 """
