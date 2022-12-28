@@ -28,7 +28,6 @@ class BaseRenderer:
         """
         updates = self.front.get_buffer_changes(self.back)
         if updates:
-            print("UPDATE")
             for update in updates:
                 self.screen.print_at(update[2], update[0], update[1], len(update[2]))
     
