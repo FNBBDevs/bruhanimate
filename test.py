@@ -1,14 +1,6 @@
 from bruhscreen import WinScreen
 from bruhrenderer import *
 from bruhffer import Buffer
-import sys
-import os
-import time
-import random
-
-def sleep(s):
-    sys.stdout.flush()
-    time.sleep(s)
 
 bruh2_0 = [
     r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ",
@@ -63,16 +55,30 @@ computer = [
     f"                      `!^\"'                                        "
 ]
 
+hey = [
+  f"    __  __          ",
+  f"   / / / /__  __  __",
+  f"  / /_/ / _ \/ / / /",
+  f" / __  /  __/ /_/ / ",
+  f"/_/ /_/\___/\__, /  ",
+  f"           /____/   "
+]
+
 
 def render(screen, frames, time, background, img):
+
     # Create the renderer
     renderer = CenterRenderer(screen, frames, time, background, img)
+
     # Edit the exit messages
     renderer.set_exit_stats(msg1=" Animation is Complete ", msg2=" Press [Enter] to Exit ", wipe=False)
-    # renderer.set_exit_stats(wipe=True)
+
+    # Set the padding on the image
+    renderer.set_padding([4, 2])
+
     # Run the frames
     renderer.run()
     
 
 
-WinScreen.wrapper(render, args=(20, 0.2, "|", computer,))
+WinScreen.wrapper(render, args=(20, 0.2, "@", hey,))

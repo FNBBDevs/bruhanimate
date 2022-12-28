@@ -15,9 +15,10 @@ class BaseRenderer:
         self.screen = screen
         self.frames = frames
         self.time = time
-
         self.height = screen.height
         self.width  = screen.width
+
+        # BUFFERS
         self.back = Buffer(self.height, self.width)
         self.front = Buffer(self.height, self.width)
 
@@ -60,6 +61,12 @@ class BaseRenderer:
         self.push_front_to_screen()
 
     def set_exit_stats(self, msg1=None, msg2=None, wipe=None):
+        """
+        Set the exit messages for when the animation finishes
+        :param msg1: primary message
+        :param msg2: secondary message
+        :param wipe: whether to clear the buffer
+        """
         if msg1:
             self.msg1 = msg1
         if msg2:
@@ -79,12 +86,47 @@ class CenterRenderer(BaseRenderer):
         super(CenterRenderer, self).__init__(screen, frames, time)
         self.background = background if background else " "
         self.img = img
+        self.orig_img = img
+        self.padding = [0, 0]
 
         if img:
             self.img_height = len(img)
             self.img_width  = len(img[0])
             self.img_y_start = (self.height - len(img)) // 2
             self.img_x_start = (self.width - len(img[0])) // 2
+
+    def set_padding(self, padding_vals):
+        """
+        Set the padding for the image
+        :param padding_vals: vals for padding [left-right, top-bottom]
+        """
+        if len(padding_vals) == 2:
+            self.padding = padding_vals
+        
+        left_right = self.padding[0]
+        top_bottom = self.padding[1]
+        if left_right > 0 or top_bottom > 0:
+            tmp = []
+            for _ in range(top_bottom):
+                tmp.append(" "*self.img_width)
+            for line in self.img:
+                tmp.append(line)
+            for _ in range(top_bottom):
+                tmp.append(" "*self.img_width)
+
+            for i in range(len(tmp)):
+                tmp[i] = (" "*left_right) + tmp[i] + (" "*left_right)
+            
+            self.img = [line for line in tmp]
+            self._set_img_attributes()
+    
+    def _set_img_attributes(self):
+        self.img_height = len(self.img)
+        self.img_width = len(self.img[0])
+        self.img_y_start = (self.height - len(self.img)) // 2
+        self.img_x_start = (self.width - len(self.img[0])) // 2
+
+
                 
     def render_frame(self):
         """
