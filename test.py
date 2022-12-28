@@ -69,4 +69,4 @@ def render(screen, frames, time, background, img):
     renderer.run()
 
 
-WinScreen.wrapper(render, args=(20, 0.2, "#", None,))
+WinScreen.wrapper(render, args=(20, 0.2, "#", computer,))

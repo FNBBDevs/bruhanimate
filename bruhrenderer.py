@@ -28,6 +28,7 @@ class BaseRenderer:
         """
         updates = self.front.get_buffer_changes(self.back)
         if updates:
+            print("UPDATE")
             for update in updates:
                 self.screen.print_at(update[2], update[0], update[1], len(update[2]))
     
@@ -56,8 +57,6 @@ class BaseRenderer:
         To be defined by specific renderer classes
         """
 
-
-
 class CenterRenderer(BaseRenderer):
     def __init__(self, screen, frames, time, background, img):
         super(CenterRenderer, self).__init__(screen, frames, time)
@@ -67,13 +66,21 @@ class CenterRenderer(BaseRenderer):
         if img:
             self.img_height = len(img)
             self.img_width  = len(img[0])
+            self.img_y_start = (self.height - len(img)) // 2
+            self.img_x_start = (self.width - len(img[0])) // 2
                 
     def render_frame(self):
         """
         Renders out the img to the center of the screen in the back buffer.
         """
         if self.img:
-            pass
+            for y in range(len(self.back.buffer)):
+                if y >= self.img_y_start and y < self.img_y_start + self.img_height:
+                    self.back.put_at(0, y, self.background*(self.img_x_start))
+                    self.back.put_at(self.img_x_start, y, self.img[y-self.img_y_start])
+                    self.back.put_at(self.img_x_start + self.img_width, y, self.background*(self.img_x_start))
+                else:
+                    self.back.put_at(0, y, self.background*self.width)
         else:
             """
             Simply render the specified background.
