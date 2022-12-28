@@ -38,6 +38,9 @@ class Buffer:
             self.buffer[y][x] = val
         else:
             return
+    
+    def put_at(self, x, y, text):
+        pass
 
     def grab_chunk(self, x, y, width):
         return self.buffer[y][x:x+width]

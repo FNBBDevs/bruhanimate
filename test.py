@@ -1,4 +1,5 @@
 from bruhanimate import WinScreen
+from bruhrenderer import *
 from bruhffer import Buffer
 import sys
 import os
@@ -62,27 +63,10 @@ computer = [
     f"                      `!^\"'                                        "
 ]
 
-def center_renderer(screen, frames, time, background, img):
-    width, height = screen.width, screen.height
-    img_width, img_height = len(img[0]), len(img)
 
-    back = Buffer(height, width)
-    front = Buffer(height, width)
-
-    for _ in range(frames):
-        sleep(time)
-        back.put_char(_, _, " ")
-        back.put_char(_ + 1, _ + 1, "#")
-        updates = front.get_buffer_changes(back)
-        if not updates:
-            continue
-        else:
-            for update in updates:
-                screen.print_at(update[2], update[0], update[1], 1)
-            front.sync_with(back)
-    front.clear_buffer()
-    
-    screen.print_center("Frames Are Done - Press Enter", screen.height - 2, len("Frames Are Done - Press Enter"))
+def render(screen, frames, time, background, img):
+    renderer = CenterRenderer(screen, frames, time, background, img)
+    renderer.run()
 
 
-WinScreen.wrapper(center_renderer, args=(20, 0.2, "#", computer,))
+WinScreen.wrapper(render, args=(20, 0.2, "#", computer,))
