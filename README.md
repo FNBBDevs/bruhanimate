@@ -39,7 +39,7 @@ def render(screen, frames, time, background, img):
 WinScreen.wrapper(render, args=(20, 0.2, " ", img,))
 
 # You can also render out the static animation without an image
-# In this case, only the specified backgroudn character will be rendered
+# In this case, only the specified background character will be rendered
 WinScreen.wrapper(render, args=(20, 0.2, " ", None,))
 
 ```
