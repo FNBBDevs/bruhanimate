@@ -39,10 +39,26 @@ class Buffer:
         else:
             return
     
-    def put_at(self, x, y, text):
-        pass
-
-    def grab_chunk(self, x, y, width):
+    def put_at(self, x, y, text, transparent=False):
+        """
+        Put text at a given x, y coordinate in the buffer
+        """
+        if x < 0:
+            text = text[-x:]
+            x = 0
+        
+        if x + len(text) > self._width:
+            text = text[:self._width-x]
+        
+        if not transparent:
+            for i, c in enumerate(text):
+                self.put_char(x+i, y, c)
+        else:
+            for i, c in enumerate(text):
+                if c != " ":
+                    self.put_char(x+i, y, c)
+        
+    def grab_slice(self, x, y, width):
         return self.buffer[y][x:x+width]
 
     def sync_with(self, in_buf):

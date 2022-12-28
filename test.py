@@ -1,4 +1,4 @@
-from bruhanimate import WinScreen
+from bruhscreen import WinScreen
 from bruhrenderer import *
 from bruhffer import Buffer
 import sys
@@ -69,4 +69,4 @@ def render(screen, frames, time, background, img):
     renderer.run()
 
 
-WinScreen.wrapper(render, args=(20, 0.2, "#", computer,))
+WinScreen.wrapper(render, args=(20, 0.2, "#", None,))
