@@ -90,10 +90,7 @@ class CenterRenderer(BaseRenderer):
         self.padding = [0, 0]
 
         if img:
-            self.img_height = len(img)
-            self.img_width  = len(img[0])
-            self.img_y_start = (self.height - len(img)) // 2
-            self.img_x_start = (self.width - len(img[0])) // 2
+            self._set_img_attributes()
 
     def set_padding(self, padding_vals):
         """
@@ -121,10 +118,11 @@ class CenterRenderer(BaseRenderer):
             self._set_img_attributes()
     
     def _set_img_attributes(self):
-        self.img_height = len(self.img)
-        self.img_width = len(self.img[0])
-        self.img_y_start = (self.height - len(self.img)) // 2
-        self.img_x_start = (self.width - len(self.img[0])) // 2
+        if self.img:
+            self.img_height = len(self.img)
+            self.img_width = len(self.img[0])
+            self.img_y_start = (self.height - len(self.img)) // 2
+            self.img_x_start = (self.width - len(self.img[0])) // 2
 
 
                 
