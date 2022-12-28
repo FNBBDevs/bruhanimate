@@ -1,13 +1,7 @@
 """
-Terminal ASCII animation package. This package is heavily inspired by 
-Ascii  Matics by Peter Brittain. The aim of this is create a better animation
-in the terminal than simply writing lines and clearing the screen (flicker).
-Thus, this is a 'barebones' attempt at double buffering terminal animation.
-
-Author: Ethan Christensen <github: https://github.com/ethanlchristensen>
+Much of bruhscreen implementation is based on the Windows based implementation of 
+setting of terminal screen from AsciiMatics found here at <https://github.com/peterbrittain/asciimatics>
 """
-
-
 
 from __future__ import division
 from __future__ import absolute_import
@@ -21,6 +15,8 @@ ENABLE_QUICK_EDIT_MODE = 0x0040
 
 if sys.platform == 'win32':
     import win32con
+    
+
     import win32console
     import win32event
     import win32file
