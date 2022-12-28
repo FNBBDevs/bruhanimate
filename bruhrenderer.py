@@ -21,6 +21,11 @@ class BaseRenderer:
         self.back = Buffer(self.height, self.width)
         self.front = Buffer(self.height, self.width)
 
+        # EXIT STATS
+        self.msg1 = " Frames Are Done "
+        self.msg2 = "   Press Enter   "
+        self.wipe = False
+
     def push_front_to_screen(self):
         """
         Pushes changes between the back and front buffer and applies them
@@ -31,24 +36,37 @@ class BaseRenderer:
             for update in updates:
                 self.screen.print_at(update[2], update[0], update[1], len(update[2]))
     
-    def render_exit(self, wipe=True):
+    def render_exit(self):
         """
         Renders out the exit prompt to the screen.
         :param wipe: To clear the final frame on the front buffer / screen.
         """
-        pass
-    
+        if self.wipe:
+            self.back.clear_buffer()
+        self.back.put_at_center(self.height - 3, self.msg1)    
+        self.back.put_at_center(self.height - 2, self.msg2)
+
     def run(self):
         """
         Renders a new frame to the back buffer, then syncs it with the front buffer.
         Then the front buffer is pushed to the screen.
         """
         for _ in range(self.frames):
+            sleep(self.time)
             self.render_frame()
             self.push_front_to_screen()
             self.front.sync_with(self.back)
         self.render_exit()
         self.push_front_to_screen()
+
+    def set_exit_stats(self, msg1=None, msg2=None, wipe=None):
+        if msg1:
+            self.msg1 = msg1
+        if msg2:
+            self.msg2 = msg2
+        if wipe:
+            self.wipe = wipe
+
     
     @abstractmethod
     def render_frame(self):

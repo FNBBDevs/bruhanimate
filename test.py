@@ -65,8 +65,14 @@ computer = [
 
 
 def render(screen, frames, time, background, img):
+    # Create the renderer
     renderer = CenterRenderer(screen, frames, time, background, img)
+    # Edit the exit messages
+    renderer.set_exit_stats(msg1=" Animation is Complete ", msg2=" Press [Enter] to Exit ", wipe=False)
+    # renderer.set_exit_stats(wipe=True)
+    # Run the frames
     renderer.run()
+    
 
 
-WinScreen.wrapper(render, args=(20, 0.2, " ", computer,))
+WinScreen.wrapper(render, args=(20, 0.2, "|", computer,))

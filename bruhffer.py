@@ -57,6 +57,16 @@ class Buffer:
             for i, c in enumerate(text):
                 if c != " ":
                     self.put_char(x+i, y, c)
+    
+    def put_at_center(self, y, text):
+        """
+        Puts the given text in the center of the row given by y.
+        :param y: row to place the text.
+        :param text: text to write to the buffers.
+        """
+        x = (self._width // 2) - len(text) // 2
+        for i, c in enumerate(text):
+            self.put_char(x+i, y, c)
         
     def grab_slice(self, x, y, width):
         return self.buffer[y][x:x+width]
