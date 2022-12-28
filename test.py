@@ -22,6 +22,19 @@ bruh2_0 = [
     r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ",
     r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ",
 ]
+bruh2_0_2 = [
+    r"    _             _          ",
+    r"  /\ \          / /\         ",
+    r" /  \ \        / /  \        ",
+    r"/ /\ \ \      / / /\ \       ",
+    r"\/_/\ \ \    / / /\ \ \      ",
+    r"    / / /   /_/ /  \ \ \     ",
+    r"   / / /    \ \ \   \ \ \    ",
+    r"  / / /  _   \ \ \   \ \ \   ",
+    r" / / /_/\_\ _ \ \ \___\ \ \  ",
+    r"/ /_____/ //\_\\ \/____\ \ \ ",
+    r"\________/ \/_/ \_________\/ ",
+]
 computer = [
     f"                       .,,uod8B8bou,,.                             ",
     f"              ..,uod8BBBBBBBBBBBBBBBBRPFT?l!i:.                    ",
@@ -71,7 +84,7 @@ def render(screen, frames, time, background, img):
     renderer = CenterRenderer(screen, frames, time, background, img)
 
     # Edit the exit messages
-    renderer.set_exit_stats(msg1=" Animation is Complete ", msg2=" Press [Enter] to Exit ", wipe=False)
+    renderer.set_exit_stats(msg1="  Animation is Complete  ", msg2="  Press [Enter] to Exit  ", wipe=False)
 
     # Set the padding on the image
     renderer.set_padding([4, 2])
@@ -81,4 +94,4 @@ def render(screen, frames, time, background, img):
     
 
 
-WinScreen.wrapper(render, args=(20, 0.2, "@", hey,))
+WinScreen.wrapper(render, args=(20, 0.2, "bruh2.0", bruh2_0_2))

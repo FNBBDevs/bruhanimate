@@ -97,6 +97,10 @@ class CenterRenderer(BaseRenderer):
         Set the padding for the image
         :param padding_vals: vals for padding [left-right, top-bottom]
         """
+
+        if not self.img:
+            return
+
         if len(padding_vals) == 2:
             self.padding = padding_vals
         
@@ -132,12 +136,10 @@ class CenterRenderer(BaseRenderer):
         """
         if self.img:
             for y in range(len(self.back.buffer)):
+                self.back.put_at(0, y, self.background*self.width)
+            for y in range(len(self.back.buffer)):
                 if y >= self.img_y_start and y < self.img_y_start + self.img_height:
-                    self.back.put_at(0, y, self.background*(self.img_x_start))
                     self.back.put_at(self.img_x_start, y, self.img[y-self.img_y_start])
-                    self.back.put_at(self.img_x_start + self.img_width, y, self.background*(self.img_x_start))
-                else:
-                    self.back.put_at(0, y, self.background*self.width)
         else:
             """
             Simply render the specified background.
