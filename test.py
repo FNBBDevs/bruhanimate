@@ -94,4 +94,4 @@ def render(screen, frames, time, background, img):
     
 
 
-WinScreen.wrapper(render, args=(10, 0.2, "*", None))
+WinScreen.wrapper(render, args=(10, 0.2, " ", None))
