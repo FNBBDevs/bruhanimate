@@ -15,12 +15,13 @@ class BaseRenderer:
     Defines the base methods, abstract methods, and base attributes
     for the render class
     """
-    def __init__(self, screen, frames, time):
+    def __init__(self, screen, frames, time, offset=False):
         self.screen = screen
         self.frames = frames
         self.time = time
         self.height = screen.height
         self.width  = screen.width
+        self.offset = offset
 
         # BUFFERS
         self.back = Buffer(self.height, self.width)
@@ -90,14 +91,15 @@ class CenterRenderer(BaseRenderer):
     """
     A renderer to load an image in the center of the screen
     """
-    def __init__(self, screen, frames, time, background, img):
-        super(CenterRenderer, self).__init__(screen, frames, time)
+    def __init__(self, screen, frames, time, background, img, offset):
+        super(CenterRenderer, self).__init__(screen, frames, time, offset)
         self.background = background if background else " "
-        self.img = img
+        self.img = None
         self.orig_img = img
         self.padding = [0, 0]
 
         if img:
+            self.img = img
             self._set_img_attributes()
 
     def set_padding(self, padding_vals):
@@ -147,28 +149,35 @@ class CenterRenderer(BaseRenderer):
         """
         if self.img:
             for y in range(len(self.back.buffer)):
-                self.back.put_at(0, y, self.background*self.width)
+                if self.offset:
+                    self.back.put_at(0, y, (self.background[y%len(self.background):] + self.background[:y%len(self.background)])*self.width)
+                else:
+                    self.back.put_at(0, y, self.background*self.width)
             for y in range(len(self.back.buffer)):
                 if y >= self.img_y_start and y < self.img_y_start + self.img_height:
                     self.back.put_at(self.img_x_start, y, self.img[y-self.img_y_start])
         else:
-            for _ in range(self.height):
-                self.back.put_at(0, _, self.background*self.width)
+            for y in range(self.height):
+                if self.offset:
+                    self.back.put_at(0, y, (self.background[y%len(self.background):] + self.background[:y%len(self.background)])*self.width)
+                else:
+                    self.back.put_at(0, y, self.background*self.width)
 
 
 class PanRenderer(BaseRenderer):
     """
     A renderer to pan an image across the screen
     """
-    def __init__(self, screen, frames, time, background=None, img=None, direction=None):
-        super().__init__(screen, frames, time)
+    def __init__(self, screen, frames, time, background, img, offset, direction=None):
+        super().__init__(screen, frames, time, offset)
         self.background = background if background else " "
         self.direction = direction if direction and direction in ["horizontal", "vertical"] else "horizontal"
-        self.img = img
+        self.img = None
         self.current_x = 0
         self.current_y = 0
 
         if img:
+            self.img = img
             self.frames = self.screen.width + len(self.img[0])
             self._set_img_attributes()
     
