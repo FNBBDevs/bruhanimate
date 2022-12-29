@@ -52,7 +52,8 @@ class Buffer:
         Put the value at the given location
         """
         if 0 <= y < self._height and 0 <= x < self._width:
-            self.buffer[y][x] = val
+            if self.buffer[y][x] != val:
+                self.buffer[y][x] = val
         else:
             return
     

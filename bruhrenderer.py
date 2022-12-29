@@ -38,7 +38,6 @@ class BaseRenderer:
         to the screen
         """
         updates = self.front.get_buffer_changes(self.back)
-        # (100, 25, "X")
         if updates:
             for update in updates:
                 self.screen.print_at(update[2], update[0], update[1], len(update[2]))
@@ -153,7 +152,6 @@ class CenterRenderer(BaseRenderer):
                     self.back.put_at(0, y, (self.background[y%len(self.background):] + self.background[:y%len(self.background)])*self.width)
                 else:
                     self.back.put_at(0, y, self.background*self.width)
-            for y in range(len(self.back.buffer)):
                 if y >= self.img_y_start and y < self.img_y_start + self.img_height:
                     self.back.put_at(self.img_x_start, y, self.img[y-self.img_y_start])
         else:
@@ -168,21 +166,24 @@ class PanRenderer(BaseRenderer):
     """
     A renderer to pan an image across the screen
     """
-    def __init__(self, screen, frames, time, background, img, offset, direction=None):
+    def __init__(self, screen, frames, time, background, img, offset, direction=None, shift_rate=1):
         super().__init__(screen, frames, time, offset)
         self.background = background if background else " "
-        self.direction = direction if direction and direction in ["horizontal", "vertical"] else "horizontal"
+        self.direction = direction if direction and direction in ["h", "v"] else "h"
         self.img = None
         self.current_x = 0
         self.current_y = 0
+        self.shift_rate = shift_rate
 
         if img:
             self.img = img
-            self.frames = self.screen.width + len(self.img[0])
+            self.frames = (self.screen.width + len(self.img[0])) // self.shift_rate + self.shift_rate
             self._set_img_attributes()
     
     def _set_img_attributes(self):
         if self.img:
+            self.current_x = 0 if self.direction == "v" else -len(self.img[0])
+            self.current_y = 0 if self.direction == "h" else -len(self.img)
             self.img_height = len(self.img)
             self.img_width = len(self.img[0])
             self.img_y_start = (self.height - len(self.img)) // 2
@@ -224,8 +225,21 @@ class PanRenderer(BaseRenderer):
         the background is rendered on it's own
         """
         if self.img:
-            pass
+            if self.direction == "h":
+                # Align center vertically
+
+                for y in range(self.height):
+                    if self.offset:
+                        self.back.put_at(0, y, (self.background[y%len(self.background):] + self.background[:y%len(self.background)])*self.width)
+                    else:
+                        self.back.put_at(0, y, self.background*self.width)
+                    if y >= self.img_y_start and y < self.img_y_start + len(self.img):
+                        self.back.put_at(self.current_x, y, self.img[y-self.img_y_start])
+                self.current_x += self.shift_rate
         else:
-            for _ in range(self.height):
-                self.back.put_at(0, _, self.background*self.width)
+            for y in range(self.height):
+                if self.offset:
+                    self.back.put_at(0, y, (self.background[y%len(self.background):] + self.background[:y%len(self.background)])*self.width)
+                else:
+                    self.back.put_at(0, y, self.background*self.width)
 

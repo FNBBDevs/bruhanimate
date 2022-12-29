@@ -127,7 +127,6 @@ if sys.platform == 'win32':
                 else:
                     return function(screen)
             finally:
-                input()
                 screen.close()
 
 

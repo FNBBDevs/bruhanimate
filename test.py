@@ -92,22 +92,24 @@ def render1(screen, frames, time, background, img, offset):
     # Run the frames
     renderer.run()
 
+    # get input to stop
+    input()
 
-def render2(screen, frames, time, background, img, offset):
+
+def render2(screen, frames, time, background, img, offset, direction, shit_rate):
     # Create the renderer
-    renderer = PanRenderer(screen, frames, time, background, img, offset, None)
+    renderer = PanRenderer(screen, frames, time, background, img, offset, direction=direction, shift_rate=shit_rate)
 
     # Edit the exit messages
     renderer.set_exit_stats(msg1="  Animation is Complete  ", msg2="  Press [Enter] to Exit  ", wipe=False)
 
-    # Set the padding on the image
-    renderer.set_padding([4, 2])
-
     # Run the frames
     renderer.run()
+
+    # get input to stop()
+    input()
     
 
 
-WinScreen.wrapper(render1, args=(10, 0.2, "!@#$%^&*()_+", computer, True,))
-WinScreen.wrapper(render2, args=(10, 0.2, ".-._", None, False,))
-
+#WinScreen.wrapper(render1, args=(10, 0.2, "!@#$%^&*()_+", computer, True,))
+WinScreen.wrapper(render2, args=(None, 0.01, ".-._", hey, True, "h", 1))
