@@ -66,7 +66,6 @@ computer = [
     f"                    `!9899fT|!^\"'                                  ",
     f"                      `!^\"'                                        "
 ]
-
 hey = [
   f"    __  __          ",
   f"   / / / /__  __  __",
@@ -86,7 +85,9 @@ def render(screen, frames, time, effect, background, transparent):
     renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
 
     # REDUCE INTENSITY FOR FASTER RENDER
-    renderer.effect.update_intensity(75)
+    renderer.effect.update_intensity(10)
+
+    print(renderer.width)
 
     # RUN
     renderer.run()
@@ -94,4 +95,4 @@ def render(screen, frames, time, effect, background, transparent):
     # [Enter] TO MOVE ON
     input()
 
-WinScreen.show(render, args=(100, 0.1, "noise", " ", None))
+WinScreen.show(render, args=(1000, 0, "noise", " ", None))

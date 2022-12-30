@@ -5,6 +5,7 @@ import random
 from bruhffer import Buffer
 from bruheffects import *
 from abc import ABC, abstractmethod
+from threading import Timer
 _VALID_EFFECTS = ["static", "offset", "noise", "stars"]
 
 def sleep(s):
@@ -22,7 +23,7 @@ class BaseRenderer:
         # NECESSAARY INFO
         self.screen      = screen
         self.frames      = frames if frames else 100
-        self.time        = time   if time   else 0.1
+        self.time        = time   if time >= 0 else 0.1
         self.effect_type = effect_type if effect_type in _VALID_EFFECTS else "static"
         self.transparent = transparent
         self.background  = background
@@ -56,12 +57,8 @@ class BaseRenderer:
         Pushes changes between the back_buffer and front_buffer and applies them
         to the screen
         """
-        updates = self.front_buffer.get_buffer_changes(self.back_buffer)
-        if updates:
-            for update in updates:
-                self.screen.print_at(update[2], update[0], update[1], len(update[2]))
-        else:
-            return
+        for y, x, val in self.front_buffer.get_buffer_changes(self.back_buffer):
+            self.screen.print_at(val, x, y, 1)
     
     def render_exit(self):
         """
@@ -81,10 +78,8 @@ class BaseRenderer:
         for _ in range(self.frames):
             sleep(self.time)
             self.render_img_frame(_)
-            self.render_effect(_)
+            self.render_effect_frame(_)
             self.push_front_to_screen()
-
-            self.front_buffer.sync_with(self.back_buffer)
         self.render_exit()
         self.push_front_to_screen()
 
@@ -129,20 +124,17 @@ class EffectRenderer(BaseRenderer):
     def __init__(self, screen, frames, time, effect_type="static", background=" ", transparent=False):
         super(EffectRenderer, self).__init__(screen, frames, time, effect_type, background, transparent)
         self.background = self.effect.background
-
-
+    
     def render_effect_frame(self, frame_number):
         self.effect.render_frame(frame_number)
-
+    
     def run(self):
         for _ in range(self.frames):
-            if self.time > 0:
-                sleep(self.time)
             self.render_effect_frame(_)
-            self.back_buffer.buffer[:] = self.effect.buffer.buffer[:]
+            self.back_buffer.sync_with(self.effect.buffer)
             self.push_front_to_screen()
-            self.front_buffer.buffer[:] = self.back_buffer.buffer[:]
-
+            self.front_buffer.sync_with(self.back_buffer)
+            sleep(self.time)
         self.render_exit()
         self.push_front_to_screen()
 

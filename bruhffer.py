@@ -1,3 +1,5 @@
+import numpy as np
+
 class Buffer:
     """
     Class for creating and managing a buffer
@@ -14,14 +16,13 @@ class Buffer:
         and buffer that was passed in
         :param in_buf: buffer to compare this buffer to
         """
-        res = []
         if  self._height != len(in_buf.buffer) or self._width != len(in_buf.buffer[0]):
             return None
         for y in range(self._height):
             for x in range(self._width):
                 if self.buffer[y][x] != in_buf.buffer[y][x]:
-                    res.append((x, y, in_buf.buffer[y][x]))
-        return res
+                    yield y, x, in_buf.buffer[y][x]
+
 
     def clear_buffer(self, x=0, y=0, w=None, h=None):
         """
@@ -72,7 +73,9 @@ class Buffer:
             text = text[:self._width-x]
         
         if not transparent:
-            self.buffer[y] = self.buffer[y][:x] + [c for c in text] + self.buffer[y][x + len(text):]
+            #self.buffer[y] = self.buffer[y][:x] + [c for c in text] + self.buffer[y][x + len(text):]
+            for i, c in enumerate(text):
+                self.put_char(x+i, y, c)
         else:
             for i, c in enumerate(text):
                 if c != " ":
@@ -102,9 +105,8 @@ class Buffer:
         Sync this buffer with the given buffer
         :param in_buf: buffer to be applied to this buffer
         """
-        updates = self.get_buffer_changes(in_buf)
-        for update in updates:
-            self.buffer[update[1]][update[0]] = update[2]
+        for i in range(self.height()):
+            self.buffer[i][:] = in_buf.buffer[i][:]
 
     def height(self):
         """
