@@ -37,6 +37,6 @@ def render_stars(screen, frames, time, effect, background, transparent):
 # Now that we have a funciton to render the animation, let's
 # create a screen and call the function
 #              function            fram  time  effect   bk   img
-WinScreen.show(render_stars, args=(1000, 0.05, "stars", " ", None))
+WinScreen.show(render_stars, args=(100, 0.05, "stars", " ", None))
 
 ```
