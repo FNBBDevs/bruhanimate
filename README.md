@@ -4,7 +4,7 @@ bruhanimate offers a series of files to aid in rendering out animations in the t
 **NOTE: This currently only runs on WINDOWS OS currently**
 
 # Usage
-This is not complete, but currently offers the ability to render out background-effects. There also exists renderers that can render out images to the screen, but these need to be modified following the implementation of the `Effects` class. A great example of this can be found in `demo.py`. Here is a what a simple example might look like. <br/><br/>
+This is not complete, but currently offers the ability to render out background-effects. There also exists renderers that can render out images to the screen, but these need to be modified following the implementation of the `Effects` class. A great example of the effects can be found in `demo.py`. Here is a what a simple example might look like. <br/><br/>
 ```py
 
 """
