@@ -99,6 +99,29 @@ class StarEffect(NoiseEffect):
             self.buffer.put_at(0, y, ''.join([self.stars[random.randint(0, self.start_length - 1)] if random.random() < self.intensity else self.buffer.get_char(_, y) for _ in range(self.buffer.width())]))
 
 
+class PlasmaEffect(BaseEffect):
+    def __init__(self, buffer, background):
+        super(PlasmaEffect, self).__init__(buffer, background)
+
+        self.scale = ' .:-=+*#%@'
+        self.ayo = 0
+        self.vals = [random.randint(2, 20), random.randint(2, 20), random.randint(2, 20), random.randint(2, 20)]
+
+    def update_background(self, background):
+        self.background        = background
+        self.background_length = len(self.background)
+
+    def render_frame(self, frame_number):
+        self.ayo += 1
+        for y in range(self.buffer.height()):
+            for x in range(self.buffer.width()):
+                value = abs(self.func(x + self.ayo / 3, y, 1/4, 1/3, self.vals[0]) + self.func(x, y, 1/8, 1/5, self.vals[1]) 
+                           + self.func(x, y + self.ayo / 3, 1/2, 1/5, self.vals[2]) + self.func(x, y, 3/4, 4/5, self.vals[3])) / 4.0
+                self.buffer.put_char(x, y, self.scale[int((len(self.scale) - 1) * value)])
+
+    def func(self, x, y, a, b, n):
+        return math.sin(math.sqrt((x - self.buffer.width() * a) ** 2 + 4 * ((y - self.buffer.height() * b)) ** 2) * math.pi / n)
+
 # TESTING
 def run_n_frames(effect, n, s):
     for _ in range(n):

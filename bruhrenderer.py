@@ -6,7 +6,7 @@ from bruhffer import Buffer
 from bruheffects import *
 from abc import ABC, abstractmethod
 from threading import Timer
-_VALID_EFFECTS = ["static", "offset", "noise", "stars"]
+_VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma"]
 
 def sleep(s):
     sys.stdout.flush()
@@ -41,6 +41,8 @@ class BaseRenderer:
             self.background = self.effect.background
         elif self.effect_type == "stars":
             self.effect = StarEffect(effect_buffer, self.background)
+        elif self.effect_type == "plasma":
+            self.effect = PlasmaEffect(effect_buffer, self.background)
         
         # BUFFERS
         self.image_buffer  = Buffer(self.height, self.width)
@@ -129,6 +131,7 @@ class EffectRenderer(BaseRenderer):
         self.effect.render_frame(frame_number)
     
     def run(self):
+        print(f"RUN ANALYSIS FOR '{self.effect_type.center(8, ' ')}' WITH INTENSITY: {None if self.effect_type in ['static', 'offset', 'plasma'] else self.effect.intensity}")
         start = time.time()
         second = 1
         for _ in range(self.frames):
@@ -138,9 +141,10 @@ class EffectRenderer(BaseRenderer):
             self.front_buffer.sync_with(self.back_buffer)
             sleep(self.time)
             if time.time() - start >= 1:
-                print(f"{second} SECOND ELAPSED AT FRAME: {_}")
+                print(f"\t{str(second).rjust(2, ' ')} SECOND --> FRAMES ELAPSED {str(_).rjust(4, ' ')}")
                 second += 1
                 start = time.time()
+        print()
         self.render_exit()
         self.push_front_to_screen()
 
