@@ -68,11 +68,8 @@ class BaseRenderer:
         """
         if self.wipe:
             self.back_buffer.clear_buffer()
-            self.back_buffer.put_at_center(self.height // 2 - 1, self.msg1)    
-            self.back_buffer.put_at_center(self.height // 2, self.msg2)
-        else:
-            self.back_buffer.put_at_center(self.height - 3, self.msg1)    
-            self.back_buffer.put_at_center(self.height - 2, self.msg2)
+        self.back_buffer.put_at_center(self.height // 2 - 1, self.msg1)    
+        self.back_buffer.put_at_center(self.height // 2, self.msg2)
 
     def run(self):
         """

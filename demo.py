@@ -140,7 +140,7 @@ def offset_render(screen, frames, time, effect, background, transparent):
     renderer.effect.update_direction("left")
 
     # CHANGE THE END MESSAGES
-    renderer.set_exit_stats("  Animation Frames Completed  ", "    Press [Enter] to leave    ", wipe=True)
+    renderer.set_exit_stats("  Animation Frames Completed  ", "    Press [Enter] to leave    ", wipe=False)
 
     # RUN
     renderer.run()

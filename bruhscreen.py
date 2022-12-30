@@ -1,6 +1,7 @@
 """
 Much of bruhscreen implementation is based on the Windows based implementation of 
 setting of terminal screen from AsciiMatics found here at <https://github.com/peterbrittain/asciimatics>
+and more specifically at <https://github.com/peterbrittain/asciimatics/blob/master/asciimatics/screen.py>
 """
 
 from __future__ import division
