@@ -76,11 +76,10 @@ hey = [
 ]
 
 
-def render(screen, frames, time, effect, background, transparent):
+def noise_render(screen, frames, time, effect, background, transparent):
     """
     Testing just rendering an effect
     """
-
     # SETUP
     renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
 
@@ -93,4 +92,68 @@ def render(screen, frames, time, effect, background, transparent):
     # [Enter] TO MOVE ON
     input()
 
-WinScreen.show(render, args=(3000, 0, "stars", " ", None))
+
+def stars_render(screen, frames, time, effect, background, transparent):
+    """
+    Testing just rendering an effect
+    """
+    # SETUP
+    renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
+
+    # REDUCE INTENSITY FOR FASTER RENDER
+    renderer.effect.update_intensity(10)
+
+    # RUN
+    renderer.run()
+
+    # [Enter] TO MOVE ON
+    input()
+
+
+def static_render(screen, frames, time, effect, background, transparent):
+    """
+    Testing just rendering an effect
+    """
+    # SETUP
+    renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
+
+    # RUN
+    renderer.run()
+
+    # [Enter] TO MOVE ON
+    input()
+
+
+def offset_render(screen, frames, time, effect, background, transparent):
+    """
+    Testing just rendering an effect
+    """
+    # SETUP
+    renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
+
+    # RUN
+    renderer.run()
+
+    # CHANGE THE DIRECTION
+    renderer.effect.update_direction("left")
+
+    # RUN
+    renderer.run()
+
+    # [Enter] TO MOVE ON
+    input()
+
+
+
+
+# TESTING NOISE
+WinScreen.show(noise_render, args=(1000, 0, "noise", " ", None))
+
+# TESTING STARS
+WinScreen.show(stars_render, args=(1000, 0, "stars", " ", None))
+
+# TESTING STATIC
+WinScreen.show(static_render, args=(1000, 0, "static", ".-._", None))
+
+# TESTING OFFSET
+WinScreen.show(offset_render, args=(1000, 0, "offset", "Hello, from bruhanimate!", None))
