@@ -11,8 +11,8 @@ This is not complete, but currently offers the ability to render out background-
 Here is a simple program that uses the EffectRenderer to render out one
 of the prebuilt effects to the terminal.
 """
-from bruhscreen import WinScreen
-from bruhrenderer import *
+from bruhanimate.bruhscreen import WinScreen
+from bruhanimate.bruhrenderer import *
 
 # Define a function that the screen warpper function will call
 def render_stars(screen, frames, time, effect, background, transparent):
