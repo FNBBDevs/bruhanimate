@@ -8,8 +8,8 @@ This is no where near complete, but currently offers the ability to render out b
 ```py
 
 """
-Here is a simple program that uses the CenterRenderer to render out a static
-ASCII image in the center of the terminal
+Here is a simple program that uses the EffectRenderer to render out one
+of the prebuilt effects to the terminal.
 """
 from bruhscreen import WinScreen
 from bruhrenderer import *
