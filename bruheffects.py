@@ -4,6 +4,7 @@ import random
 from abc import ABC, abstractmethod
 
 _VALID_DIRECTIONS = ["right", "left"]
+_GREY_SCALES      = ['  ..:-=+*#%@', '  __--+<>i!lI?', ' .:;rsA23hHG#9&@']
 
 class BaseEffect:
     """
@@ -103,9 +104,9 @@ class PlasmaEffect(BaseEffect):
     def __init__(self, buffer, background):
         super(PlasmaEffect, self).__init__(buffer, background)
 
-        self.scale = ' .:-=+*#%@'
+        self.scale = random.choice(_GREY_SCALES)
         self.ayo = 0
-        self.vals = [random.randint(2, 20), random.randint(2, 20), random.randint(2, 20), random.randint(2, 20)]
+        self.vals = [random.randint(1, 50), random.randint(1, 50), random.randint(1, 50), random.randint(1, 50)]
 
     def update_background(self, background):
         self.background        = background
@@ -121,12 +122,3 @@ class PlasmaEffect(BaseEffect):
 
     def func(self, x, y, a, b, n):
         return math.sin(math.sqrt((x - self.buffer.width() * a) ** 2 + 4 * ((y - self.buffer.height() * b)) ** 2) * math.pi / n)
-
-# TESTING
-def run_n_frames(effect, n, s):
-    for _ in range(n):
-        time.sleep(s)
-        effect.render_frame(_)
-        for y in range(effect.buffer.height()):
-            print("".join(effect.buffer.grab_slice(0, y, effect.buffer.width())))
-        print()

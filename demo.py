@@ -84,10 +84,7 @@ def plasma_render(screen, frames, time, effect, background, transparent):
     renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
 
     # RUN
-    renderer.run()
-
-    # [Enter] TO MOVE ON
-    input()
+    renderer.run(end_message=False)
 
 
 def noise_render(screen, frames, time, effect, background, transparent):
@@ -101,10 +98,7 @@ def noise_render(screen, frames, time, effect, background, transparent):
     renderer.effect.update_intensity(1)
 
     # RUN
-    renderer.run()
-
-    # [Enter] TO MOVE ON
-    input()
+    renderer.run(end_message=False)
 
 
 def stars_render(screen, frames, time, effect, background, transparent):
@@ -118,10 +112,7 @@ def stars_render(screen, frames, time, effect, background, transparent):
     renderer.effect.update_intensity(1)
 
     # RUN
-    renderer.run()
-
-    # [Enter] TO MOVE ON
-    input()
+    renderer.run(end_message=False)
 
 
 def static_render(screen, frames, time, effect, background, transparent):
@@ -132,10 +123,7 @@ def static_render(screen, frames, time, effect, background, transparent):
     renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
 
     # RUN
-    renderer.run()
-
-    # [Enter] TO MOVE ON
-    input()
+    renderer.run(end_message=False)
 
 
 def offset_render(screen, frames, time, effect, background, transparent):
@@ -146,10 +134,13 @@ def offset_render(screen, frames, time, effect, background, transparent):
     renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
 
     # RUN
-    renderer.run()
+    renderer.run(end_message=False)
 
     # CHANGE THE DIRECTION
     renderer.effect.update_direction("left")
+
+    # CHANGE THE END MESSAGES
+    renderer.set_exit_stats("  Animation Frames Completed  ", "    Press [Enter] to leave    ", wipe=True)
 
     # RUN
     renderer.run()
@@ -160,20 +151,20 @@ def offset_render(screen, frames, time, effect, background, transparent):
 
 
 
+if __name__ == "__main__":
+    FRAMES = 1000
 
-FRAMES = 1000
+    # TESTING NOISE
+    WinScreen.show(noise_render, args=(FRAMES, 0, "noise", " ", None))
 
-# TESTING NOISE
-WinScreen.show(noise_render, args=(FRAMES, 0, "noise", " ", None))
+    # TESTING STARS
+    WinScreen.show(stars_render, args=(FRAMES, 0, "stars", " ", None))
 
-# TESTING STARS
-WinScreen.show(stars_render, args=(FRAMES, 0, "stars", " ", None))
+    # TESTING PLASMA
+    WinScreen.show(plasma_render, args=(100, 0, 'plasma', " ", None))
 
-# TESTING PLASMA
-WinScreen.show(plasma_render, args=(FRAMES, 0, 'plasma', " ", None))
+    # TESTING STATIC
+    WinScreen.show(static_render, args=(FRAMES, 0, "static", ".-._", None))
 
-# TESTING STATIC
-WinScreen.show(static_render, args=(FRAMES, 0, "static", ".-._", None))
-
-# TESTING OFFSET
-WinScreen.show(offset_render, args=(FRAMES, 0, "offset", "Hello, from bruhanimate!", None))
+    # TESTING OFFSET
+    WinScreen.show(offset_render, args=(FRAMES, 0, "offset", "..--..__", None))

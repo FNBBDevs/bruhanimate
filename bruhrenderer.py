@@ -68,8 +68,11 @@ class BaseRenderer:
         """
         if self.wipe:
             self.back_buffer.clear_buffer()
-        self.back_buffer.put_at_center(self.height - 3, self.msg1)    
-        self.back_buffer.put_at_center(self.height - 2, self.msg2)
+            self.back_buffer.put_at_center(self.height // 2 - 1, self.msg1)    
+            self.back_buffer.put_at_center(self.height // 2, self.msg2)
+        else:
+            self.back_buffer.put_at_center(self.height - 3, self.msg1)    
+            self.back_buffer.put_at_center(self.height - 2, self.msg2)
 
     def run(self):
         """
@@ -130,7 +133,7 @@ class EffectRenderer(BaseRenderer):
     def render_effect_frame(self, frame_number):
         self.effect.render_frame(frame_number)
     
-    def run(self):
+    def run(self, end_message=True):
         print(f"RUN ANALYSIS FOR '{self.effect_type.center(8, ' ')}' WITH INTENSITY: {None if self.effect_type in ['static', 'offset', 'plasma'] else self.effect.intensity}")
         start = time.time()
         second = 1
@@ -145,8 +148,9 @@ class EffectRenderer(BaseRenderer):
                 second += 1
                 start = time.time()
         print()
-        self.render_exit()
-        self.push_front_to_screen()
+        if end_message:
+            self.render_exit()
+            self.push_front_to_screen()
 
 
 class CenterRenderer(BaseRenderer):
