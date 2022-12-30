@@ -1,6 +1,5 @@
 from bruhscreen import WinScreen
 from bruhrenderer import *
-from bruhffer import Buffer
 
 bruh2_0 = [
     r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ",
@@ -78,38 +77,21 @@ hey = [
 ]
 
 
-def render1(screen, frames, time, background, img, offset):
+def render(screen, frames, time, effect, background, transparent):
+    """
+    Testing just rendering an effect
+    """
 
-    # Create the renderer
-    renderer = CenterRenderer(screen, frames, time, background, img, offset)
+    # SETUP
+    renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
 
-    # Edit the exit messages
-    renderer.set_exit_stats(msg1="  Animation is Complete  ", msg2="  Press [Enter] to Exit  ", wipe=False)
+    # REDUCE INTENSITY FOR FASTER RENDER
+    renderer.effect.update_intensity(75)
 
-    # Set the padding on the image
-    renderer.set_padding([4, 2])
-
-    # Run the frames
+    # RUN
     renderer.run()
 
-    # get input to stop
+    # [Enter] TO MOVE ON
     input()
 
-
-def render2(screen, frames, time, background, img, offset, direction, shit_rate):
-    # Create the renderer
-    renderer = PanRenderer(screen, frames, time, background, img, offset, direction=direction, shift_rate=shit_rate)
-
-    # Edit the exit messages
-    renderer.set_exit_stats(msg1="  Animation is Complete  ", msg2="  Press [Enter] to Exit  ", wipe=False)
-
-    # Run the frames
-    renderer.run()
-
-    # get input to stop()
-    input()
-    
-
-
-#WinScreen.wrapper(render1, args=(10, 0.2, "!@#$%^&*()_+", computer, True,))
-WinScreen.wrapper(render2, args=(None, 0.01, ".-._", hey, True, "h", 1))
+WinScreen.show(render, args=(100, 0.1, "noise", " ", None))

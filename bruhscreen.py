@@ -118,9 +118,8 @@ if sys.platform == 'win32':
             return screen
             
         @classmethod
-        def wrapper(cls, function, args=None):
+        def show(cls, function, args=None):
             screen = WinScreen.open()
-            restore = True
             try:
                 if args:
                     return function(screen, *args)

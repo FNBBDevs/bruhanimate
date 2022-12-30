@@ -72,8 +72,7 @@ class Buffer:
             text = text[:self._width-x]
         
         if not transparent:
-            for i, c in enumerate(text):
-                self.put_char(x+i, y, c)
+            self.buffer[y] = self.buffer[y][:x] + [c for c in text] + self.buffer[y][x + len(text):]
         else:
             for i, c in enumerate(text):
                 if c != " ":
@@ -103,7 +102,9 @@ class Buffer:
         Sync this buffer with the given buffer
         :param in_buf: buffer to be applied to this buffer
         """
-        self.buffer = [line[:] for line in in_buf.buffer]
+        updates = self.get_buffer_changes(in_buf)
+        for update in updates:
+            self.buffer[update[1]][update[0]] = update[2]
 
     def height(self):
         """
