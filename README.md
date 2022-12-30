@@ -1,5 +1,5 @@
 # bruhanimate
-bruhanimate offers a series of files to aid in rendering out animations in the terminal. This is heavily inspisred by the <a href="https://github.com/peterbrittain/asciimatics">Asciimatics</a> package. While this package does everyething you would want one to do, I figured it would be good practice to go ahead and attempt something like this myself.
+bruhanimate offers a series of files to aid in rendering out animations in the terminal. This is heavily inspisred by the <a href="https://github.com/peterbrittain/asciimatics">Asciimatics</a> package. While Asciimatics is the end-all be-all for termianl animations, I figured it would be good practice to go ahead and attempt something like this myself.
 
 **NOTE: This currently only runs on WINDOWS OS currently**
 
