@@ -1,5 +1,3 @@
-import numpy as np
-
 class Buffer:
     """
     Class for creating and managing a buffer
