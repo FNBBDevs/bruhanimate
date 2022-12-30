@@ -4,7 +4,7 @@ bruhanimate offers a series of files to aid in rendering out animations in the t
 **NOTE: This currently only runs on WINDOWS OS currently**
 
 # Usage
-This is no where near complete, but does offer the ability to render out static images in the center of the screen. This would look something like this . . . <br/><br/>
+This is no where near complete, but currently offers the ability to render out background-effects. A great example of this can be foudn in `demo.py`. Here is a what a simple example might look like. <br/><br/>
 ```py
 
 """
@@ -12,34 +12,31 @@ Here is a simple program that uses the CenterRenderer to render out a static
 ASCII image in the center of the terminal
 """
 from bruhscreen import WinScreen
-from bruhrenderer import CenterRenderer
+from bruhrenderer import *
 
-# Create a simple ASCII image
-img = [
-    f"    __  __          ",
-    f"   / / / /__  __  __",
-    f"  / /_/ / _ \/ / / /",
-    f" / __  /  __/ /_/ / ",
-    f"/_/ /_/\___/\__, /  ",
-    f"           /____/   "
-]
-
-# Define a function to handle the animation
-# This is what we will wrap the screen in
-def render(screen, frames, time, background, img):
+# Define a function that the screen warpper function will call
+def render_stars(screen, frames, time, effect, background, transparent):
+    
     # Create the renderer
-    renderer = CenterRenderer(screen, frames, time, background, img)
-    # Edit the exit messages
-    renderer.set_exit_stats(msg1=" Animation is Complete ", msg2=" Press [Enter] to Exit ", wipe=False)
-    # Run the frames
+    renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
+    
+    # Change the exit messages if you want, wipe tells the renderer to wipe the final
+    # animation frame before displaying the exit messages.
+    renderer.set_exit_stats("  Animation Frames Completed  ", "    Press [Enter] to leave    ", wipe=True)
+    
+    # Set the intensity if you want, the higher the intensity, the more stars.
+    # Intensity can be set for the Noise and Stars Effect, 200 is a good spot.
+    renderer.effect.update_intensity(200)
+    
+    # Run the animation
     renderer.run()
+    
+    # Add an input() to catch the end of the enimation
+    input()
 
-# Create the screen and wrap it with the renderer
-# note: this is similar to Asciimatics
-WinScreen.wrapper(render, args=(20, 0.2, " ", img,))
-
-# You can also render out the static animation without an image
-# In this case, only the specified background character will be rendered
-WinScreen.wrapper(render, args=(20, 0.2, " ", None,))
+# Now that we have a funciton to render the animation, let's
+# create a screen and call the function
+#              function            fram  time  effect   bk   img
+WinScreen.show(render_stars, args=(1000, 0.05, "stars", " ", None))
 
 ```
