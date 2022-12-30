@@ -129,12 +129,18 @@ class EffectRenderer(BaseRenderer):
         self.effect.render_frame(frame_number)
     
     def run(self):
+        start = time.time()
+        second = 1
         for _ in range(self.frames):
             self.render_effect_frame(_)
             self.back_buffer.sync_with(self.effect.buffer)
             self.push_front_to_screen()
             self.front_buffer.sync_with(self.back_buffer)
             sleep(self.time)
+            if time.time() - start >= 1:
+                print(f"{second} SECOND ELAPSED AT FRAME: {_}")
+                second += 1
+                start = time.time()
         self.render_exit()
         self.push_front_to_screen()
 

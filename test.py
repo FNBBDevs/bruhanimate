@@ -87,12 +87,10 @@ def render(screen, frames, time, effect, background, transparent):
     # REDUCE INTENSITY FOR FASTER RENDER
     renderer.effect.update_intensity(10)
 
-    print(renderer.width)
-
     # RUN
     renderer.run()
 
     # [Enter] TO MOVE ON
     input()
 
-WinScreen.show(render, args=(1000, 0, "noise", " ", None))
+WinScreen.show(render, args=(3000, 0, "stars", " ", None))
