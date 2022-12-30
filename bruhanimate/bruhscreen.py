@@ -16,10 +16,9 @@ ENABLE_QUICK_EDIT_MODE = 0x0040
 
 if sys.platform == 'win32':
     import win32con
-    
+    import win32event # -->. for keyboard events
 
     import win32console
-    import win32event
     import win32file
     import pywintypes
 

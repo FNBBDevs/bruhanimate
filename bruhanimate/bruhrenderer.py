@@ -1,11 +1,9 @@
 import sys
-import os
 import time
 import random
 from bruhffer import Buffer
 from bruheffects import *
-from abc import ABC, abstractmethod
-from threading import Timer
+from abc import abstractmethod
 _VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma"]
 
 def sleep(s):

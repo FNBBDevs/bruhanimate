@@ -1,6 +1,6 @@
-from bruhscreen import WinScreen
-from bruhrenderer import *
-import images
+from bruhanimate.bruhscreen import WinScreen
+from bruhanimate.bruhrenderer import *
+import bruhanimate.images
 
 
 def plasma_render(screen, frames, time, effect, background, transparent):
