@@ -1,8 +1,8 @@
 import sys
 import time
 import random
-from bruhffer import Buffer
-from bruheffects import *
+from bruhanimate.bruhffer import Buffer
+from bruhanimate.bruheffects import *
 from abc import abstractmethod
 _VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma"]
 
