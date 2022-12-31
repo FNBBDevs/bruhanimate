@@ -105,6 +105,16 @@ class Buffer:
         """
         for i in range(self.height()):
             self.buffer[i][:] = in_buf.buffer[i][:]
+    
+    def sync_over_top_img(self, img_buffer):
+        """
+        Apply the image overtop this buffer. Image takes priority.
+        """
+        for y in range(self.height()):
+            for x in range(self.width()):
+                if img_buffer.buffer[y][x] != None:
+                    self.buffer[y][x] = img_buffer.buffer[y][x]
+
 
     def height(self):
         """
