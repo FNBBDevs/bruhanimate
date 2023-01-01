@@ -22,4 +22,4 @@ def pan_render(screen, img, frames=500, time=0, effect_type="static", background
     input()
 
 
-WinScreen.show(pan_render, args=(images.get_image("COMPUTER"), 500, 0.01, "plasma", " ", True, 1, False))
+WinScreen.show(pan_render, args=(images.get_image("COMPUTER"), 500, 0.02, "stars", " ", True, 1, False))

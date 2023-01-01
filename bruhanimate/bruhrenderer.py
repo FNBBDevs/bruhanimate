@@ -260,7 +260,7 @@ class PanRenderer(BaseRenderer):
 
     def render_horizontal_frame(self, frame_number):
 
-        if 0 <= frame_number <= self.img_width:
+        if (0 <= frame_number <= self.img_width) or not self.loop:
             for y in range(self.height):
                 for x in range(self.width):
                     if x >= self.img_back and x < self.img_front and y >= self.img_top and y < self.img_bottom:
@@ -287,32 +287,5 @@ class PanRenderer(BaseRenderer):
                 self.img_back += self.shift_rate
                 self.img_front += self.shift_rate
         else:
-            if self.loop:
-                for y in range(self.height):
-                    self.image_buffer.buffer[y] = self.image_buffer.buffer[y][-self.shift_rate:] + self.image_buffer.buffer[y][:-self.shift_rate]
-            else:
-                for y in range(self.height):
-                    for x in range(self.width):
-                        if x >= self.img_back and x < self.img_front and y >= self.img_top and y < self.img_bottom:
-                            if (y-self.img_top) >= 0 and (y-self.img_bottom) < self.img_height and (x-self.img_back) >= 0 and (x-self.img_back) < self.img_width:
-                                if self.transparent:
-                                    if self.img[y-self.img_top][x-self.img_back]== " ":
-                                        self.image_buffer.put_char(x, y, None)
-                                    else:
-                                        self.image_buffer.put_char(x, y, self.img[y-self.img_top][x-self.img_back])
-                                else:
-                                    self.image_buffer.put_char(x, y, self.img[y-self.img_top][x-self.img_back])
-                        else:
-                            self.image_buffer.put_char(x, y, None)
-                if self.loop:
-                    if self.img_front >= self.width:
-                        self.img_front = 0
-                    else:
-                        self.img_front += self.shift_rate
-                    if self.img_back >= self.width:
-                        self.img_back = 0
-                    else:
-                        self.img_back += self.shift_rate
-                else:
-                    self.img_back += self.shift_rate
-                    self.img_front += self.shift_rate
+            for y in range(self.height):
+                self.image_buffer.buffer[y] = self.image_buffer.buffer[y][-self.shift_rate:] + self.image_buffer.buffer[y][:-self.shift_rate]
