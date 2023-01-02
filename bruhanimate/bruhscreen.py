@@ -9,6 +9,9 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
+import signal
+
 
 import sys
 ENABLE_EXTENDED_FLAGS = 0x0080
@@ -128,4 +131,165 @@ if sys.platform == 'win32':
             finally:
                 screen.close()
 
+else:
+    import curses
+    import termios
+    import select
 
+    class UnixScreen:
+        def __init__(self, window, height=None):
+            self.screen = window
+            self.screen.keypad(1)
+            self.height = window.getmaxyx()[0]
+            self.width  = window.getmaxyx()[1]
+            curses.curs_set(0)
+            self.screen.nodelay(1)
+            self.signal_state = _SignalState()
+            self._re_sized = False
+            self.signal_state.set(signal.SIGWINCH, self._resize_handler)
+            self.signal_state.set(signal.SIGCONT, self._continue_handler)
+            curses.mousemask(curses.ALL_MOUSE_EVENTS |
+                                curses.REPORT_MOUSE_POSITION)
+            self._move_y_x = curses.tigetstr("cup")
+            self._up_line = curses.tigetstr("ri").decode("utf-8")
+            self._down_line = curses.tigetstr("ind").decode("utf-8")
+            self._fg_color = curses.tigetstr("setaf")
+            self._bg_color = curses.tigetstr("setab")
+            self._default_colours = curses.tigetstr("op")
+            if curses.tigetflag("hs"):
+                self._start_title = curses.tigetstr("tsl").decode("utf-8")
+                self._end_title = curses.tigetstr("fsl").decode("utf-8")
+            else:
+                self._start_title = self._end_title = None
+            self._a_normal = curses.tigetstr("sgr0").decode("utf-8")
+            self._a_bold = curses.tigetstr("bold").decode("utf-8")
+            self._a_reverse = curses.tigetstr("rev").decode("utf-8")
+            self._a_underline = curses.tigetstr("smul").decode("utf-8")
+            self._clear_screen = curses.tigetstr("clear").decode("utf-8")
+            self._bytes_to_read = 0
+            self._bytes_to_return = b""
+            self._cur_x = 0
+            self._cur_y = 0
+        
+        def _resize_handler(self, *_):
+            """
+            Window resize signal handler.  We don't care about any of the
+            parameters passed in beyond the object reference.
+            """
+            curses.endwin()
+            curses.initscr()
+            self._re_sized = True
+        
+        def _continue_handler(self, *_):
+            """
+            Job pause/resume signal handler.  We don't care about any of the
+            parameters passed in beyond the object reference.
+            """
+            self.force_update(full_refresh=True)
+
+        def close(self, restore=True):
+            """
+            Close down this Screen and tidy up the environment as required.
+            :param restore: whether to restore the environment or not.
+            """
+            self.signal_state.restore()
+            if restore:
+                self.screen.keypad(0)
+                curses.echo()
+                curses.nocbreak()
+                curses.endwin()
+
+        @classmethod
+        def open(cls):
+            stdcrs = curses.initscr()
+            curses.noecho()
+            curses.cbreak()
+            stdcrs.keypad(1)
+            screen = UnixScreen(stdcrs)
+            return screen
+
+        @staticmethod
+        def _safe_write(msg):
+            """
+            Safe write to screen - catches IOErrors on screen resize.
+            :param msg: The message to write to the screen.
+            """
+            try:
+                sys.stdout.write(msg)
+            except IOError:
+                # Screen resize can throw IOErrors.  These can be safely
+                # ignored as the screen will be shortly reset anyway.
+                pass
+        
+        def print_at(self, text, x, y, width):
+            """
+            Print string at the required location.
+            :param text: The text string to print.
+            :param x: The x coordinate
+            :param y: The Y coordinate
+            :param width: The width of the character (for dual-width glyphs in CJK languages).
+            """
+            # Move the cursor if necessary
+            cursor = u""
+            if x != self._cur_x or y != self._cur_y:
+                cursor = curses.tparm(self._move_y_x, y, x).decode("utf-8")
+
+            # Print the text at the required location and update the current
+            # position.
+            try:
+                self._safe_write(cursor + text)
+            except UnicodeEncodeError:
+                # This is probably a sign that the user has the wrong locale.
+                # Try to soldier on anyway.
+                self._safe_write(cursor + "?" * len(text))
+
+            # Update cursor position for next time...
+            self._cur_x = x + width
+            self._cur_y = y
+        
+        @classmethod
+        def show(cls, function, args=None):
+            os.system("clear")
+            screen = UnixScreen.open()
+            try:
+                if args:
+                    return function(screen, *args)
+                else:
+                    return function(screen)
+            finally:
+                screen.close()
+                input()
+                os.system("clear")
+                
+
+    class _SignalState(object):
+            """
+            Save previous user signal state while setting signals.
+            Used for signal restoration when asciimatics no longer has control
+            of the user program.
+            """
+
+            def __init__(self):
+                self._old_signal_states = []
+
+            def set(self, signalnum, handler):
+                """
+                Set signal handler and record their previous values.
+                :param signalnum: The const/enum matching to the signal to be set.
+                :param handler: The function/const to set the signal to
+                """
+                old_handler = signal.getsignal(signalnum)
+                # Some environments may install a non-Python handler (which returns None at this point).
+                # We can't reinstate these, so just reset the default handler in such cases.
+                if old_handler is None:
+                    old_handler = signal.SIG_DFL
+                self._old_signal_states.append((signalnum, old_handler))
+                signal.signal(signalnum, handler)
+
+            def restore(self):
+                """
+                Restore saved signals to their previous handles.
+                """
+                for signalnum, handler in self._old_signal_states:
+                    signal.signal(signalnum, handler)
+                self._old_signal_states = []
