@@ -4,7 +4,7 @@ import random
 from bruhanimate.bruhffer import Buffer
 from bruhanimate.bruheffects import *
 from abc import abstractmethod
-_VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma"]
+_VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma", "gol"]
 HORIZONTAL = "h"
 VERTICAL   = "v"
 
@@ -43,6 +43,8 @@ class BaseRenderer:
             self.effect = StarEffect(effect_buffer, self.background)
         elif self.effect_type == "plasma":
             self.effect = PlasmaEffect(effect_buffer, self.background)
+        elif self.effect_type == "gol":
+            self.effect = GameOfLifeEffect(effect_buffer, self.background)
         
         # BUFFERS
         self.image_buffer  = Buffer(self.height, self.width)
@@ -136,7 +138,7 @@ class EffectRenderer(BaseRenderer):
         self.effect.render_frame(frame_number)
     
     def run(self, end_message=True):
-        print(f"RUN ANALYSIS FOR '{self.effect_type.center(8, ' ')}' WITH INTENSITY: {None if self.effect_type in ['static', 'offset', 'plasma'] else self.effect.intensity}")
+        print(f"RUN ANALYSIS FOR '{self.effect_type.center(8, ' ')}' WITH INTENSITY: {None if self.effect_type in ['static', 'offset', 'plasma', 'gol'] else self.effect.intensity}")
         start = time.time()
         second = 1
         for _ in range(self.frames):

@@ -2,6 +2,20 @@ from bruhanimate.bruhscreen import WinScreen
 from bruhanimate.bruhrenderer import *
 
 
+def gol_render(screen, frames, time, effect, background, transparent):
+    """
+    Testing just an effect
+    """
+    # SETUP
+    renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
+
+    # RUN
+    renderer.run(end_message=True)
+
+    # [Enter] TO MOVE ON
+    input()
+
+
 def plasma_render(screen, frames, time, effect, background, transparent):
     """
     Testing just an effect
@@ -78,6 +92,9 @@ def offset_render(screen, frames, time, effect, background, transparent):
 def main():
 
     FRAMES = 500
+
+    # TESTING GOL
+    WinScreen.show(gol_render, args=(FRAMES, 0, "gol", " ", None))
 
     # TESTING NOISE
     WinScreen.show(noise_render, args=(FRAMES, 0, "noise", " ", None))
