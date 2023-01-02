@@ -4,7 +4,7 @@ import random
 from abc import ABC, abstractmethod
 
 _VALID_DIRECTIONS = ["right", "left"]
-_GREY_SCALES      = [' .:-=+*%#@', '  __--+<>i!lI?', ' .:;rsA23hHG#9&@']
+_GREY_SCALES      = [' .:-=+*%#@', ' .:;rsA23hHG#9&@']
 
 class BaseEffect:
     """
@@ -46,6 +46,7 @@ class OffsetEffect(BaseEffect):
     
     def update_direction(self, direction):
         self.direction  = direction if direction in _VALID_DIRECTIONS else "right"
+        self.buffer.clear_buffer()
 
     def render_frame(self, frame_number):
         for y in range(self.buffer.height()):
@@ -112,6 +113,12 @@ class PlasmaEffect(BaseEffect):
         self.background        = background
         self.background_length = len(self.background)
 
+    def update_plasma_values(self, a=random.randint(1, 50), b=random.randint(1, 50), c=random.randint(1, 50), d=random.randint(1, 50)):
+        self.vals = [a, b, c, d]
+
+    def shuffle_plasma_values(self):
+        self.vals = [random.randint(1, 50), random.randint(1, 50), random.randint(1, 50), random.randint(1, 50)]
+
     def render_frame(self, frame_number):
         self.ayo += 1
         for y in range(self.buffer.height()):
@@ -119,6 +126,8 @@ class PlasmaEffect(BaseEffect):
                 value = abs(self.func(x + self.ayo / 3, y, 1/4, 1/3, self.vals[0]) + self.func(x, y, 1/8, 1/5, self.vals[1]) 
                            + self.func(x, y + self.ayo / 3, 1/2, 1/5, self.vals[2]) + self.func(x, y, 3/4, 4/5, self.vals[3])) / 4.0
                 self.buffer.put_char(x, y, self.scale[int((len(self.scale) - 1) * value)])
+        for i in range(4):
+            self.buffer.put_at(0, i, f"VAL {i+1}: {str(self.vals[i]):>3s} ")
 
     def func(self, x, y, a, b, n):
         return math.sin(math.sqrt((x - self.buffer.width() * a) ** 2 + 4 * ((y - self.buffer.height() * b)) ** 2) * math.pi / n)

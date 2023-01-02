@@ -147,7 +147,7 @@ class EffectRenderer(BaseRenderer):
             self.push_front_to_screen()
             self.front_buffer.sync_with(self.back_buffer)
             sleep(self.time)
-            if time.time() - start >= 1:
+            if time.time() - start >= 0.5:
                 print(f"\t{str(second).rjust(2, ' ')} SECOND --> FRAMES ELAPSED {str(_).rjust(4, ' ')}")
                 second += 1
                 start = time.time()
