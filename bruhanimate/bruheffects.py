@@ -4,7 +4,7 @@ import random
 from abc import ABC, abstractmethod
 
 _VALID_DIRECTIONS = ["right", "left"]
-_GREY_SCALES      = ['  ..:-=+*#%@', '  __--+<>i!lI?', ' .:;rsA23hHG#9&@']
+_GREY_SCALES      = [' .:-=+*%#@', '  __--+<>i!lI?', ' .:;rsA23hHG#9&@']
 
 class BaseEffect:
     """
@@ -122,3 +122,64 @@ class PlasmaEffect(BaseEffect):
 
     def func(self, x, y, a, b, n):
         return math.sin(math.sqrt((x - self.buffer.width() * a) ** 2 + 4 * ((y - self.buffer.height() * b)) ** 2) * math.pi / n)
+
+
+class GameOfLifeEffect(BaseEffect):
+    def __init__(self, buffer, background, decay=False):
+        super(GameOfLifeEffect, self).__init__(buffer, background)
+        self.decay = decay
+        self._set_attributes()
+        self.direcitons = [
+            [1, 0],
+            [0, 1],
+            [-1, 0],
+            [0, -1],
+            [1, 1],
+            [1, -1],
+            [-1, 1],
+            [-1, -1]
+        ]
+
+    def _set_attributes(self):
+        self.grey_scale = _GREY_SCALES[0] if self.decay else " O"
+        self.ALIVE      = len(self.grey_scale) - 1
+        self.DEAD       = 0
+        self.mappings   = {i: self.grey_scale[i] for i in range(len(self.grey_scale))}
+
+    def set_decay(self, decay):
+        self.decay = decay
+        self._set_attributes()
+
+    def render_frame(self, frame_number):
+        if frame_number == 0: # INITIALIZE THE GAME
+            for y in range(self.buffer.height()):
+                for x in range(self.buffer.width()):
+                    if random.random() < 0.1:
+                        self.buffer.put_char(x, y, self.grey_scale[self.ALIVE])
+                    else:
+                        self.buffer.put_char(x, y, self.grey_scale[self.DEAD])         
+        else: # RUN THE GAME
+            all_neighbors = []
+            for y in range(self.buffer.height()):
+                row_neighbors = [0 for _ in range(self.buffer.width())]
+                for x in range(self.buffer.width()):
+                    for direction in self.direcitons:
+                        if 0 <= y+direction[0] < self.buffer.height() and 0 <= x+direction[1] < self.buffer.width():
+                            if self.grey_scale.index(self.buffer.get_char(x+direction[1], y+direction[0])) == self.ALIVE:
+                                row_neighbors[x] += 1
+                all_neighbors.append(row_neighbors)
+                        
+            for y in range(self.buffer.height()):
+                for x in range(self.buffer.width()):       
+                    if self.grey_scale.index(self.buffer.get_char(x, y)) == self.ALIVE: # ALIVE
+                        if 2 <= all_neighbors[y][x] <= 3: # STAY ALIVE
+                            pass
+                        else: # MOVE TO THE FIRST DECAY STAGE
+                            self.buffer.put_char(x, y, self.grey_scale[self.ALIVE - 1])
+                    else: # DEAD
+                        if all_neighbors[y][x] == 3: # COME BACK TO LIFE
+                            self.buffer.put_char(x, y, self.grey_scale[self.ALIVE])
+                        else: # MOVE TO THE NEXT STAGE --> IF AT 0 STAY AT 0 i.e. don't decrement
+                            current_greyscale_position = self.grey_scale.index(self.buffer.get_char(x, y))
+                            current_greyscale_position = current_greyscale_position - 1 if current_greyscale_position > 0 else 0
+                            self.buffer.put_char(x, y, self.grey_scale[current_greyscale_position])

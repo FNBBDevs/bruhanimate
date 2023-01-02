@@ -1,6 +1,19 @@
 from bruhanimate.bruhscreen import WinScreen
 from bruhanimate.bruhrenderer import *
-import bruhanimate.images
+
+
+def gol_render(screen, frames, time, effect, background, transparent):
+    """
+    Testing just an effect
+    """
+    # SETUP
+    renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
+
+    # RUN
+    renderer.run(end_message=True)
+
+    # [Enter] TO MOVE ON
+    input()
 
 
 def plasma_render(screen, frames, time, effect, background, transparent):
@@ -22,7 +35,7 @@ def noise_render(screen, frames, time, effect, background, transparent):
     renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
 
     # REDUCE INTENSITY FOR FASTER RENDER
-    renderer.effect.update_intensity(100)
+    renderer.effect.update_intensity(1)
 
     # RUN
     renderer.run(end_message=False)
@@ -80,6 +93,9 @@ def main():
 
     FRAMES = 500
 
+    # TESTING GOL
+    WinScreen.show(gol_render, args=(FRAMES, 0, "gol", " ", None))
+
     # TESTING NOISE
     WinScreen.show(noise_render, args=(FRAMES, 0, "noise", " ", None))
 
@@ -87,7 +103,7 @@ def main():
     WinScreen.show(stars_render, args=(FRAMES, 0, "stars", " ", None))
 
     # TESTING PLASMA
-    WinScreen.show(plasma_render, args=(1000, 0, 'plasma', " ", None))
+    WinScreen.show(plasma_render, args=(100, 0, 'plasma', " ", None))
 
     # TESTING STATIC
     WinScreen.show(static_render, args=(FRAMES, 0, "static", ".-._", None))

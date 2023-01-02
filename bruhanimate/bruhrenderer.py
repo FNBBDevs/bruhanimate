@@ -4,7 +4,9 @@ import random
 from bruhanimate.bruhffer import Buffer
 from bruhanimate.bruheffects import *
 from abc import abstractmethod
-_VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma"]
+_VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma", "gol"]
+HORIZONTAL = "h"
+VERTICAL   = "v"
 
 def sleep(s):
     sys.stdout.flush()
@@ -41,6 +43,8 @@ class BaseRenderer:
             self.effect = StarEffect(effect_buffer, self.background)
         elif self.effect_type == "plasma":
             self.effect = PlasmaEffect(effect_buffer, self.background)
+        elif self.effect_type == "gol":
+            self.effect = GameOfLifeEffect(effect_buffer, self.background)
         
         # BUFFERS
         self.image_buffer  = Buffer(self.height, self.width)
@@ -69,7 +73,7 @@ class BaseRenderer:
         self.back_buffer.put_at_center(self.height // 2 - 1, self.msg1)    
         self.back_buffer.put_at_center(self.height // 2, self.msg2)
 
-    def run(self):
+    def run(self, end_message=True):
         """
         Updates the image_buffer and effect_buffer. Then the image_buffer is applied over top the effect_buffer
         and stored into the back_buffer. After the front_buffer is rendered to the screen, the front_buffer is synced
@@ -78,10 +82,15 @@ class BaseRenderer:
         for _ in range(self.frames):
             sleep(self.time)
             self.render_img_frame(_)
-            self.render_effect_frame(_)
+            self.effect.render_frame(_)
+            self.back_buffer.sync_with(self.effect.buffer)
+            self.back_buffer.sync_over_top_img(self.image_buffer)
             self.push_front_to_screen()
-        self.render_exit()
-        self.push_front_to_screen()
+            self.front_buffer.sync_with(self.back_buffer)
+        
+        if end_message:
+            self.render_exit()
+            self.push_front_to_screen()
 
     def set_exit_stats(self, msg1=None, msg2=None, wipe=None):
         """
@@ -129,7 +138,7 @@ class EffectRenderer(BaseRenderer):
         self.effect.render_frame(frame_number)
     
     def run(self, end_message=True):
-        print(f"RUN ANALYSIS FOR '{self.effect_type.center(8, ' ')}' WITH INTENSITY: {None if self.effect_type in ['static', 'offset', 'plasma'] else self.effect.intensity}")
+        print(f"RUN ANALYSIS FOR '{self.effect_type.center(8, ' ')}' WITH INTENSITY: {None if self.effect_type in ['static', 'offset', 'plasma', 'gol'] else self.effect.intensity}")
         start = time.time()
         second = 1
         for _ in range(self.frames):
@@ -156,75 +165,34 @@ class CenterRenderer(BaseRenderer):
     def __init__(self, screen, frames, time, img, effect_type="static", background=" ", transparent=False):
         super(CenterRenderer, self).__init__(screen, frames, time, effect_type, background, transparent)
         self.background = background if background else " "
-        self.img = None
         self.transparent = transparent if transparent else False
-        self.orig_img = img
-        self.padding = [0, 0]
 
-        if img:
-            self.img = img
-            self._set_img_attributes()
+        # IMAGE
+        self.img = img
+        self.img_height = len(self.img)
+        self.img_width = len(self.img[0])
+        self.img_y_start = (self.height - len(self.img)) // 2
+        self.img_x_start = (self.width - len(self.img[0])) // 2
 
-    def set_padding(self, padding_vals):
-        """
-        Set the padding for the image
-        :param padding_vals: vals for padding [left-right, top-bottom]
-        """
-
-        if not self.img:
-            return
-
-        if len(padding_vals) == 2:
-            self.padding = padding_vals
-        
-        left_right = self.padding[0]
-        top_bottom = self.padding[1]
-        if left_right > 0 or top_bottom > 0:
-            tmp = []
-            for _ in range(top_bottom):
-                tmp.append(" "*self.img_width)
-            for line in self.img:
-                tmp.append(line)
-            for _ in range(top_bottom):
-                tmp.append(" "*self.img_width)
-
-            for i in range(len(tmp)):
-                tmp[i] = (" "*left_right) + tmp[i] + (" "*left_right)
-            
-            self.img = [line for line in tmp]
-            self._set_img_attributes()
-    
-    def _set_img_attributes(self):
-        """
-        Updates attributes that relate to the image given an image exists
-        """
-        if self.img:
-            self.img_height = len(self.img)
-            self.img_width = len(self.img[0])
-            self.img_y_start = (self.height - len(self.img)) // 2
-            self.img_x_start = (self.width - len(self.img[0])) // 2
- 
     def render_img_frame(self, frame_number):
         """
         Renders out the image to the center of the screen,
         if there is no image passed into the renderer then
         the background is rendered on it's own
         """
-        if self.img:
-            for y in range(self.back.height()):
-                self.back.put_at(0, y, ''.join([self.background[random.randint(0, len(self.background) - 1)] if random.random() < 0.1 else self.back.get_char(_, y) for _ in range(self.back.width())]))
-                """if self.offset:
-                    self.back.put_at(0, y, (self.background[y%len(self.background):] + self.background[:y%len(self.background)])*self.width)
-                else:
-                    self.back.put_at(0, y, self.background*self.width, self.transparent)"""
-                if y >= self.img_y_start and y < self.img_y_start + self.img_height:
-                    self.back.put_at(self.img_x_start, y, self.img[y-self.img_y_start], self.transparent)
-        else:
+        if frame_number == 0:
             for y in range(self.height):
-                if self.offset:
-                    self.back.put_at(0, y, (self.background[y%len(self.background):] + self.background[:y%len(self.background)])*self.width)
-                else:
-                    self.back.put_at(0, y, self.background*self.width)
+                for x in range(self.width):
+                    if y >= self.img_y_start and y < self.img_y_start + self.img_height and x >= self.img_x_start and x < self.img_x_start + self.img_width:
+                        if self.transparent:
+                            if self.img[y-self.img_y_start][x-self.img_x_start] == " ":
+                                self.image_buffer.put_char(x, y, None)
+                            else:
+                                self.image_buffer.put_char(x, y, self.img[y-self.img_y_start][x-self.img_x_start])
+                        else:
+                            self.image_buffer.put_char(x, y, self.img[y-self.img_y_start][x-self.img_x_start])
+                    else:
+                        self.image_buffer.put_char(x, y, None)
 
 
 class PanRenderer(BaseRenderer):
@@ -232,29 +200,24 @@ class PanRenderer(BaseRenderer):
     A renderer to pan an image across the screen.
     Update the image_buffer only.
     """
-    def __init__(self, screen, frames, time, img, effect_type="static", background=" ", transparent=False, direction="h", shift_rate=1):
+    def __init__(self, screen, frames, time, img, effect_type="static", background=" ", transparent=False, direction="h", shift_rate=1, loop=False):
         super().__init__(screen, frames, time, effect_type, background, transparent)
         self.direction = direction if direction and direction in ["h", "v"] else "h"
-        self.img = None
-        self.current_x = 0
-        self.current_y = 0
+        self.img = img
         self.shift_rate = shift_rate
-
-        if img:
-            self.img = img
-            self.frames = (self.screen.width + len(self.img[0])) // self.shift_rate + self.shift_rate
-            self._set_img_attributes()
+        self.loop = loop
+        self._set_img_attributes()
     
     def _set_img_attributes(self):
-        if self.img:
-            self.current_x = 0 if self.direction == "v" else -len(self.img[0])
-            self.current_y = 0 if self.direction == "h" else -len(self.img)
-            self.img_height = len(self.img)
-            self.img_width = len(self.img[0])
-            self.img_y_start = (self.height - len(self.img)) // 2
-            self.img_x_start = (self.width - len(self.img[0])) // 2
+        self.render_image = True
+        self.img_height = len(self.img)
+        self.img_width  = len(self.img[0])
+        self.img_back   = -self.img_width-1
+        self.img_front  = -1
+        self.img_top    = (self.height - self.img_height) // 2
+        self.img_bottom = ((self.height - self.img_height) // 2) + self.img_height
 
-    def set_padding(self, padding_vals):
+    def _set_padding(self, padding_vals):
         """
         Set the padding for the image
         :param padding_vals: vals for padding [left-right, top-bottom]
@@ -289,22 +252,42 @@ class PanRenderer(BaseRenderer):
         if there is no image passed into the renderer then
         the background is rendered on it's own
         """
-        if self.img:
-            if self.direction == "h":
-                # Align center vertically
+        if not self.loop:
+            if self.img_back > self.width + 1:
+                return
+        if self.direction == HORIZONTAL:
+            self.render_horizontal_frame(frame_number)
+        elif self.direction == VERTICAL:
+            self.render_veritcal_frame()
 
-                for y in range(self.height):
-                    if self.offset:
-                        self.back.put_at(0, y, (self.background[y%len(self.background):] + self.background[:y%len(self.background)])*self.width)
+    def render_horizontal_frame(self, frame_number):
+
+        if (0 <= frame_number <= self.img_width) or not self.loop:
+            for y in range(self.height):
+                for x in range(self.width):
+                    if x >= self.img_back and x < self.img_front and y >= self.img_top and y < self.img_bottom:
+                        if (y-self.img_top) >= 0 and (y-self.img_bottom) < self.img_height and (x-self.img_back) >= 0 and (x-self.img_back) < self.img_width:
+                            if self.transparent:
+                                if self.img[y-self.img_top][x-self.img_back]== " ":
+                                    self.image_buffer.put_char(x, y, None)
+                                else:
+                                    self.image_buffer.put_char(x, y, self.img[y-self.img_top][x-self.img_back])
+                            else:
+                                self.image_buffer.put_char(x, y, self.img[y-self.img_top][x-self.img_back])
                     else:
-                        self.back.put_at(0, y, self.background*self.width, self.transparent)
-                    if y >= self.img_y_start and y < self.img_y_start + len(self.img):
-                        self.back.put_at(self.current_x, y, self.img[y-self.img_y_start], self.transparent)
-                self.current_x += self.shift_rate
+                        self.image_buffer.put_char(x, y, None)
+            if self.loop:
+                if self.img_front >= self.width:
+                    self.img_front = 0
+                else:
+                    self.img_front += self.shift_rate
+                if self.img_back >= self.width:
+                    self.img_back = 0
+                else:
+                    self.img_back += self.shift_rate
+            else:
+                self.img_back += self.shift_rate
+                self.img_front += self.shift_rate
         else:
             for y in range(self.height):
-                if self.offset:
-                    self.back.put_at(0, y, (self.background[y%len(self.background):] + self.background[:y%len(self.background)])*self.width)
-                else:
-                    self.back.put_at(0, y, self.background*self.width)
-
+                self.image_buffer.buffer[y] = self.image_buffer.buffer[y][-self.shift_rate:] + self.image_buffer.buffer[y][:-self.shift_rate]
