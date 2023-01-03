@@ -18,7 +18,7 @@ class BaseRenderer:
     Defines the base methods, abstract methods, and base attributes
     for the render class, is an Effect Only Renderer
     """
-    def __init__(self, screen, frames, time, effect_type="static", background=" ", transparent=False):
+    def __init__(self, screen, frames, time, effect_type="static", background=" ", transparent=False, collision=False):
 
         # NECESSAARY INFO
         self.screen            = screen
@@ -30,6 +30,7 @@ class BaseRenderer:
         self.height            = screen.height
         self.width             = screen.width
         self.smart_transparent = False
+        self.collision         = collision
         
         # EFFECT
         effect_buffer = Buffer(self.height, self.width)
@@ -62,7 +63,8 @@ class BaseRenderer:
     def update_collision(self, collision):
         if self.effect_type == "rain":
             try:
-                self.effect.update_collision(self.current_img_x, self.current_img_y, self.img_width, self.img_height, collision)
+                self.collision = collision
+                self.effect.update_collision(self.current_img_x, self.current_img_y, self.img_width, self.img_height, collision, self.smart_transparent, self.image_buffer)
             except:
                 pass
         
@@ -185,6 +187,7 @@ class CenterRenderer(BaseRenderer):
         self.img_x_start     = (self.width - len(self.img[0])) // 2
         self.current_img_x   = self.img_x_start
         self.current_img_y   = self.img_y_start
+
 
     def render_img_frame(self, frame_number):
         """
