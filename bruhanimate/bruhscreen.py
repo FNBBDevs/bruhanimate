@@ -186,6 +186,13 @@ else:
                 curses.echo()
                 curses.nocbreak()
                 curses.endwin()
+        
+        def clear(self):
+            try:
+                sys.stdout.flush()
+                os.system("clear")
+            except IOError:
+                pass
 
         @classmethod
         def open(cls):
