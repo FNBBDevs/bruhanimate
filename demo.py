@@ -1,8 +1,7 @@
-from bruhanimate.bruhscreen import WinScreen, UnixScreen
+from bruhanimate.bruhscreen import *
 from bruhanimate.bruhrenderer import *
 from bruhanimate import images
 import sys
-
 
 
 def effects(screen, frames=500, time=0, background=" ", transparent=False):
@@ -21,7 +20,7 @@ def effects(screen, frames=500, time=0, background=" ", transparent=False):
     plasma_renderer = EffectRenderer(screen, frames, time, "plasma", " ", transparent)
     plasma_renderer.effect.update_plasma_values(15, 26, 19, 41)
 
-    rain_renderer = EffectRenderer(screen, 1000, 0.02, "rain", " ", transparent)
+    rain_renderer = EffectRenderer(screen, 1000, 0.01, "rain", " ", transparent)
     rain_renderer.update_smart_transparent(True)
     rain_renderer.update_collision(True)
     rain_renderer.effect.update_wind_direction("east")
@@ -65,8 +64,7 @@ def center(screen, img, frames=500, time=0, effect_type="static", background=" "
     renderer = CenterRenderer(screen, frames, time, img, effect_type, background, transparent)
     renderer.update_smart_transparent(True)
     renderer.update_collision(True)
-    renderer.effect.update_swells(True)
-    renderer.effect.update_intensity(1)
+    renderer.effect.update_intensity(500)
     renderer.effect.update_wind_direction("west")
 
     # RUN
@@ -91,16 +89,21 @@ def pan(screen, img, frames=500, time=0, effect_type="static", background=" ", t
     input()
 
 
-if sys.platform == 'win32':
-    WinScreen.show(effects, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
+def main():
+    if sys.platform == 'win32':
+        WinScreen.show(effects, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
 
-    WinScreen.show(center, args=(images.get_image("COMPUTER"), 1850, 0.01, "rain", " ", True))
+        WinScreen.show(center, args=(images.get_image("COMPUTER"), 500, 0.01, "rain", " ", True))
 
-    WinScreen.show(pan, args=(images.get_image("COMPUTER"), 380, 0.005, "stars", " ", True, "h", 2, True))
-else:
-    UnixScreen.show(effects, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
+        WinScreen.show(pan, args=(images.get_image("COMPUTER"), 380, 0.005, "stars", " ", True, "h", 2, True))
+    else:
+        UnixScreen.show(effects, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
 
-    UnixScreen.show(center, args=(images.get_image("COMPUTER"), 1850, 0.01, "rain", " ", True))
+        UnixScreen.show(center, args=(images.get_image("COMPUTER"), 1850, 0.01, "rain", " ", True))
 
-    UnixScreen.show(pan, args=(images.get_image("COMPUTER"), 380, 0.005, "stars", " ", True, "h", 2, True))
+        UnixScreen.show(pan, args=(images.get_image("COMPUTER"), 380, 0.005, "stars", " ", True, "h", 2, True))
+
+
+if __name__ == "__main__":
+    main()
 
