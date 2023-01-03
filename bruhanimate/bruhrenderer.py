@@ -65,8 +65,8 @@ class BaseRenderer:
             try:
                 self.collision = collision
                 self.effect.update_collision(self.current_img_x, self.current_img_y, self.img_width, self.img_height, collision, self.smart_transparent, self.image_buffer)
-            except:
-                pass
+            except Exception as e:
+                self.effect.update_collision(None, None, None, None, collision, None, None)
         
     def update_smart_transparent(self, smart_transparent):
         self.smart_transparent = smart_transparent

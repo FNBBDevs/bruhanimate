@@ -199,7 +199,7 @@ class RainEffect(BaseEffect):
         super(RainEffect, self).__init__(buffer, background)
         
         self.img_present = True if img_start_x and img_start_y and img_width and img_height else False
-        self.collision   = False if not self.img_present else collision
+        self.collision   = collision
         self.intensity   = intensity
         self.rain        = f"{' ' * (1000 - self.intensity)}.\\"
         self.rain_length = len(self.rain)
@@ -211,14 +211,14 @@ class RainEffect(BaseEffect):
 
     def update_collision(self, img_start_x, img_start_y, img_width, img_height, collision, smart_transparent=False, image_buffer=None):
         self.img_present       = True if img_start_x and img_start_y and img_width and img_height else False
-        self.collision         = False if not self.img_present else collision
-        self.img_start_x       = img_start_x
-        self.img_start_y       = img_start_y
-        self.img_height        = img_height
-        self.img_width         = img_width
-        self.smart_transparent = smart_transparent
-        self.image_buffer      = image_buffer
-        print(self.image_buffer)
+        self.collision         = collision
+        if self.img_present:
+            self.img_start_x       = img_start_x
+            self.img_start_y       = img_start_y
+            self.img_height        = img_height
+            self.img_width         = img_width
+            self.smart_transparent = smart_transparent
+            self.image_buffer      = image_buffer
 
     def render_frame(self, frame_number):
         if frame_number == 0:
@@ -235,11 +235,12 @@ class RainEffect(BaseEffect):
                         if self.buffer.get_char(x, y) == "v":
                             self.buffer.put_char(x, y, " ")
                         else:
-                            # if we are inscope of the image we need to process impacts
-                            if self.image_buffer:
-                                if 0 <= y + 1 < self.buffer.height():
-                                    if not self.image_buffer.buffer[y+1][x] in [" ", None] and self.buffer.get_char(x, y) in ["\\", "."]:
-                                        self.buffer.put_char(x, y, "v")
+                            if self.img_present:
+                                # if we are inscope of the image we need to process impacts
+                                if self.image_buffer:
+                                    if 0 <= y + 1 < self.buffer.height():
+                                        if not self.image_buffer.buffer[y+1][x] in [" ", None] and self.buffer.get_char(x, y) in ["\\", "."]:
+                                            self.buffer.put_char(x, y, "v")
 
                             # impacting the bottom
                             if y == self.buffer.height() - 1:
