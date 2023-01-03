@@ -3,7 +3,7 @@ from bruhanimate.bruhrenderer import *
 from bruhanimate import images
 
 
-def effect(screen, frames=500, time=0, background=" ", transparent=False):
+def effects(screen, frames=500, time=0, background=" ", transparent=False):
 
     # CREATE THE RENDERERS AND RENDERER ATTRIBUTES
 
@@ -38,6 +38,9 @@ def effect(screen, frames=500, time=0, background=" ", transparent=False):
     noise_renderer.run(end_message=False)
     screen.clear()
 
+    plasma_renderer.run(end_message=False)
+    screen.clear()
+    plasma_renderer.effect.shuffle_plasma_values()
     plasma_renderer.run(end_message=False)
     screen.clear()
 
@@ -77,18 +80,19 @@ def pan(screen, img, frames=500, time=0, effect_type="static", background=" ", t
 
 def test(screen, img, frames=200, time=0, effect_type="static", background=" ", transparent=False):
     renderer = CenterRenderer(screen, frames, time, img, effect_type, background, transparent)
-    renderer.effect.update_intensity(800)
-    renderer.update_collision(True)
+    #renderer.effect.update_intensity(800)
+    #renderer.update_collision(True)
+    renderer.effect.set_decay(True)
     renderer.update_smart_transparent(True)
     renderer.run()
     input()
 
 
 
-WinScreen.show(effect, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
+#WinScreen.show(effects, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
 
-WinScreen.show(center, args=(images.get_image("COMPUTER"), 200, 0, "gol", " ", True))
+#WinScreen.show(center, args=(images.get_image("COMPUTER"), 200, 0, "gol", " ", True))
 
-WinScreen.show(pan, args=(images.get_image("COMPUTER"), 200, 0.01, "stars", " ", True, "h", 1, True))
+#WinScreen.show(pan, args=(images.get_image("COMPUTER"), 200, 0.005, "stars", " ", True, "h", 1, True))
 
-WinScreen.show(test, args=(images.get_image("COMPUTER"), 500, 0.02, "rain", " ", True))
+WinScreen.show(test, args=(images.get_image("COMPUTER"), 500, 0.02, "gol", " ", True))
