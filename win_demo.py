@@ -3,7 +3,7 @@ from bruhanimate.bruhrenderer import *
 from bruhanimate import images
 
 
-def effect(screen, frames=500, time=0, background=" ", transparent=False):
+def effects(screen, frames=500, time=0, background=" ", transparent=False):
 
     # CREATE THE RENDERERS AND RENDERER ATTRIBUTES
 
@@ -18,6 +18,12 @@ def effect(screen, frames=500, time=0, background=" ", transparent=False):
 
     plasma_renderer = EffectRenderer(screen, frames, time, "plasma", " ", transparent)
     plasma_renderer.effect.update_plasma_values(15, 26, 19, 41)
+
+    rain_renderer = EffectRenderer(screen, frames, 0.03, "rain", " ", transparent)
+    rain_renderer.update_smart_transparent(True)
+    rain_renderer.update_collision(True)
+    print(rain_renderer.effect.collision)
+    rain_renderer.effect.update_intensity(900)
 
     gol_renderer = EffectRenderer(screen, frames, time, "gol", " ", transparent)
     gol_renderer.effect.set_decay(True)
@@ -41,6 +47,9 @@ def effect(screen, frames=500, time=0, background=" ", transparent=False):
     plasma_renderer.run(end_message=False)
     screen.clear()
 
+    rain_renderer.run()
+    screen.clear()
+
     gol_renderer.run(end_message=True)
 
     # [Enter] TO EXIT
@@ -51,10 +60,11 @@ def center(screen, img, frames=500, time=0, effect_type="static", background=" "
 
     # SETUP
     renderer = CenterRenderer(screen, frames, time, img, effect_type, background, transparent)
-    renderer.effect.set_decay(True)
-
-    if effect_type == "plasma":
-        renderer.effect.update_plasma_values(10, 26, 19, 41)
+    renderer.update_smart_transparent(True)
+    renderer.update_collision(True)
+    renderer.effect.update_swells(True)
+    renderer.effect.update_intensity(1)
+    renderer.effect.update_wind_direction("west")
 
     # RUN
     renderer.run(end_message=True)
@@ -68,6 +78,9 @@ def pan(screen, img, frames=500, time=0, effect_type="static", background=" ", t
     # SETUP
     renderer = PanRenderer(screen, frames, time, img, effect_type, background, transparent, direction, shift, loop)
 
+    # ATTRIBUTES
+    renderer.update_smart_transparent(True)
+
     # RUN
     renderer.run(end_message=True)
 
@@ -75,20 +88,8 @@ def pan(screen, img, frames=500, time=0, effect_type="static", background=" ", t
     input()
 
 
-def test(screen, img, frames=200, time=0, effect_type="static", background=" ", transparent=False):
-    renderer = CenterRenderer(screen, frames, time, img, effect_type, background, transparent)
-    renderer.effect.update_intensity(800)
-    renderer.update_collision(True)
-    renderer.update_smart_transparent(True)
-    renderer.run()
-    input()
+WinScreen.show(effects, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
 
+WinScreen.show(center, args=(images.get_image("COMPUTER"), 1900, 0.01, "rain", " ", True))
 
-
-WinScreen.show(effect, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
-
-WinScreen.show(center, args=(images.get_image("COMPUTER"), 200, 0, "gol", " ", True))
-
-WinScreen.show(pan, args=(images.get_image("COMPUTER"), 200, 0.01, "stars", " ", True, "h", 1, True))
-
-WinScreen.show(test, args=(images.get_image("COMPUTER"), 500, 0.02, "rain", " ", True))
+WinScreen.show(pan, args=(images.get_image("COMPUTER"), 200, 0.005, "stars", " ", True, "h", 1, True))
