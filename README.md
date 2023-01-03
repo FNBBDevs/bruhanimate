@@ -25,7 +25,7 @@ def render_stars(screen, frames, time, effect, background, transparent):
     renderer.set_exit_stats("  Animation Frames Completed  ", "    Press [Enter] to leave    ", wipe=True)
     
     # Set the intensity if you want, the higher the intensity, the more stars.
-    # Intensity can be set for the Noise and Stars Effect, 200 is a good spot.
+    # Intensity can be set for the Noise and Stars Effect, <= 200 is a good spot.
     renderer.effect.update_intensity(200)
     
     # Run the animation
