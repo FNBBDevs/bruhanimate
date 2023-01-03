@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 
 _VALID_DIRECTIONS = ["right", "left"]
 _GREY_SCALES      = [' .:-=+*%#@', ' .:;rsA23hHG#9&@']
+_WIND_DIRECTIONS  = ["east", "west", "none"]
 
 class BaseEffect:
     """
@@ -195,19 +196,49 @@ class GameOfLifeEffect(BaseEffect):
 
 
 class RainEffect(BaseEffect):
-    def __init__(self, buffer, background, img_start_x=None, img_start_y=None, img_width=None, img_height=None, collision=False, intensity=200):
+    def __init__(self, buffer, background, img_start_x=None, img_start_y=None, img_width=None, img_height=None, collision=False, intensity=1, swells=False, wind_direction="none"):
         super(RainEffect, self).__init__(buffer, background)
         
         self.img_present = True if img_start_x and img_start_y and img_width and img_height else False
         self.collision   = collision
         self.intensity   = intensity
-        self.rain        = f"{' ' * (1000 - self.intensity)}.\\"
+        self.swells      = swells
+        self.swell_direction = 1
+        self.wind_direction = wind_direction if wind_direction in _WIND_DIRECTIONS else "none"
+        self.wind_mappings   = {
+            "east": [".\\", -1, ["\\", "."]],
+            "none": [".|",   0, ["|", "."]],
+            "west": ["./",   1, ["/", "."]]
+        }
+        self._set_rain()
+
+
+    def update_wind_direction(self, direction):
+        if direction in _WIND_DIRECTIONS:
+            self.wind_direction = direction
+            self._set_rain()
+    
+    def _set_rain(self):
+        self.rain        = f"{' ' * (1000 - self.intensity)}"
+        if self.intensity > 50:
+            self.rain += "."
+        if self.intensity > 250:
+            self.rain += "."
+        if self.intensity > 500:
+            self.rain += self.wind_mappings[self.wind_direction][0]
         self.rain_length = len(self.rain)
 
+
     def update_intensity(self, intensity):
-        self.intensity   = intensity
-        self.rain        = f"{' ' * (1000 - self.intensity)}.\\"
-        self.rain_length = len(self.rain)
+        if self.swells:
+            if self.intensity == 900:
+                self.swell_direction = -1
+            if self.intensity == 0:
+                self.swell_direction = 1
+            self.intensity += self.swell_direction
+        else:
+            self.intensity   = intensity if intensity < 1000 else 999
+        self._set_rain()
 
     def update_collision(self, img_start_x, img_start_y, img_width, img_height, collision, smart_transparent=False, image_buffer=None):
         self.img_present       = True if img_start_x and img_start_y and img_width and img_height else False
@@ -219,14 +250,19 @@ class RainEffect(BaseEffect):
             self.img_width         = img_width
             self.smart_transparent = smart_transparent
             self.image_buffer      = image_buffer
+    
+    def update_swells(self, swells):
+        self.swells = swells
 
     def render_frame(self, frame_number):
+        if self.swells:
+            self.update_intensity(None)
         if frame_number == 0:
             self.buffer.put_at(0, 0, ''.join([self.rain[random.randint(0, self.rain_length - 1)] for _ in range(self.buffer.width())]))
         else:
+            self.buffer.shift(self.wind_mappings[self.wind_direction][1])
             self.buffer.scroll(-1)
             self.buffer.put_at(0, 0, ''.join([self.rain[random.randint(0, self.rain_length - 1)] for _ in range(self.buffer.width())]))
-            self.buffer.shift(-1)
 
             if self.collision:
                 for y in range(self.buffer.height()):
@@ -239,12 +275,12 @@ class RainEffect(BaseEffect):
                                 # if we are inscope of the image we need to process impacts
                                 if self.image_buffer:
                                     if 0 <= y + 1 < self.buffer.height():
-                                        if not self.image_buffer.buffer[y+1][x] in [" ", None] and self.buffer.get_char(x, y) in ["\\", "."]:
+                                        if not self.image_buffer.buffer[y+1][x] in [" ", None] and self.buffer.get_char(x, y) in self.wind_mappings[self.wind_direction][2]:
                                             self.buffer.put_char(x, y, "v")
 
                             # impacting the bottom
                             if y == self.buffer.height() - 1:
-                                if self.buffer.get_char(x, y) in ["\\", "."]:
+                                if self.buffer.get_char(x, y) in self.wind_mappings[self.wind_direction][2]:
                                     self.buffer.put_char(x, y, "v")
                 
 

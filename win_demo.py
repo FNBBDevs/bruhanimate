@@ -60,12 +60,11 @@ def center(screen, img, frames=500, time=0, effect_type="static", background=" "
 
     # SETUP
     renderer = CenterRenderer(screen, frames, time, img, effect_type, background, transparent)
-    renderer.effect.set_decay(True)
-
-    if effect_type == "plasma":
-        renderer.effect.update_plasma_values(10, 26, 19, 41)
-    if effect_type == "gol":
-        renderer.update_smart_transparent(True)
+    renderer.update_smart_transparent(True)
+    renderer.update_collision(True)
+    renderer.effect.update_swells(True)
+    renderer.effect.update_intensity(1)
+    renderer.effect.update_wind_direction("west")
 
     # RUN
     renderer.run(end_message=True)
@@ -91,6 +90,6 @@ def pan(screen, img, frames=500, time=0, effect_type="static", background=" ", t
 
 WinScreen.show(effects, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
 
-WinScreen.show(center, args=(images.get_image("COMPUTER"), 200, 0, "gol", " ", True))
+WinScreen.show(center, args=(images.get_image("COMPUTER"), 1900, 0.01, "rain", " ", True))
 
 WinScreen.show(pan, args=(images.get_image("COMPUTER"), 200, 0.005, "stars", " ", True, "h", 1, True))
