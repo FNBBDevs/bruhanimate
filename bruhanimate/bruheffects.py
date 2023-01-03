@@ -192,3 +192,18 @@ class GameOfLifeEffect(BaseEffect):
                             current_greyscale_position = self.grey_scale.index(self.buffer.get_char(x, y))
                             current_greyscale_position = current_greyscale_position - 1 if current_greyscale_position > 0 else 0
                             self.buffer.put_char(x, y, self.grey_scale[current_greyscale_position])
+
+
+class RainEffect(BaseEffect):
+    def __init__(self, buffer, background, img_start_x=None, img_start_y=None, img_width=None, img_height=None, collision=False):
+        super(RainEffect, self).__init__(buffer, background)
+        
+        self.img_present = True if img_start_x and img_start_y and img_width and img_height else False
+        self.collision = False if not self.img_present else collision
+    
+    def update_collision(self, img_start_x, img_start_y, img_width, img_height, collision):
+        self.img_present = True if img_start_x and img_start_y and img_width and img_height else False
+        self.collision = False if not self.img_present else collision
+
+    def render_frame(self, frame_number):
+        pass
