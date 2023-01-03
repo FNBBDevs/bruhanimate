@@ -282,7 +282,3 @@ class RainEffect(BaseEffect):
                             if y == self.buffer.height() - 1:
                                 if self.buffer.get_char(x, y) in self.wind_mappings[self.wind_direction][2]:
                                     self.buffer.put_char(x, y, "v")
-                
-
-
-        
