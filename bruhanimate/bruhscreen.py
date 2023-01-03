@@ -144,7 +144,7 @@ else:
             self.width  = window.getmaxyx()[1]
             curses.curs_set(0)
             self.screen.nodelay(1)
-            self.signal_state = _SignalState()
+            self.signal_state = SignalState()
             self._re_sized = False
             self.signal_state.set(signal.SIGWINCH, self._resize_handler)
             self.signal_state.set(signal.SIGCONT, self._continue_handler)
@@ -172,26 +172,14 @@ else:
             self._cur_y = 0
         
         def _resize_handler(self, *_):
-            """
-            Window resize signal handler.  We don't care about any of the
-            parameters passed in beyond the object reference.
-            """
             curses.endwin()
             curses.initscr()
             self._re_sized = True
         
         def _continue_handler(self, *_):
-            """
-            Job pause/resume signal handler.  We don't care about any of the
-            parameters passed in beyond the object reference.
-            """
             self.force_update(full_refresh=True)
 
         def close(self, restore=True):
-            """
-            Close down this Screen and tidy up the environment as required.
-            :param restore: whether to restore the environment or not.
-            """
             self.signal_state.restore()
             if restore:
                 self.screen.keypad(0)
@@ -210,40 +198,20 @@ else:
 
         @staticmethod
         def _safe_write(msg):
-            """
-            Safe write to screen - catches IOErrors on screen resize.
-            :param msg: The message to write to the screen.
-            """
             try:
                 sys.stdout.write(msg)
             except IOError:
-                # Screen resize can throw IOErrors.  These can be safely
-                # ignored as the screen will be shortly reset anyway.
                 pass
         
         def print_at(self, text, x, y, width):
-            """
-            Print string at the required location.
-            :param text: The text string to print.
-            :param x: The x coordinate
-            :param y: The Y coordinate
-            :param width: The width of the character (for dual-width glyphs in CJK languages).
-            """
-            # Move the cursor if necessary
             cursor = u""
             if x != self._cur_x or y != self._cur_y:
                 cursor = curses.tparm(self._move_y_x, y, x).decode("utf-8")
-
-            # Print the text at the required location and update the current
-            # position.
             try:
                 self._safe_write(cursor + text)
             except UnicodeEncodeError:
-                # This is probably a sign that the user has the wrong locale.
-                # Try to soldier on anyway.
                 self._safe_write(cursor + "?" * len(text))
 
-            # Update cursor position for next time...
             self._cur_x = x + width
             self._cur_y = y
         
@@ -262,34 +230,18 @@ else:
                 os.system("clear")
                 
 
-    class _SignalState(object):
-            """
-            Save previous user signal state while setting signals.
-            Used for signal restoration when asciimatics no longer has control
-            of the user program.
-            """
-
+    class SignalState(object):
             def __init__(self):
                 self._old_signal_states = []
 
             def set(self, signalnum, handler):
-                """
-                Set signal handler and record their previous values.
-                :param signalnum: The const/enum matching to the signal to be set.
-                :param handler: The function/const to set the signal to
-                """
                 old_handler = signal.getsignal(signalnum)
-                # Some environments may install a non-Python handler (which returns None at this point).
-                # We can't reinstate these, so just reset the default handler in such cases.
                 if old_handler is None:
                     old_handler = signal.SIG_DFL
                 self._old_signal_states.append((signalnum, old_handler))
                 signal.signal(signalnum, handler)
 
             def restore(self):
-                """
-                Restore saved signals to their previous handles.
-                """
                 for signalnum, handler in self._old_signal_states:
                     signal.signal(signalnum, handler)
                 self._old_signal_states = []

@@ -45,6 +45,8 @@ class BaseRenderer:
             self.effect = PlasmaEffect(effect_buffer, self.background)
         elif self.effect_type == "gol":
             self.effect = GameOfLifeEffect(effect_buffer, self.background)
+        elif self.effect_type == "rain":
+            self.effect = RainEffect(effect_buffer, self.background)
         
         # BUFFERS
         self.image_buffer  = Buffer(self.height, self.width)
@@ -138,7 +140,6 @@ class EffectRenderer(BaseRenderer):
         self.effect.render_frame(frame_number)
     
     def run(self, end_message=True):
-        print(f"RUN ANALYSIS FOR '{self.effect_type.center(8, ' ')}' WITH INTENSITY: {None if self.effect_type in ['static', 'offset', 'plasma', 'gol'] else self.effect.intensity}")
         start = time.time()
         second = 1
         for _ in range(self.frames):
@@ -147,11 +148,9 @@ class EffectRenderer(BaseRenderer):
             self.push_front_to_screen()
             self.front_buffer.sync_with(self.back_buffer)
             sleep(self.time)
-            if time.time() - start >= 1:
-                print(f"\t{str(second).rjust(2, ' ')} SECOND --> FRAMES ELAPSED {str(_).rjust(4, ' ')}")
+            if time.time() - start >= 0.5:
                 second += 1
                 start = time.time()
-        print()
         if end_message:
             self.render_exit()
             self.push_front_to_screen()
