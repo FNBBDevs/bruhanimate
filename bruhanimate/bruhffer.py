@@ -88,7 +88,47 @@ class Buffer:
         x = (self._width // 2) - len(text) // 2
         for i, c in enumerate(text):
             self.put_char(x+i, y, c)
-        
+
+    def scroll(self, shift):
+        """
+        Scrolls the buffer up or down a number of lines denoted
+        by the shift value. '-' -> scroll down, '+' -> scroll up
+        :param shift: amount to shift up or down
+        """
+        line = [u" " for _ in range(self._width)]
+
+        if shift > 0:
+            shift = min(shift, self._height)
+            for y in range(0, self._height - shift):
+                self.buffer[y] = self.buffer[y + shift]
+            for y in range(self._height - shift, self._height):
+                self.buffer[y] = line[:]
+        else:
+            shift = max(shift, -self._height)
+            for y in range(self._height - 1, -shift - 1, -1):
+                self.buffer[y] = self.buffer[y + shift]
+            for y in range(0, -shift):
+                self.buffer[y] = line[:]
+    
+    def shift_line(self, y, shift):
+        """
+        Shift the given line to the right by the value denoted
+        by shift.
+        :param y:     index of the row to shift
+        :param shift: amount to shift the row by
+        """
+        self.buffer[y] = self.buffer[y][-shift:] + self.buffer[y][:-shift]
+
+    def shift(self, shift):
+        """
+        Shift the entire buffer to the right by the value denoted
+        by shift
+        :param shift: amount to shift the row by
+        """
+        for y in range(self._height):
+            self.buffer[y] = self.buffer[y][shift:] + self.buffer[y][:shift]
+
+
     def grab_slice(self, x, y, width):
         """
         Grabs a part of a row from this buffer
@@ -103,15 +143,15 @@ class Buffer:
         Sync this buffer with the given buffer
         :param in_buf: buffer to be applied to this buffer
         """
-        for i in range(self.height()):
+        for i in range(self._height):
             self.buffer[i][:] = in_buf.buffer[i][:]
     
     def sync_over_top_img(self, img_buffer):
         """
         Apply the image overtop this buffer. Image takes priority.
         """
-        for y in range(self.height()):
-            for x in range(self.width()):
+        for y in range(self._height):
+            for x in range(self._width):
                 if img_buffer.buffer[y][x] != None:
                     self.buffer[y][x] = img_buffer.buffer[y][x]
 

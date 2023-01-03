@@ -88,17 +88,17 @@ class StarEffect(NoiseEffect):
         super(StarEffect, self).__init__(buffer, background)
 
         self.stars        = f"{background*(100 // self.background_length)}.*+"
-        self.start_length = len(self.stars)
+        self.stars_length = len(self.stars)
 
     def update_background(self, background):
         self.background        = background
         self.background_length = len(background)
         self.stars             = f"{background*(100 // self.background_length)}.*+"
-        self.start_length      = len(self.stars)
+        self.stars_length      = len(self.stars)
 
     def render_frame(self, frame_number):
         for y in range(self.buffer.height()):
-            self.buffer.put_at(0, y, ''.join([self.stars[random.randint(0, self.start_length - 1)] if random.random() < self.intensity else self.buffer.get_char(_, y) for _ in range(self.buffer.width())]))
+            self.buffer.put_at(0, y, ''.join([self.stars[random.randint(0, self.stars_length - 1)] if random.random() < self.intensity else self.buffer.get_char(_, y) for _ in range(self.buffer.width())]))
 
 
 class PlasmaEffect(BaseEffect):
@@ -195,15 +195,52 @@ class GameOfLifeEffect(BaseEffect):
 
 
 class RainEffect(BaseEffect):
-    def __init__(self, buffer, background, img_start_x=None, img_start_y=None, img_width=None, img_height=None, collision=False):
+    def __init__(self, buffer, background, img_start_x=None, img_start_y=None, img_width=None, img_height=None, collision=False, intensity=200):
         super(RainEffect, self).__init__(buffer, background)
         
         self.img_present = True if img_start_x and img_start_y and img_width and img_height else False
-        self.collision = False if not self.img_present else collision
-    
-    def update_collision(self, img_start_x, img_start_y, img_width, img_height, collision):
-        self.img_present = True if img_start_x and img_start_y and img_width and img_height else False
-        self.collision = False if not self.img_present else collision
+        self.collision   = False if not self.img_present else collision
+        self.intensity   = intensity
+        self.rain        = f"{' ' * (1000 - self.intensity)}.\\"
+        self.rain_length = len(self.rain)
+
+    def update_intensity(self, intensity):
+        self.intensity   = intensity
+        self.rain        = f"{' ' * (1000 - self.intensity)}.\\"
+        self.rain_length = len(self.rain)
+
+    def update_collision(self, img_start_x, img_start_y, img_width, img_height, collision, smart_transparent=False):
+        self.img_present       = True if img_start_x and img_start_y and img_width and img_height else False
+        self.collision         = False if not self.img_present else collision
+        self.img_start_x       = img_start_x
+        self.img_start_y       = img_start_y
+        self.img_height        = img_height
+        self.img_width         = img_width
+        self.smart_transparent = smart_transparent
 
     def render_frame(self, frame_number):
-        pass
+        if frame_number == 0:
+            self.buffer.put_at(0, 0, ''.join([self.rain[random.randint(0, self.rain_length - 1)] for _ in range(self.buffer.width())]))
+        else:
+            self.buffer.scroll(-1)
+            self.buffer.put_at(0, 0, ''.join([self.rain[random.randint(0, self.rain_length - 1)] for _ in range(self.buffer.width())]))
+            self.buffer.shift(-1)
+
+            # Impacts
+            for y in range(self.buffer.height()):
+                for x in range(self.buffer.width()):
+                    # Wipe prior frames impact
+                    if self.buffer.get_char(x, y) == "v":
+                        self.buffer.put_char(x, y, " ")
+                    else:
+                        # if we are inscope of the image we need to process impacts
+                        if y < self.img_start_y:
+                            pass
+                        else:
+                            if y == self.buffer.height() - 1:
+                                if self.buffer.get_char(x, y) in ["\\", "."]:
+                                    self.buffer.put_char(x, y, "v")
+                
+
+
+        

@@ -75,8 +75,11 @@ def pan(screen, img, frames=500, time=0, effect_type="static", background=" ", t
     input()
 
 
-def test(screen, frames=200, time=0, effect_type="static", background=" ", transparent=False):
-    renderer = EffectRenderer(screen, frames, time, effect_type, background, transparent)
+def test(screen, img, frames=200, time=0, effect_type="static", background=" ", transparent=False):
+    renderer = CenterRenderer(screen, frames, time, img, effect_type, background, transparent)
+    renderer.effect.update_intensity(800)
+    renderer.update_collision(True)
+    renderer.update_smart_transparent(True)
     renderer.run()
     input()
 
@@ -88,4 +91,4 @@ def test(screen, frames=200, time=0, effect_type="static", background=" ", trans
 
 #WinScreen.show(pan, args=(images.get_image("COMPUTER"), 200, 0.01, "stars", " ", True, "h", 1, True))
 
-WinScreen.show(test, args=(200, 0, "rain", " ", False))
+WinScreen.show(test, args=(images.get_image("COMPUTER"), 200, 0.2, "rain", " ", False))
