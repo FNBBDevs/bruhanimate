@@ -1,6 +1,8 @@
-from bruhanimate.bruhscreen import WinScreen
+from bruhanimate.bruhscreen import WinScreen, UnixScreen
 from bruhanimate.bruhrenderer import *
 from bruhanimate import images
+import sys
+
 
 
 def effects(screen, frames=500, time=0, background=" ", transparent=False):
@@ -19,11 +21,12 @@ def effects(screen, frames=500, time=0, background=" ", transparent=False):
     plasma_renderer = EffectRenderer(screen, frames, time, "plasma", " ", transparent)
     plasma_renderer.effect.update_plasma_values(15, 26, 19, 41)
 
-    rain_renderer = EffectRenderer(screen, frames, 0.03, "rain", " ", transparent)
+    rain_renderer = EffectRenderer(screen, 1000, 0.02, "rain", " ", transparent)
     rain_renderer.update_smart_transparent(True)
     rain_renderer.update_collision(True)
-    print(rain_renderer.effect.collision)
-    rain_renderer.effect.update_intensity(900)
+    rain_renderer.effect.update_wind_direction("east")
+    rain_renderer.effect.update_swells(True)
+    rain_renderer.effect.update_intensity(1)
 
     gol_renderer = EffectRenderer(screen, frames, time, "gol", " ", transparent)
     gol_renderer.effect.set_decay(True)
@@ -88,8 +91,16 @@ def pan(screen, img, frames=500, time=0, effect_type="static", background=" ", t
     input()
 
 
-WinScreen.show(effects, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
+if sys.platform == 'win32':
+    WinScreen.show(effects, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
 
-WinScreen.show(center, args=(images.get_image("COMPUTER"), 1900, 0.01, "rain", " ", True))
+    WinScreen.show(center, args=(images.get_image("COMPUTER"), 1850, 0.01, "rain", " ", True))
 
-WinScreen.show(pan, args=(images.get_image("COMPUTER"), 200, 0.005, "stars", " ", True, "h", 1, True))
+    WinScreen.show(pan, args=(images.get_image("COMPUTER"), 380, 0.005, "stars", " ", True, "h", 2, True))
+else:
+    UnixScreen.show(effects, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
+
+    UnixScreen.show(center, args=(images.get_image("COMPUTER"), 1850, 0.01, "rain", " ", True))
+
+    UnixScreen.show(pan, args=(images.get_image("COMPUTER"), 380, 0.005, "stars", " ", True, "h", 2, True))
+
