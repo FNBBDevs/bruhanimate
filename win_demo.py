@@ -85,10 +85,10 @@ def test(screen, img, frames=200, time=0, effect_type="static", background=" ", 
 
 
 
-#WinScreen.show(effect, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
+WinScreen.show(effect, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
 
-#WinScreen.show(center, args=(images.get_image("COMPUTER"), 200, 0, "gol", " ", True))
+WinScreen.show(center, args=(images.get_image("COMPUTER"), 200, 0, "gol", " ", True))
 
-#WinScreen.show(pan, args=(images.get_image("COMPUTER"), 200, 0.01, "stars", " ", True, "h", 1, True))
+WinScreen.show(pan, args=(images.get_image("COMPUTER"), 200, 0.01, "stars", " ", True, "h", 1, True))
 
 WinScreen.show(test, args=(images.get_image("COMPUTER"), 500, 0.02, "rain", " ", True))
