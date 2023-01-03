@@ -4,7 +4,7 @@ import random
 from bruhanimate.bruhffer import Buffer
 from bruhanimate.bruheffects import *
 from abc import abstractmethod
-_VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma", "gol"]
+_VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma", "gol", "rain"]
 HORIZONTAL = "h"
 VERTICAL   = "v"
 
@@ -21,14 +21,15 @@ class BaseRenderer:
     def __init__(self, screen, frames, time, effect_type="static", background=" ", transparent=False):
 
         # NECESSAARY INFO
-        self.screen      = screen
-        self.frames      = frames if frames else 100
-        self.time        = time   if time >= 0 else 0.1
-        self.effect_type = effect_type if effect_type in _VALID_EFFECTS else "static"
-        self.transparent = transparent
-        self.background  = background
-        self.height      = screen.height
-        self.width       = screen.width
+        self.screen            = screen
+        self.frames            = frames if frames else 100
+        self.time              = time   if time >= 0 else 0.1
+        self.effect_type       = effect_type if effect_type in _VALID_EFFECTS else "static"
+        self.transparent       = transparent
+        self.background        = background
+        self.height            = screen.height
+        self.width             = screen.width
+        self.smart_transparent = False
         
         # EFFECT
         effect_buffer = Buffer(self.height, self.width)
@@ -57,6 +58,16 @@ class BaseRenderer:
         self.msg1 = " Frames Are Done "
         self.msg2 = "   Press Enter   "
         self.wipe = False
+    
+    def update_collision(self, collision):
+        if self.effect_type == "rain":
+            try:
+                self.effect.update_collision(self.current_img_x, self.current_img_y, self.img_width, self.img_height, collision)
+            except:
+                pass
+        
+    def update_smart_transparent(self, smart_transparent):
+        self.smart_transparent = smart_transparent
 
     def push_front_to_screen(self):
         """
@@ -163,15 +174,17 @@ class CenterRenderer(BaseRenderer):
     """
     def __init__(self, screen, frames, time, img, effect_type="static", background=" ", transparent=False):
         super(CenterRenderer, self).__init__(screen, frames, time, effect_type, background, transparent)
-        self.background = background if background else " "
-        self.transparent = transparent if transparent else False
+        self.background        = background if background else " "
+        self.transparent       = transparent if transparent else False
 
         # IMAGE
-        self.img = img
-        self.img_height = len(self.img)
-        self.img_width = len(self.img[0])
-        self.img_y_start = (self.height - len(self.img)) // 2
-        self.img_x_start = (self.width - len(self.img[0])) // 2
+        self.img             = img
+        self.img_height      = len(self.img)
+        self.img_width       = len(self.img[0])
+        self.img_y_start     = (self.height - len(self.img)) // 2
+        self.img_x_start     = (self.width - len(self.img[0])) // 2
+        self.current_img_x   = self.img_x_start
+        self.current_img_y   = self.img_y_start
 
     def render_img_frame(self, frame_number):
         """
@@ -180,18 +193,48 @@ class CenterRenderer(BaseRenderer):
         the background is rendered on it's own
         """
         if frame_number == 0:
-            for y in range(self.height):
-                for x in range(self.width):
-                    if y >= self.img_y_start and y < self.img_y_start + self.img_height and x >= self.img_x_start and x < self.img_x_start + self.img_width:
-                        if self.transparent:
-                            if self.img[y-self.img_y_start][x-self.img_x_start] == " ":
+            if self.smart_transparent:
+                # Place the image in it's entirerty
+                for y in range(self.height):
+                    for x in range(self.width):
+                        if y >= self.img_y_start and y < self.img_y_start + self.img_height and x >= self.img_x_start and x < self.img_x_start + self.img_width:
+                            self.image_buffer.put_char(x, y, self.img[y-self.img_y_start][x-self.img_x_start])
+                # Now process spaces from left-to-right till a non-space character is hit. 
+                # Then do the same right-to-left. Place these spaces with None
+                for y in range(self.height):
+                    if y >= self.img_y_start and y < self.img_y_start + self.img_height:
+                        for x in range(self.width):
+                            if x >= self.img_x_start and x < self.img_x_start + self.img_width:
+                                if self.image_buffer.get_char(x, y) != " ":
+                                    break
+                                else:
+                                    self.image_buffer.put_char(x, y, None)
+                            else:
                                 self.image_buffer.put_char(x, y, None)
+                        for x in range(self.width - 1, -1, -1):
+                            if x >= self.img_x_start and x < self.img_x_start + self.img_width:
+                                if self.image_buffer.get_char(x, y) != " ":
+                                    break
+                                else:
+                                    self.image_buffer.put_char(x, y, None)
+                            else:
+                                self.image_buffer.put_char(x, y, None)
+                    else:
+                        for x in range(self.width):
+                            self.image_buffer.put_char(x, y, None)
+            else:
+                for y in range(self.height):
+                    for x in range(self.width):
+                        if y >= self.img_y_start and y < self.img_y_start + self.img_height and x >= self.img_x_start and x < self.img_x_start + self.img_width:
+                            if self.transparent:
+                                if self.img[y-self.img_y_start][x-self.img_x_start] == " ":
+                                    self.image_buffer.put_char(x, y, None)
+                                else:
+                                    self.image_buffer.put_char(x, y, self.img[y-self.img_y_start][x-self.img_x_start])
                             else:
                                 self.image_buffer.put_char(x, y, self.img[y-self.img_y_start][x-self.img_x_start])
                         else:
-                            self.image_buffer.put_char(x, y, self.img[y-self.img_y_start][x-self.img_x_start])
-                    else:
-                        self.image_buffer.put_char(x, y, None)
+                            self.image_buffer.put_char(x, y, None)
 
 
 class PanRenderer(BaseRenderer):
@@ -215,6 +258,8 @@ class PanRenderer(BaseRenderer):
         self.img_front  = -1
         self.img_top    = (self.height - self.img_height) // 2
         self.img_bottom = ((self.height - self.img_height) // 2) + self.img_height
+        self.current_img_x = self.img_back
+        self.current_img_y = self.img_top
 
     def _set_padding(self, padding_vals):
         """
