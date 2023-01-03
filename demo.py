@@ -99,7 +99,7 @@ def main():
     else:
         UnixScreen.show(effects, args=(250, 0, "| .:-=+*%#@#%*+=-:.  ", None))
 
-        UnixScreen.show(center, args=(images.get_image("COMPUTER"), 1850, 0.01, "rain", " ", True))
+        UnixScreen.show(center, args=(images.get_image("COMPUTER"), 500, 0.01, "rain", " ", True))
 
         UnixScreen.show(pan, args=(images.get_image("COMPUTER"), 380, 0.005, "stars", " ", True, "h", 2, True))
 
