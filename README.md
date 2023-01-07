@@ -1,7 +1,7 @@
 # bruhanimate
 bruhanimate offers a series of files to aid in rendering out animations in the terminal. This is heavily inspisred by the <a href="https://github.com/peterbrittain/asciimatics">Asciimatics</a> package. While Asciimatics is the end-all be-all for termianl animations, I figured it would be good practice to go ahead and attempt something like this myself.
 
-**NOTE: This currently only runs on WINDOWS OS currently**
+** Support on Unix Systems is meh **
 
 # Usage
 This is not complete, but currently offers the ability to render out background-effects. There also exists renderers that can render out images to the screen, but these need to be modified following the implementation of the `Effects` class. A great example of the effects can be found in `demo.py`. Here is a what a simple example might look like. <br/><br/>
@@ -31,7 +31,7 @@ def render_stars(screen, frames, time, effect, background, transparent):
     # Run the animation
     renderer.run()
     
-    # Add an input() to catch the end of the enimation
+    # Add an input() to catch the end of the enimation - WINDOWS ONLY
     input()
 
 # Now that we have a funciton to render the animation, let's
