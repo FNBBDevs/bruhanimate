@@ -20,7 +20,7 @@ import random
 from bruhanimate.bruhffer import Buffer
 from bruhanimate.bruheffects import *
 from abc import abstractmethod
-_VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma", "gol", "rain"]
+_VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma", "gol", "rain", "matrix", "drawlines"]
 HORIZONTAL = "h"
 VERTICAL   = "v"
 
@@ -65,6 +65,10 @@ class BaseRenderer:
             self.effect = GameOfLifeEffect(effect_buffer, self.background)
         elif self.effect_type == "rain":
             self.effect = RainEffect(effect_buffer, self.background)
+        elif self.effect_type == "matrix":
+            self.effect = MatrixEffect(effect_buffer, self.background)
+        elif self.effect_type == "drawlines":
+            self.effect = DrawLines(effect_buffer, self.background)
         
         # BUFFERS
         self.image_buffer  = Buffer(self.height, self.width)
@@ -86,6 +90,9 @@ class BaseRenderer:
         
     def update_smart_transparent(self, smart_transparent):
         self.smart_transparent = smart_transparent
+
+    def update_points(self, p1, p2):
+        self.effect.line.uppdate_points(p1, p2)
 
     def push_front_to_screen(self):
         """
