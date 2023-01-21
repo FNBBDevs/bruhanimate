@@ -18,6 +18,16 @@ import math
 import time
 import random
 from abc import ABC, abstractmethod
+from bruhcolor import bruhcolored
+
+
+_LIFE_COLORS = {
+    "GREYSCALE"      : [232, 235, 239, 241, 244, 247, 248, 250, 254, 231],
+    "GREYSCALE_r"    : [232, 235, 239, 241, 244, 247, 248, 250, 254, 231][::-1],
+    "GREYSCALE_MUTED": [232, 235, 235, 239, 239, 241, 241, 244, 244, 231],
+    "RAINBOW"        : [196, 202, 208, 190, 112, 27, 105, 129, 161, 231],
+    "RAINBOW_r"      : [231, 196, 208, 190, 112, 27, 105, 129, 161, 201][::-1],
+}
 
 _VALID_DIRECTIONS = ["right", "left"]
 _GREY_SCALES = [' .:-=+*%#@', ' .:;rsA23hHG#9&@']
@@ -88,7 +98,7 @@ class NoiseEffect(BaseEffect):
                           Will be a value 1 - 999
     """
 
-    def __init__(self, buffer, background, intensity=200):
+    def __init__(self, buffer, background, intensity=200, color=False):
         super(NoiseEffect, self).__init__(buffer, background)
 
         self.intensity = intensity / \
@@ -96,15 +106,28 @@ class NoiseEffect(BaseEffect):
 
         self.noise = " !@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
         self.noise_length = len(self.noise)
+        self.color = color
 
     def update_intensity(self, intensity):
         self.intensity = intensity / \
             1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
+        
+    def update_color(self, color):
+        self.color = color
 
     def render_frame(self, frame_number):
-        for y in range(self.buffer.height()):
-            self.buffer.put_at(0, y, ''.join([self.noise[random.randint(0, self.noise_length - 1)] if random.random(
-            ) < self.intensity else self.buffer.get_char(_, y) for _ in range(self.buffer.width())]))
+        if self.color:
+            for y in range(self.buffer.height()):
+                for _ in range(self.buffer.width()):
+                    if random.random() < self.intensity:
+                        self.buffer.put_char(_, y, bruhcolored(self.noise[random.randint(0, self.noise_length - 1)], on_color=random.randint(0, 256)).colored)
+            if frame_number == 0:
+                print(bruhcolored(self.noise[random.randint(0, self.noise_length - 1)], on_color=random.randint(0, 256)))
+        else:
+            for y in range(self.buffer.height()):
+                for _ in range(self.buffer.width()):
+                    if random.random() < self.intensity:
+                        self.buffer.put_at(_, y,self.noise[random.randint(0, self.noise_length - 1)])
 
 
 class StarEffect(NoiseEffect):
@@ -167,9 +190,11 @@ class PlasmaEffect(BaseEffect):
 
 
 class GameOfLifeEffect(BaseEffect):
-    def __init__(self, buffer, background, decay=False):
+    def __init__(self, buffer, background, decay=False, color=False, color_type=None):
         super(GameOfLifeEffect, self).__init__(buffer, background)
         self.decay = decay
+        self.color = color
+        self.color_type = color_type
         self._set_attributes()
         self.direcitons = [
             [1, 0],
@@ -181,16 +206,22 @@ class GameOfLifeEffect(BaseEffect):
             [-1, 1],
             [-1, -1]
         ]
+        self.board = [[" " for _ in range(self.buffer.width())] for __ in range(self.buffer.height())]
 
     def _set_attributes(self):
+        #  .:-=+*%#@
+        # colors --> 232, 235, 239, 241, 244, 247, 248, 250, 254, 231
         self.grey_scale = _GREY_SCALES[0] if self.decay else " O"
+        self.colors = _LIFE_COLORS[self.color_type] if self.decay else [232, 231]
         self.ALIVE = len(self.grey_scale) - 1
         self.DEAD = 0
         self.mappings = {i: self.grey_scale[i]
                          for i in range(len(self.grey_scale))}
 
-    def set_decay(self, decay):
+    def set_decay(self, decay, color_type="GREYSCALE"):
         self.decay = decay
+        if color_type:
+            self.color_type = color_type
         self._set_attributes()
 
     def render_frame(self, frame_number):
@@ -198,9 +229,11 @@ class GameOfLifeEffect(BaseEffect):
             for y in range(self.buffer.height()):
                 for x in range(self.buffer.width()):
                     if random.random() < 0.1:
-                        self.buffer.put_char(x, y, self.grey_scale[self.ALIVE])
+                        self.buffer.put_char(x, y, bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]).colored)
+                        self.board[y][x] =  bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE])
                     else:
-                        self.buffer.put_char(x, y, self.grey_scale[self.DEAD])
+                        self.buffer.put_char(x, y, bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD]).colored)
+                        self.board[y][x] = bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD])
         else:  # RUN THE GAME
             all_neighbors = []
             for y in range(self.buffer.height()):
@@ -208,29 +241,32 @@ class GameOfLifeEffect(BaseEffect):
                 for x in range(self.buffer.width()):
                     for direction in self.direcitons:
                         if 0 <= y+direction[0] < self.buffer.height() and 0 <= x+direction[1] < self.buffer.width():
-                            if self.grey_scale.index(self.buffer.get_char(x+direction[1], y+direction[0])) == self.ALIVE:
+                            if self.grey_scale.index(self.board[y+direction[0]][x+direction[1]].text) == self.ALIVE:
                                 row_neighbors[x] += 1
                 all_neighbors.append(row_neighbors)
 
             for y in range(self.buffer.height()):
                 for x in range(self.buffer.width()):
-                    if self.grey_scale.index(self.buffer.get_char(x, y)) == self.ALIVE:  # ALIVE
+                    if self.grey_scale.index(self.board[y][x].text) == self.ALIVE:  # ALIVE
                         if 2 <= all_neighbors[y][x] <= 3:  # STAY ALIVE
                             pass
                         else:  # MOVE TO THE FIRST DECAY STAGE
                             self.buffer.put_char(
-                                x, y, self.grey_scale[self.ALIVE - 1])
+                                x, y, bruhcolored(self.grey_scale[self.ALIVE - 1], color=self.colors[self.ALIVE - 1]).colored)
+                            self.board[y][x] = bruhcolored(self.grey_scale[self.ALIVE - 1], color=self.colors[self.ALIVE - 1])
                     else:  # DEAD
                         if all_neighbors[y][x] == 3:  # COME BACK TO LIFE
                             self.buffer.put_char(
-                                x, y, self.grey_scale[self.ALIVE])
+                                x, y, bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]).colored)
+                            self.board[y][x] = bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE - 1])
                         else:  # MOVE TO THE NEXT STAGE --> IF AT 0 STAY AT 0 i.e. don't decrement
                             current_greyscale_position = self.grey_scale.index(
-                                self.buffer.get_char(x, y))
+                                self.board[y][x].text)
                             current_greyscale_position = current_greyscale_position - \
                                 1 if current_greyscale_position > 0 else 0
                             self.buffer.put_char(
-                                x, y, self.grey_scale[current_greyscale_position])
+                                x, y, bruhcolored(self.grey_scale[current_greyscale_position], color=self.colors[current_greyscale_position]).colored)
+                            self.board[y][x] = bruhcolored(self.grey_scale[current_greyscale_position], color=self.colors[current_greyscale_position])
 
 
 class RainEffect(BaseEffect):
@@ -242,6 +278,7 @@ class RainEffect(BaseEffect):
         self.intensity = intensity
         self.swells = swells
         self.swell_direction = 1
+        self.multiplier = 1
         self.wind_direction = wind_direction if wind_direction in _WIND_DIRECTIONS else "none"
         self.wind_mappings = {
             "east": [".\\", -1, ["\\", "."]],
@@ -249,6 +286,9 @@ class RainEffect(BaseEffect):
             "west": ["./",   1, ["/", "."]]
         }
         self._set_rain()
+
+    def update_multiplier(self, val):
+        self.multiplier = val
 
     def update_wind_direction(self, direction):
         if direction in _WIND_DIRECTIONS:
@@ -297,8 +337,8 @@ class RainEffect(BaseEffect):
             self.buffer.put_at(0, 0, ''.join([self.rain[random.randint(
                 0, self.rain_length - 1)] for _ in range(self.buffer.width())]))
         else:
-            self.buffer.shift(self.wind_mappings[self.wind_direction][1])
-            self.buffer.scroll(-1)
+            self.buffer.shift(self.wind_mappings[self.wind_direction][1] * self.multiplier)
+            self.buffer.scroll(-1 * self.multiplier)
             self.buffer.put_at(0, 0, ''.join([self.rain[random.randint(
                 0, self.rain_length - 1)] for _ in range(self.buffer.width())]))
 
