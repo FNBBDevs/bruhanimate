@@ -14,8 +14,9 @@ def effects(screen, frames=500, time=0, background=" ", transparent=False):
 
     stars_renderer = EffectRenderer(screen, frames, time, "stars", " ", transparent)
 
-    noise_renderer = EffectRenderer(screen, frames, time, "noise", " ", transparent)
+    noise_renderer = EffectRenderer(screen, 1000, time, "noise", " ", transparent)
     noise_renderer.effect.update_intensity(10)
+    noise_renderer.effect.update_color(True)
 
     plasma_renderer = EffectRenderer(screen, frames, time, "plasma", " ", transparent)
     plasma_renderer.effect.update_plasma_values(15, 26, 19, 41)
@@ -26,6 +27,7 @@ def effects(screen, frames=500, time=0, background=" ", transparent=False):
     rain_renderer.effect.update_wind_direction("east")
     rain_renderer.effect.update_swells(True)
     rain_renderer.effect.update_intensity(1)
+    rain_renderer.effect.update_multiplier(3)
 
     gol_renderer = EffectRenderer(screen, frames, time, "gol", " ", transparent)
     gol_renderer.effect.set_decay(True)
