@@ -36,7 +36,7 @@ if sys.platform == 'win32':
     import win32file
     import pywintypes
 
-    class WinScreen:
+    class Screen:
         """
         Class for creating and managing a terminal screen in a WINDOWS OS terminal
         """
@@ -128,12 +128,12 @@ if sys.platform == 'win32':
             win_in.SetConsoleMode(new_mode)
 
 
-            screen = WinScreen(win_out, win_in, old_out, in_mode)
+            screen = Screen(win_out, win_in, old_out, in_mode)
             return screen
             
         @classmethod
         def show(cls, function, args=None):
-            screen = WinScreen.open()
+            screen = Screen.open()
             try:
                 if args:
                     return function(screen, *args)
@@ -147,7 +147,7 @@ else:
     import termios
     import select
 
-    class UnixScreen:
+    class Screen:
         def __init__(self, window, height=None):
             self.screen = window
             self.screen.keypad(1)
@@ -211,7 +211,7 @@ else:
             curses.noecho()
             curses.cbreak()
             stdcrs.keypad(1)
-            screen = UnixScreen(stdcrs)
+            screen = Screen(stdcrs)
             return screen
 
         @staticmethod
@@ -236,7 +236,7 @@ else:
         @classmethod
         def show(cls, function, args=None):
             os.system("clear")
-            screen = UnixScreen.open()
+            screen = Screen.open()
             try:
                 if args:
                     return function(screen, *args)

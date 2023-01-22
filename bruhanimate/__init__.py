@@ -1,14 +1,12 @@
 import sys
-if sys.platform == 'win32':
-    from bruhanimate.bruhscreen import WinScreen
-else:
-    from bruhanimate.bruhscreen import UnixScreen
+from bruhanimate.bruhscreen import Screen
 from bruhanimate.bruheffects    import BaseEffect, StaticEffect, OffsetEffect, NoiseEffect, StarEffect, PlasmaEffect, GameOfLifeEffect, RainEffect
 from bruhanimate.bruhffer       import Buffer
 from bruhanimate.bruhrenderer   import BaseRenderer, EffectRenderer, CenterRenderer, PanRenderer
 from bruhanimate import images
 
-__all__ = [ 
+__all__ = [
+    "Screen"
     "BaseEffect",
     "StaticEffect",
     "OffsetEffect", 
@@ -24,8 +22,3 @@ __all__ = [
     "PanRenderer",
     "images"
 ]
-
-if sys.platform == "win32":
-    __all__.append("WinScreen")
-else:
-    __all__.append("UnixScreen")
