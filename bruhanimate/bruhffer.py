@@ -41,7 +41,7 @@ class Buffer:
                     yield y, x, in_buf.buffer[y][x]
 
 
-    def clear_buffer(self, x=0, y=0, w=None, h=None):
+    def clear_buffer(self, x=0, y=0, w=None, h=None, val=" "):
         """
         Clear a section of this buffer
         :param x: x position to start the clear
@@ -51,19 +51,24 @@ class Buffer:
         """
         width = w if w else self._width
         height = h if h else self._height
-        line = [u" " for _ in range(width)]
+        line = [val for _ in range(width)]
 
         if x == 0 and y == 0 and not w and not y:
             self.buffer = [line[:] for _ in range(height)]
         else:
             for i in range(y, y + height):
                 self.buffer[i][x:x + width] = line[:]
+        
+        return self
 
     def get_char(self, x, y):
         """
         Return the value at the given location
         """
-        return self.buffer[y][x]
+        try:
+            return self.buffer[y][x]
+        except Exception:
+            return None
 
     def put_char(self, x, y, val):
         """
@@ -147,7 +152,6 @@ class Buffer:
         for y in range(self._height):
             self.buffer[y] = self.buffer[y][shift:] + self.buffer[y][:shift]
 
-
     def grab_slice(self, x, y, width):
         """
         Grabs a part of a row from this buffer
@@ -173,7 +177,6 @@ class Buffer:
             for x in range(self._width):
                 if img_buffer.buffer[y][x] != None:
                     self.buffer[y][x] = img_buffer.buffer[y][x]
-
 
     def height(self):
         """

@@ -1,5 +1,6 @@
 """
 Copyright 2023 Ethan Christensen
+Line Drawing Copied, Guided, and Adapted from Asciimatics <https://github.com/peterbrittain/asciimatics/blob/master/asciimatics/screen.py>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -29,6 +30,11 @@ _LIFE_COLORS = {
     "RAINBOW_r"      : [231, 196, 208, 190, 112, 27, 105, 129, 161, 201][::-1],
 }
 
+_PLASMA_COLORS = {
+    10: [232, 16, 53, 55, 89, 91, 126, 163, 197, 196][::-1],
+    16: [232, 16, 53, 55, 56, 89, 90, 91, 125, 126, 163, 199, 198, 197, 196, 39, 81, 231][::-1]
+}
+
 _VALID_DIRECTIONS = ["right", "left"]
 _GREY_SCALES = [' .:-=+*%#@', ' .:;rsA23hHG#9&@']
 _WIND_DIRECTIONS = ["east", "west", "none"]
@@ -56,14 +62,16 @@ class StaticEffect(BaseEffect):
     """
     Class for generating a static background.
     """
-
     def __init__(self, buffer, background):
         super(StaticEffect, self).__init__(buffer, background)
 
     def render_frame(self, frame_number):
+        """
+        Renders the background to the screen
+        """
         for y in range(self.buffer.height()):
             self.buffer.put_at(0, y, self.background * (self.buffer.width() //
-                               self.background_length + self.background_length))
+                            self.background_length + self.background_length))
 
 
 class OffsetEffect(BaseEffect):
@@ -78,10 +86,17 @@ class OffsetEffect(BaseEffect):
         self.direction = direction if direction in _VALID_DIRECTIONS else "right"
 
     def update_direction(self, direction):
+        """
+        Function to update the direction of the offset
+        :param direction: East / West
+        """
         self.direction = direction if direction in _VALID_DIRECTIONS else "right"
         self.buffer.clear_buffer()
 
     def render_frame(self, frame_number):
+        """
+        Function to render the next frame of the Offset effect
+        """
         for y in range(self.buffer.height()):
             row = (self.background[y % self.background_length:] + self.background[:y % self.background_length]) * (
                 self.buffer.width() // self.background_length + self.background_length)
@@ -109,13 +124,24 @@ class NoiseEffect(BaseEffect):
         self.color = color
 
     def update_intensity(self, intensity):
+        """
+        Function to update the intensity of the effect
+        :param intensity: new intensity
+        """
         self.intensity = intensity / \
             1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
         
     def update_color(self, color):
+        """
+        Function to enable / disable color for the effect
+        :param color: True / False
+        """
         self.color = color
 
     def render_frame(self, frame_number):
+        """
+        Function to render the next frame of the Noise effect
+        """
         if self.color:
             for y in range(self.buffer.height()):
                 for _ in range(self.buffer.width()):
@@ -136,60 +162,99 @@ class StarEffect(NoiseEffect):
     Ideally the background would be ' ' for the best effect, but the choice is yours.
     """
 
-    def __init__(self, buffer, background):
+    def __init__(self, buffer, background, color_type="GREYSCALE"):
         super(StarEffect, self).__init__(buffer, background)
 
         self.stars = f"{background*(100 // self.background_length)}.*+"
         self.stars_length = len(self.stars)
+        self.color_type = color_type
+
+    def update_color_type(self, color_type):
+        """
+        Function to update the color of the stars
+        :param color_type: color map
+        """
+        self.color_type = color_type
 
     def update_background(self, background):
+        """
+        Function to update the background of the efffect
+        :param background: the new background
+        """
         self.background = background
         self.background_length = len(background)
         self.stars = f"{background*(100 // self.background_length)}.*+"
         self.stars_length = len(self.stars)
 
     def render_frame(self, frame_number):
+        """
+        Function to update the next frame of the Stars effect
+        """
         for y in range(self.buffer.height()):
-            self.buffer.put_at(0, y, ''.join([self.stars[random.randint(0, self.stars_length - 1)] if random.random(
-            ) < self.intensity else self.buffer.get_char(_, y) for _ in range(self.buffer.width())]))
+            for x in range(self.buffer.width()):
+                if random.random() < self.intensity:
+                    self.buffer.put_char(x, y, bruhcolored(self.stars[random.randint(0, self.stars_length - 1)], color=_LIFE_COLORS[self.color_type][random.randint(0, len(_LIFE_COLORS[self.color_type]) - 1)]).colored)
 
 
 class PlasmaEffect(BaseEffect):
+    """
+    Function to generate a plasma like effect
+    """
     def __init__(self, buffer, background):
         super(PlasmaEffect, self).__init__(buffer, background)
 
         self.scale = random.choice(_GREY_SCALES)
+        self.colors = _PLASMA_COLORS[len(self.scale)]
         self.ayo = 0
         self.vals = [random.randint(1, 50), random.randint(
             1, 50), random.randint(1, 50), random.randint(1, 50)]
 
     def update_background(self, background):
+        """
+        Update the background character(s)
+        :param background: the new background
+        """
         self.background = background
         self.background_length = len(self.background)
 
     def update_plasma_values(self, a=random.randint(1, 50), b=random.randint(1, 50), c=random.randint(1, 50), d=random.randint(1, 50)):
+        """
+        Function to set the plasma values
+        """
         self.vals = [a, b, c, d]
 
     def shuffle_plasma_values(self):
+        """
+        Function to generate a new-random set of plasma values
+        """
         self.vals = [random.randint(1, 50), random.randint(
             1, 50), random.randint(1, 50), random.randint(1, 50)]
 
     def render_frame(self, frame_number):
+        """
+        Function to render the next frame of the Plasma Effect
+        """
         self.ayo += 1
         for y in range(self.buffer.height()):
             for x in range(self.buffer.width()):
                 value = abs(self.func(x + self.ayo / 3, y, 1/4, 1/3, self.vals[0]) + self.func(x, y, 1/8, 1/5, self.vals[1])
                             + self.func(x, y + self.ayo / 3, 1/2, 1/5, self.vals[2]) + self.func(x, y, 3/4, 4/5, self.vals[3])) / 4.0
                 self.buffer.put_char(
-                    x, y, self.scale[int((len(self.scale) - 1) * value)])
+                    x, y, bruhcolored(self.scale[int((len(self.scale) - 1) * value)], color=self.colors[int((len(self.scale) - 1) * value)]).colored)
         for i in range(4):
             self.buffer.put_at(0, i, f"VAL {i+1}: {str(self.vals[i]):>3s} ")
 
     def func(self, x, y, a, b, n):
+        """
+        Helper function to calculate the plasma value given the four plasma values
+        """
         return math.sin(math.sqrt((x - self.buffer.width() * a) ** 2 + 4 * ((y - self.buffer.height() * b)) ** 2) * math.pi / n)
 
 
 class GameOfLifeEffect(BaseEffect):
+    """
+    Effect ot simulate Conway's Game of Life
+    """
     def __init__(self, buffer, background, decay=False, color=False, color_type=None):
         super(GameOfLifeEffect, self).__init__(buffer, background)
         self.decay = decay
@@ -209,8 +274,9 @@ class GameOfLifeEffect(BaseEffect):
         self.board = [[" " for _ in range(self.buffer.width())] for __ in range(self.buffer.height())]
 
     def _set_attributes(self):
-        #  .:-=+*%#@
-        # colors --> 232, 235, 239, 241, 244, 247, 248, 250, 254, 231
+        """
+        Function to set the attributes of the effect
+        """
         self.grey_scale = _GREY_SCALES[0] if self.decay else " O"
         self.colors = _LIFE_COLORS[self.color_type] if self.decay else [232, 231]
         self.ALIVE = len(self.grey_scale) - 1
@@ -219,12 +285,20 @@ class GameOfLifeEffect(BaseEffect):
                          for i in range(len(self.grey_scale))}
 
     def set_decay(self, decay, color_type="GREYSCALE"):
+        """
+        Function to enable to decay and select the color map
+        :param decay: True / False
+        :param color_type: color map for the effect
+        """
         self.decay = decay
         if color_type:
             self.color_type = color_type
         self._set_attributes()
 
     def render_frame(self, frame_number):
+        """
+        Function to render the next frame of the GOL effect
+        """
         if frame_number == 0:  # INITIALIZE THE GAME
             for y in range(self.buffer.height()):
                 for x in range(self.buffer.width()):
@@ -270,6 +344,9 @@ class GameOfLifeEffect(BaseEffect):
 
 
 class RainEffect(BaseEffect):
+    """
+    Effect to emmulate the look of rain
+    """
     def __init__(self, buffer, background, img_start_x=None, img_start_y=None, img_width=None, img_height=None, collision=False, intensity=1, swells=False, wind_direction="none"):
         super(RainEffect, self).__init__(buffer, background)
 
@@ -288,14 +365,25 @@ class RainEffect(BaseEffect):
         self._set_rain()
 
     def update_multiplier(self, val):
+        """
+        Update the multiplier value that relates to shift amount
+        :param val: value to set the multiplier to
+        """
         self.multiplier = val
 
     def update_wind_direction(self, direction):
+        """
+        Update the direction of the rain
+        :param dircetion: direction for the rain to fall (east, west, none)
+        """
         if direction in _WIND_DIRECTIONS:
             self.wind_direction = direction
             self._set_rain()
 
     def _set_rain(self):
+        """
+        Function set the rain based on the intensity and wind direction
+        """
         self.rain = f"{' ' * (1000 - self.intensity)}"
         if self.intensity > 50:
             self.rain += "."
@@ -306,6 +394,10 @@ class RainEffect(BaseEffect):
         self.rain_length = len(self.rain)
 
     def update_intensity(self, intensity):
+        """
+        Function to update the intensity of the rain
+        :param intensity: intentisy value
+        """
         if self.swells:
             if self.intensity == 900:
                 self.swell_direction = -1
@@ -317,6 +409,17 @@ class RainEffect(BaseEffect):
         self._set_rain()
 
     def update_collision(self, img_start_x, img_start_y, img_width, img_height, collision, smart_transparent=False, image_buffer=None):
+        """
+        Function to set whether or not to visually see the rain collide with the ground
+        or images if they are present
+        :param img_start_x: where the image starts on the screen
+        :param img_start_y: where the image starts on the screen
+        :param img_width:   the width of the image
+        :param img_height:  the height of the image
+        :param collision:   update collision variable
+        :param smart_transparent: update smart_transparent
+        :param image_buffer: the buffer that contains the image
+        """
         self.img_present = True if img_start_x and img_start_y and img_width and img_height else False
         self.collision = collision
         if self.img_present:
@@ -328,9 +431,16 @@ class RainEffect(BaseEffect):
             self.image_buffer = image_buffer
 
     def update_swells(self, swells):
+        """
+        Function to set whether the intensity should evolve on it's own
+        :param swells: True / False
+        """
         self.swells = swells
 
     def render_frame(self, frame_number):
+        """
+        Function to render the next frame of the Rain Effect
+        """
         if self.swells:
             self.update_intensity(None)
         if frame_number == 0:
@@ -363,6 +473,9 @@ class RainEffect(BaseEffect):
 
 
 class MatrixEffect(BaseEffect):
+    """
+    Effect to mimic the cliche coding backgroud with falling random characters
+    """
     def __init__(self, buffer, background):
         super(MatrixEffect, self).__init__(buffer, background)
         self.col = self.buffer.width() // 2
@@ -372,6 +485,9 @@ class MatrixEffect(BaseEffect):
         self.spaces = self.buffer.height() - self.chars
 
     def render_frame(self, frame_number):
+        """
+        Renders the next frame for the Matrix effect into the effect buffer
+        """
         if frame_number == 0:
             self.buffer.put_at(0, 0, ''.join([_NOISE[random.randint(0, len(
                 _NOISE) - 1)] if random.random() < 0.2 else " " for _ in range(self.buffer.width())]))

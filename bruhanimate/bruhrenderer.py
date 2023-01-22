@@ -72,6 +72,7 @@ class BaseRenderer:
         
         # BUFFERS
         self.image_buffer  = Buffer(self.height, self.width)
+        self.image_buffer.clear_buffer(val=None)
         self.back_buffer   = Buffer(self.height, self.width)
         self.front_buffer  = Buffer(self.height, self.width)
 
@@ -81,6 +82,9 @@ class BaseRenderer:
         self.wipe = False
     
     def update_collision(self, collision):
+        """
+        Method for updating the collision for the rain effect
+        """
         if self.effect_type == "rain":
             try:
                 self.collision = collision
@@ -89,9 +93,18 @@ class BaseRenderer:
                 self.effect.update_collision(None, None, None, None, collision, None, None)
         
     def update_smart_transparent(self, smart_transparent):
+        """
+        Enable / Disable the smart transparency effect
+        :param smart_transparent: True / False
+        """
         self.smart_transparent = smart_transparent
 
     def update_points(self, p1, p2):
+        """
+        Given two points, update start and end points for this line
+        :param p1: start point (x, y)
+        :param p2: end   point (x, y)
+        """
         self.effect.line.uppdate_points(p1, p2)
 
     def push_front_to_screen(self):
@@ -144,19 +157,6 @@ class BaseRenderer:
         if wipe:
             self.wipe = wipe
 
-    def set_effect(self):
-        effect_type = self.effect_type
-        effect_buffer = Buffer(self.height, self.width)
-        
-        if effect_type == "static":
-            pass
-        elif effect_type == "offset":
-            pass
-        elif effect_type == "noise":
-            pass
-        elif effect_type == "start":
-            pass
-
     @abstractmethod
     def render_frame(self):
         """
@@ -173,9 +173,16 @@ class EffectRenderer(BaseRenderer):
         self.background = self.effect.background
     
     def render_effect_frame(self, frame_number):
+        """
+        We only need to render the effect, so we just call the effects render
+        frame method to update the effect buffer
+        """
         self.effect.render_frame(frame_number)
     
     def run(self, end_message=True):
+        """
+        Generate the next effect frame and sync it with the back / front buffer
+        """
         start = time.time()
         second = 1
         for _ in range(self.frames):
@@ -274,9 +281,12 @@ class PanRenderer(BaseRenderer):
         self.img = img
         self.shift_rate = shift_rate
         self.loop = loop
-        self._set_img_attributes()
+        if self.img: self._set_img_attributes()
     
     def _set_img_attributes(self):
+        """
+        Sets the attributes for the image given it exists
+        """
         self.render_image = True
         self.img_height = len(self.img)
         self.img_width  = len(self.img[0])
@@ -289,10 +299,9 @@ class PanRenderer(BaseRenderer):
 
     def _set_padding(self, padding_vals):
         """
-        Set the padding for the image
+        Set the padding for the image [DEPRECATED FOR NOW]
         :param padding_vals: vals for padding [left-right, top-bottom]
         """
-
         if not self.img:
             return
 
@@ -331,7 +340,9 @@ class PanRenderer(BaseRenderer):
             self.render_veritcal_frame()
 
     def render_horizontal_frame(self, frame_number):
-
+        """
+        Renders the next image frame for a horizontal pan
+        """
         if (0 <= frame_number <= self.img_width) or not self.loop:
             for y in range(self.height):
                 for x in range(self.width):
@@ -361,3 +372,77 @@ class PanRenderer(BaseRenderer):
         else:
             for y in range(self.height):
                 self.image_buffer.buffer[y] = self.image_buffer.buffer[y][-self.shift_rate:] + self.image_buffer.buffer[y][:-self.shift_rate]
+
+
+class FocusRenderer(BaseRenderer):
+    """
+    A Renderer that takes an image and randomly spreads the characters around the screen.
+    The characters are then pulled to the middle of the screen
+    """
+    def __init__(self, screen, frames, time, img, effect_type="static", background=" ", transparent=False, start_frame=0):
+        super(FocusRenderer, self).__init__(screen, frames, time, effect_type, background, transparent)
+        self.background        = background if background else " "
+        self.transparent       = transparent if transparent else False
+        self.img               = img
+        self.start_frame       = 0
+        if self.img: self._set_img_attributes()
+
+    def _set_img_attributes(self):
+        """
+        Set the attributes of the img
+        """
+        self.img_height      = len(self.img)
+        self.img_width       = len(self.img[0])
+        self.img_y_start     = (self.height - len(self.img)) // 2
+        self.img_x_start     = (self.width - len(self.img[0])) // 2
+        self.current_img_x   = self.img_x_start
+        self.current_img_y   = self.img_y_start
+        self.start_board     = [[[random.randint(0, self.width - 1), random.randint(0, self.height - 1), self.img[y][x], (x, y)] for x in range(self.img_width)] for y in range(self.img_height)]
+        self.current_board   = [[[self.start_board[y][x][0], self.start_board[y][x][1], self.img[y][x], (x, y)] for x in range(self.img_width)] for y in range(self.img_height)]
+        self.end_board       = [[[self.img_x_start + x, self.img_y_start + y, self.img[y][x], (x, y)] for x in range(self.img_width)] for y in range(self.img_height)]
+        self.direction_board = [[[-1 if (self.end_board[y][x][0] - self.current_board[y][x][0]) < 0 else 1,
+                                  -1 if (self.end_board[y][x][1] - self.current_board[y][x][1]) < 0 else 1]
+                                  for x in range(self.img_width)] for y in range(self.img_height)]
+
+    def update_start_frame(self, frame_number):
+        """
+        Updates the frame at which the Focus Effeect should start
+        :param frame_number: Frame to start
+        """
+        self.start_frame = frame_number
+
+    def solved(self):
+        """
+        Function that determines if the image has been moved back to its
+        original shape
+        """
+        b1 = self.current_board
+        b2 = self.end_board
+        for y in range(len(b1)):
+            for x in range(len(b1[y])):
+                if b1[y][x][0] == b2[y][x][0] and b1[y][x][1] == b2[y][x][1]:
+                    pass
+                else:
+                    return False
+        return True
+
+    def render_img_frame(self, frame_number):
+        """
+        Renders the next image frame into the image buffer
+        """
+        if frame_number >= self.start_frame:
+            if not self.solved():
+                for y in range(len(self.current_board)):
+                    for x in range(len(self.current_board[y])):
+                        # MOVE X IF NEEDED
+                        if self.current_board[y][x][0] != self.end_board[y][x][0]:
+                            self.current_board[y][x][0] += self.direction_board[y][x][0]
+
+                        # MOVE Y IF NEEDED
+                        if self.current_board[y][x][1] != self.end_board[y][x][1]:
+                            self.current_board[y][x][1] += self.direction_board[y][x][1]
+                self.image_buffer.clear_buffer(val=None)
+                for row in self.current_board:
+                    for value in row:
+                        self.image_buffer.put_char(value[0], value[1], value[2])
+            
