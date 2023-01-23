@@ -15,8 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import wcwidth
-
 class Buffer:
     """
     Class for creating and managing a buffer
@@ -39,7 +37,6 @@ class Buffer:
             for x in range(self._width):
                 if self.buffer[y][x] != in_buf.buffer[y][x]:
                     yield y, x, in_buf.buffer[y][x]
-
 
     def clear_buffer(self, x=0, y=0, w=None, h=None, val=" "):
         """
@@ -77,8 +74,6 @@ class Buffer:
         if 0 <= y < self._height and 0 <= x < self._width:
             if self.buffer[y][x] != val:
                 self.buffer[y][x] = val
-        else:
-            return
     
     def put_at(self, x, y, text, transparent=False):
         """

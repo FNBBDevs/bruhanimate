@@ -147,8 +147,6 @@ class NoiseEffect(BaseEffect):
                 for _ in range(self.buffer.width()):
                     if random.random() < self.intensity:
                         self.buffer.put_char(_, y, bruhcolored(self.noise[random.randint(0, self.noise_length - 1)], on_color=random.randint(0, 256)).colored)
-            if frame_number == 0:
-                print(bruhcolored(self.noise[random.randint(0, self.noise_length - 1)], on_color=random.randint(0, 256)))
         else:
             for y in range(self.buffer.height()):
                 for _ in range(self.buffer.width()):
