@@ -11,37 +11,34 @@ This is not complete, but currently offers the ability to render out background-
 Here is a simple program that uses the EffectRenderer to render out one
 of the prebuilt effects to the terminal.
 """
-
-"""
-Here is a simple program that uses the EffectRenderer to render out one
-of the prebuilt effects to the terminal.
-"""
-from bruhanimate.bruhscreen import WinScreen
 from bruhanimate.bruhrenderer import *
+from bruhanimate.bruhscreen import Screen
+import bruhanimate.images as images
+import sys
 
-# Define a function that the screen warpper function will call
-def render_stars(screen, frames, time, effect, background, transparent):
+def demo(screen, img, frames, time, effect_type, background, transparent):
     
-    # Create the renderer
-    renderer = EffectRenderer(screen, frames, time, effect, background, transparent)
-    
-    # Change the exit messages if you want, wipe tells the renderer to wipe the final
-    # animation frame before displaying the exit messages.
-    renderer.set_exit_stats("  Animation Frames Completed  ", "    Press [Enter] to leave    ", wipe=True)
-    
-    # Set the intensity if you want, the higher the intensity, the more stars.
-    # Intensity can be set for the Noise and Stars Effect, <= 200 is a good spot.
-    renderer.effect.update_intensity(200)
-    
-    # Run the animation
+    # CREATE THE RENDERER
+    renderer = CenterRenderer(screen, frames, time, img, effect_type, background, transparent)
+
+    # SET EFFECT ATTRIBUTES
+    renderer.update_smart_transparent(True)
+    renderer.effect.update_color(True)
+    renderer.effect.update_intensity(100)
+
+    # RUN THE ANIMATION
     renderer.run()
-    
-    # Add an input() to catch the end of the enimation - WINDOWS ONLY
+
+    # CATCH THE END WITH INPUT() --> for Win-Systems --> Ctl-C for Unix-Systems
     input()
 
-# Now that we have a funciton to render the animation, let's
-# create a screen and call the function
-#              function            fram  time  effect   bk   img
-WinScreen.show(render_stars, args=(100, 0.05, "stars", " ", None))
+
+def main():
+    Screen.show(demo, args=(images.get_image("TWOPOINT"), 300, 0, "noise", " ", False))
+
+
+
+if __name__ == "__main__":
+    main()
 
 ```
