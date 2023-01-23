@@ -1,5 +1,24 @@
 # bruhanimate
+
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/termcolor.svg?logo=python&logoColor=FFE873)](https://pypi.org/project/bruhanimate/)
+
 bruhanimate offers a series of files to aid in rendering out animations in the terminal. This is heavily inspisred by the <a href="https://github.com/peterbrittain/asciimatics">Asciimatics</a> package. While Asciimatics is the end-all be-all for termianl animations, I figured it would be good practice to go ahead and attempt something like this myself.
+
+## Installation
+
+### From PyPI
+
+```bash
+python -m pip install --upgrade bruhanimate
+```
+
+### From source
+
+```bash
+git clone https://github.com/ethanlchristensen/bruhanimate
+cd bruhanimate
+python -m pip install .
+```
 
 **Support on Unix Systems is meh**
 
