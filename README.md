@@ -11,6 +11,11 @@ This is not complete, but currently offers the ability to render out background-
 Here is a simple program that uses the EffectRenderer to render out one
 of the prebuilt effects to the terminal.
 """
+
+"""
+Here is a simple program that uses the EffectRenderer to render out one
+of the prebuilt effects to the terminal.
+"""
 from bruhanimate.bruhscreen import WinScreen
 from bruhanimate.bruhrenderer import *
 
