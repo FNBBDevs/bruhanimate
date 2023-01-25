@@ -2,7 +2,7 @@
 
 <img src="https://i.ibb.co/TwssymP/BRUHANIMA.gif" alt="BRUHANIMA" border="0">
 
-<img src="https://i.ibb.co/k4ZyZ2Y/BRUHANIMATE-Made-with-Clipchamp.gif" alt="BRUHANIMATE-Made-with-Clipchamp" border="0">
+<img src="https://i.ibb.co/p3mbKb1/plas.gif" alt="plas" border="0">
 
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/termcolor.svg?logo=python&logoColor=FFE873)](https://pypi.org/project/bruhanimate/)
 
