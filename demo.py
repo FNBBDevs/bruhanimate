@@ -2,6 +2,7 @@ from bruhanimate.bruhrenderer import *
 from bruhanimate.bruhscreen import Screen
 import bruhanimate.images as images
 import sys
+import pyfiglet
 
 def demo(screen, img, frames, time, effect_type, background, transparent):
     
@@ -9,19 +10,20 @@ def demo(screen, img, frames, time, effect_type, background, transparent):
     renderer = CenterRenderer(screen, frames, time, img, effect_type, background, transparent)
 
     # SET EFFECT ATTRIBUTES
+    renderer.effect.update_color(color=True, characters=True)
     renderer.update_smart_transparent(True)
-    renderer.effect.update_color(True)
-    renderer.effect.update_intensity(100)
 
     # RUN THE ANIMATION
-    renderer.run()
+    renderer.run(end_message=False)
 
     # CATCH THE END WITH INPUT() --> for Win-Systems --> Ctl-C for Unix-Systems
+    print(screen.width, screen.height)
     input()
 
 
 def main():
-    Screen.show(demo, args=(images.get_image("TWOPOINT"), 300, 0, "noise", " ", False))
+    image = images.get_image("BRUH")
+    Screen.show(demo, args=(image, 300, 0, "plasma", " ", False))
 
 
 
