@@ -131,12 +131,14 @@ class NoiseEffect(BaseEffect):
         self.intensity = intensity / \
             1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
         
-    def update_color(self, color):
+    def update_color(self, color, characters):
         """
         Function to enable / disable color for the effect
         :param color: True / False
+        :param character: True / False to make characters visable
         """
-        self.color = color
+        self.color      = color
+        self.characters = characters
 
     def render_frame(self, frame_number):
         """
@@ -146,7 +148,10 @@ class NoiseEffect(BaseEffect):
             for y in range(self.buffer.height()):
                 for _ in range(self.buffer.width()):
                     if random.random() < self.intensity:
-                        self.buffer.put_char(_, y, bruhcolored(self.noise[random.randint(0, self.noise_length - 1)], on_color=random.randint(0, 256)).colored)
+                        if self.characters:
+                            self.buffer.put_char(_, y, bruhcolored(self.noise[random.randint(0, self.noise_length - 1)], on_color=random.randint(0, 255)).colored)
+                        else:
+                            self.buffer.put_char(_, y, bruhcolored(' ', on_color=random.randint(0, 255)).colored)
         else:
             for y in range(self.buffer.height()):
                 for _ in range(self.buffer.width()):
@@ -202,10 +207,15 @@ class PlasmaEffect(BaseEffect):
         super(PlasmaEffect, self).__init__(buffer, background)
 
         self.scale = random.choice(_GREY_SCALES)
-        self.colors = _PLASMA_COLORS[len(self.scale)]
         self.ayo = 0
         self.vals = [random.randint(1, 50), random.randint(
             1, 50), random.randint(1, 50), random.randint(1, 50)]
+
+
+    def update_color(self, color, characters=True):
+        self.color = color
+        self.colors = _PLASMA_COLORS[len(self.scale)]
+        self.characters = characters
 
     def update_background(self, background):
         """
@@ -237,8 +247,16 @@ class PlasmaEffect(BaseEffect):
             for x in range(self.buffer.width()):
                 value = abs(self.func(x + self.ayo / 3, y, 1/4, 1/3, self.vals[0]) + self.func(x, y, 1/8, 1/5, self.vals[1])
                             + self.func(x, y + self.ayo / 3, 1/2, 1/5, self.vals[2]) + self.func(x, y, 3/4, 4/5, self.vals[3])) / 4.0
-                self.buffer.put_char(
-                    x, y, bruhcolored(self.scale[int((len(self.scale) - 1) * value)], color=self.colors[int((len(self.scale) - 1) * value)]).colored)
+                if self.color:
+                    if self.characters:
+                        self.buffer.put_char(
+                            x, y, bruhcolored(self.scale[int((len(self.scale) - 1) * value)], color=self.colors[int((len(self.scale) - 1) * value)]).colored)
+                    else:
+                        self.buffer.put_char(
+                            x, y, bruhcolored(" ", on_color=self.colors[int((len(self.scale) - 1) * value)]).colored)
+                else:
+                    self.buffer.put_char(
+                        x, y, self.scale[int((len(self.scale) - 1) * value)])
         for i in range(4):
             self.buffer.put_at(0, i, f"VAL {i+1}: {str(self.vals[i]):>3s} ")
 

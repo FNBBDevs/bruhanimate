@@ -67,14 +67,14 @@ class Buffer:
         except Exception:
             return None
 
-    def put_char(self, x, y, val):
+    def put_char(self, x, y, val, transparent=False):
         """
         Put the value at the given location
         """
         if 0 <= y < self._height and 0 <= x < self._width:
             if self.buffer[y][x] != val:
                 self.buffer[y][x] = val
-    
+
     def put_at(self, x, y, text, transparent=False):
         """
         Put text at a given x, y coordinate in the buffer
