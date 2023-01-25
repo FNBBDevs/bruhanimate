@@ -1,10 +1,11 @@
 # bruhanimate
-
+<div>
 <img src="https://i.ibb.co/TwssymP/BRUHANIMA.gif" alt="BRUHANIMA" border="0">
 
 <img src="https://i.ibb.co/p3mbKb1/plas.gif" alt="plas" border="0">
 
-<img src="https://i.ibb.co/vcJGjb8/BRUHANIMATE-Made-with-Clipchamp.gif" alt="BRUHANIMATE-Made-with-Clipchamp" border="0">
+<img src="https://i.ibb.co/pR49kL6/noises.gif" alt="noises" border="0">
+</div>
 
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/termcolor.svg?logo=python&logoColor=FFE873)](https://pypi.org/project/bruhanimate/)
 
