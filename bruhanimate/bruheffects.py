@@ -26,17 +26,25 @@ _LIFE_COLORS = {
     "GREYSCALE"      : [232, 235, 239, 241, 244, 247, 248, 250, 254, 231],
     "GREYSCALE_r"    : [232, 235, 239, 241, 244, 247, 248, 250, 254, 231][::-1],
     "GREYSCALE_MUTED": [232, 235, 235, 239, 239, 241, 241, 244, 244, 231],
-    "RAINBOW"        : [196, 202, 208, 190, 112, 27, 105, 129, 161, 231],
+    "RAINBOW"        : [232, 202, 208, 190, 112, 27, 105, 129, 161, 231],
     "RAINBOW_r"      : [231, 196, 208, 190, 112, 27, 105, 129, 161, 201][::-1],
 }
-
+_LIFE_SCALES = {
+    "default": ' .:-=+*%#@',
+    ".": ' .........',
+    "o": ' ooooooooo',
+    "0": ' 000000000'
+ }
 _PLASMA_COLORS = {
-    10: [232, 16, 53, 55, 89, 91, 126, 163, 197, 196][::-1],
-    16: [232, 16, 53, 55, 56, 89, 90, 91, 125, 126, 163, 199, 198, 197, 196, 39, 81, 231][::-1]
+    8 : [[150, 93, 11, 38, 181, 250, 143, 12],
+         [142, 167, 216, 161, 59, 228, 148, 219]],
+    10: [[232, 16, 53, 55, 89, 91, 126, 163, 197, 196][::-1]],
+    16: [[232, 16, 53, 55, 56, 89, 90, 91, 125, 126, 163, 199, 198, 197, 196, 39, 81, 231][::-1],
+         [195, 106, 89, 176, 162, 180, 201, 233, 124, 252, 104, 181, 2, 182, 4, 170]]
 }
-
 _VALID_DIRECTIONS = ["right", "left"]
-_GREY_SCALES = [' .:-=+*%#@', ' .:;rsA23hHG#9&@']
+_OLD_GREY_SCALES = [' .:;rsA23hHG#9&@']
+_GREY_SCALES = [' .,:ilwW',' .,:ilwW%@', ' .:;rsA23hHG#9&@']
 _WIND_DIRECTIONS = ["east", "west", "none"]
 _NOISE = "!@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
 
@@ -205,17 +213,57 @@ class PlasmaEffect(BaseEffect):
     """
     def __init__(self, buffer, background):
         super(PlasmaEffect, self).__init__(buffer, background)
-
+        self.info  = False
+        self.random = False
         self.scale = random.choice(_GREY_SCALES)
-        self.ayo = 0
-        self.vals = [random.randint(1, 50), random.randint(
+        self.ayo   = 0
+        self.vals  = [random.randint(1, 50), random.randint(
             1, 50), random.randint(1, 50), random.randint(1, 50)]
 
+    def update_info_visibility(self, visible):
+        """
+        Function to enable or disable info about the effect
+        """
+        self.info = visible
 
-    def update_color(self, color, characters=True):
+    def update_grey_scale_size(self, size):
+        """
+        Function to change the size of the grey scale
+        """
+        if size in [8, 10, 16]:
+            self.scale  = random.choice([scale for scale in _GREY_SCALES if len(scale) == size])
+            if not self.random:
+                self.colors = random.choice(_PLASMA_COLORS[size])
+            else:
+                self.colors = [random.randint(0, 255) for _ in range(len(self.scale))]
+        else:
+            raise Exception(f"only 8, 10, and 16 are supported grey scale sizes, you provided {size}")
+
+    def update_color_properties(self, color, characters=True, random_color=False):
+        """
+        Function to update the color properties. random_color overrules other functions
+        like update greyscale size and update color
+        :param color: True / False to enable color
+        :param characters: True / False to show the characters
+        :param random_color: True / False to generate random colors
+        """
         self.color = color
-        self.colors = _PLASMA_COLORS[len(self.scale)]
+        self.random = random_color
+        if not random_color:
+            self.colors = _PLASMA_COLORS[len(self.scale)][0]
+        else:
+            self.colors = [random.randint(0, 255) for _ in range(len(self.scale))]
         self.characters = characters
+
+    def update_color(self, colors):
+        """
+        Function to update the colors used
+        """
+        if not self.random:
+            if len(colors) == len(self.scale):
+                self.colors = colors
+            else:
+                raise Exception(f"update_color(..) must be provided a list of {len(self.scale)} colors, you provided {len(colors)}")
 
     def update_background(self, background):
         """
@@ -257,8 +305,10 @@ class PlasmaEffect(BaseEffect):
                 else:
                     self.buffer.put_char(
                         x, y, self.scale[int((len(self.scale) - 1) * value)])
-        for i in range(4):
-            self.buffer.put_at(0, i, f"VAL {i+1}: {str(self.vals[i]):>3s} ")
+        if self.info:
+            self.buffer.put_at(0, 0, f"COLORS: {' '.join([str(val) for val in self.colors])}")
+            for i in range(1, 5):
+                self.buffer.put_at(0, i, f"VAL {i}: {str(self.vals[i-1]):>3s} ")
 
     def func(self, x, y, a, b, n):
         """
@@ -271,9 +321,10 @@ class GameOfLifeEffect(BaseEffect):
     """
     Effect ot simulate Conway's Game of Life
     """
-    def __init__(self, buffer, background, decay=False, color=False, color_type=None):
+    def __init__(self, buffer, background, decay=False, color=False, color_type=None, scale="random"):
         super(GameOfLifeEffect, self).__init__(buffer, background)
         self.decay = decay
+        self.scale = scale
         self.color = color
         self.color_type = color_type
         self._set_attributes()
@@ -287,29 +338,38 @@ class GameOfLifeEffect(BaseEffect):
             [-1, 1],
             [-1, -1]
         ]
+        self.rules = {
+            "life" : [2, 3],
+            "death": [3, 3]
+        }
         self.board = [[" " for _ in range(self.buffer.width())] for __ in range(self.buffer.height())]
 
     def _set_attributes(self):
         """
         Function to set the attributes of the effect
         """
-        self.grey_scale = _GREY_SCALES[0] if self.decay else " O"
+        self.grey_scale = _LIFE_SCALES[random.choice(list(_LIFE_SCALES.keys()))] if self.decay and self.scale == "random" else _LIFE_SCALES[self.scale] if self.decay else " o"
         self.colors = _LIFE_COLORS[self.color_type] if self.decay else [232, 231]
         self.ALIVE = len(self.grey_scale) - 1
         self.DEAD = 0
         self.mappings = {i: self.grey_scale[i]
                          for i in range(len(self.grey_scale))}
 
-    def set_decay(self, decay, color_type="GREYSCALE"):
+    def update_decay(self, decay, color_type="GREYSCALE", scale="random"):
         """
         Function to enable to decay and select the color map
         :param decay: True / False
         :param color_type: color map for the effect
         """
         self.decay = decay
+        self.scale = scale
         if color_type:
             self.color_type = color_type
         self._set_attributes()
+
+    def update_rules(self, life_rule, death_rule):
+        self.rules['life']  = life_rule
+        self.rules['death'] = death_rule
 
     def render_frame(self, frame_number):
         """
@@ -320,43 +380,39 @@ class GameOfLifeEffect(BaseEffect):
                 for x in range(self.buffer.width()):
                     if random.random() < 0.1:
                         self.buffer.put_char(x, y, bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]).colored)
-                        self.board[y][x] =  bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE])
+                        self.board[y][x] =  (bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]), 9)
                     else:
                         self.buffer.put_char(x, y, bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD]).colored)
-                        self.board[y][x] = bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD])
+                        self.board[y][x] = (bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD]), 0)
         else:  # RUN THE GAME
-            all_neighbors = []
-            for y in range(self.buffer.height()):
-                row_neighbors = [0 for _ in range(self.buffer.width())]
-                for x in range(self.buffer.width()):
+            all_neighbors = [[0 for _ in range(self.buffer.width())]for __ in range(self.buffer.height())]
+            for y in range(len(all_neighbors)):
+                for x in range(len(all_neighbors[y])):
+                    neighbors = 0
                     for direction in self.direcitons:
-                        if 0 <= y+direction[0] < self.buffer.height() and 0 <= x+direction[1] < self.buffer.width():
-                            if self.grey_scale.index(self.board[y+direction[0]][x+direction[1]].text) == self.ALIVE:
-                                row_neighbors[x] += 1
-                all_neighbors.append(row_neighbors)
-
+                        if 0 <= y+direction[0] < self.buffer.height() and 0 <= x+direction[1] < self.buffer.width() and self.board[y+direction[0]][x+direction[1]][1] == self.ALIVE:
+                            neighbors += 1
+                    all_neighbors[y][x] = neighbors
             for y in range(self.buffer.height()):
                 for x in range(self.buffer.width()):
-                    if self.grey_scale.index(self.board[y][x].text) == self.ALIVE:  # ALIVE
-                        if 2 <= all_neighbors[y][x] <= 3:  # STAY ALIVE
+                    if self.board[y][x][1] == self.ALIVE:  # ALIVE
+                        if self.rules['life'][0] <= all_neighbors[y][x] <= self.rules['life'][1]:  # STAY ALIVE
                             pass
                         else:  # MOVE TO THE FIRST DECAY STAGE
                             self.buffer.put_char(
                                 x, y, bruhcolored(self.grey_scale[self.ALIVE - 1], color=self.colors[self.ALIVE - 1]).colored)
-                            self.board[y][x] = bruhcolored(self.grey_scale[self.ALIVE - 1], color=self.colors[self.ALIVE - 1])
+                            self.board[y][x] = (bruhcolored(self.grey_scale[self.ALIVE - 1], color=self.colors[self.ALIVE - 1]), self.ALIVE - 1)
                     else:  # DEAD
-                        if all_neighbors[y][x] == 3:  # COME BACK TO LIFE
+                        if self.rules['death'][0] <= all_neighbors[y][x] <= self.rules['death'][1]:  # COME BACK TO LIFE
                             self.buffer.put_char(
                                 x, y, bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]).colored)
-                            self.board[y][x] = bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE - 1])
+                            self.board[y][x] = (bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]), self.ALIVE)
                         else:  # MOVE TO THE NEXT STAGE --> IF AT 0 STAY AT 0 i.e. don't decrement
-                            current_greyscale_position = self.grey_scale.index(
-                                self.board[y][x].text)
-                            current_greyscale_position = current_greyscale_position - \
-                                1 if current_greyscale_position > 0 else 0
+                            current_greyscale_position = self.board[y][x][1]
+                            current_greyscale_position = current_greyscale_position - 1 if current_greyscale_position > 0 else 0
                             self.buffer.put_char(
                                 x, y, bruhcolored(self.grey_scale[current_greyscale_position], color=self.colors[current_greyscale_position]).colored)
-                            self.board[y][x] = bruhcolored(self.grey_scale[current_greyscale_position], color=self.colors[current_greyscale_position])
+                            self.board[y][x] = (bruhcolored(self.grey_scale[current_greyscale_position], color=self.colors[current_greyscale_position]), current_greyscale_position)
 
 
 class RainEffect(BaseEffect):

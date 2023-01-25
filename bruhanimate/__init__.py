@@ -4,9 +4,11 @@ from bruhanimate.bruheffects    import BaseEffect, StaticEffect, OffsetEffect, N
 from bruhanimate.bruhffer       import Buffer
 from bruhanimate.bruhrenderer   import BaseRenderer, EffectRenderer, CenterRenderer, PanRenderer
 from bruhanimate import images
+import demo
 
 __all__ = [
-    "Screen"
+    "Screen",
+    "demo"
     "BaseEffect",
     "StaticEffect",
     "OffsetEffect", 
