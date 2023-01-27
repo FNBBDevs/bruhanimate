@@ -19,7 +19,7 @@ import math
 import time
 import random
 from abc import ABC, abstractmethod
-from bruhcolor import bruhcolored
+from bruhcolor import bruhcolored256 as bruhcolored
 
 
 _LIFE_COLORS = {
@@ -217,6 +217,7 @@ class PlasmaEffect(BaseEffect):
         self.random = False
         self.scale = random.choice(_GREY_SCALES)
         self.ayo   = 0
+        self.color = False
         self.vals  = [random.randint(1, 50), random.randint(
             1, 50), random.randint(1, 50), random.randint(1, 50)]
 

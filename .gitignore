@@ -26,6 +26,9 @@ Latest commit 94cbc4a on Sep 6, 2020
  1 contributor
 138 lines (112 sloc)  1.99 KB
 
+#testing
+/testing.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
