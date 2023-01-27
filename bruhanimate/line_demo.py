@@ -22,5 +22,9 @@ def demo(screen, img, frames, time, effect, background, transparent):
     # CATCH THE END WITH INPUT() ON WINDOWS
     input()
 
-image = images.text_to_image("HELLO WORLD!", padding_top_bottom=1, padding_left_right=3)
-Screen.show(demo, args=(image, 500, 0.05, "drawlines", " ", True))
+def run():
+    image = images.text_to_image("HELLO WORLD!", padding_top_bottom=1, padding_left_right=3)
+    Screen.show(demo, args=(image, 500, 0.05, "drawlines", " ", True))
+
+if __name__ == "__main__":
+    run()
