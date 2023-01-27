@@ -3,8 +3,8 @@ from bruhanimate.bruheffects    import BaseEffect, StaticEffect, OffsetEffect, N
 from bruhanimate.bruhffer       import Buffer
 from bruhanimate.bruhrenderer   import BaseRenderer, EffectRenderer, CenterRenderer, PanRenderer, FocusRenderer
 from bruhanimate import images
-from bruhanimate import demo
-from bruhanimate import line_demo
+from bruhanimate import demo, line_demo
+
 
 
 __all__ = [
