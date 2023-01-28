@@ -11,7 +11,7 @@ def show(screen):
     renderer2 = CenterRenderer(screen, 100, 0.01, images.get_image("COMPUTER"), "stars", background=" ", transparent=False)
 
     # SET EFFECT ATTRIBUTES
-    renderer.effect.update_color_properties(color=False, characters=False, random_color=True)
+    renderer.effect.update_color_properties(color=True, characters=True, random_color=True)
     renderer.effect.update_grey_scale_size(10)
     renderer.effect.update_plasma_values(10, 26, 19, 41)
 
@@ -27,9 +27,9 @@ def show(screen):
     # CATCH THE END WITH INPUT() --> for Win-Systems --> Ctl-C for Unix-Systems
     input()
 
-    """screen.clear()
+    screen.clear()
     renderer2.run()
-    input()"""
+    input()
 
 
 def run():

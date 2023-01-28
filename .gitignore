@@ -28,6 +28,7 @@ Latest commit 94cbc4a on Sep 6, 2020
 
 #testing
 /testing.py
+/video.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
