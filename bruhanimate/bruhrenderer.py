@@ -18,6 +18,7 @@ import time
 import random
 from bruhanimate.bruhffer import Buffer
 from bruhanimate.bruheffects import *
+from bruhcolor import bruhcolored
 from abc import abstractmethod
 _VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma", "gol", "rain", "matrix", "drawlines"]
 HORIZONTAL = "h"
@@ -68,6 +69,7 @@ class BaseRenderer:
             self.effect = MatrixEffect(effect_buffer, self.background)
         elif self.effect_type == "drawlines":
             self.effect = DrawLines(effect_buffer, self.background)
+
         
         # BUFFERS
         self.image_buffer  = Buffer(self.height, self.width)
@@ -138,9 +140,9 @@ class BaseRenderer:
         """
         for _ in range(self.frames):
             sleep(self.time)
-            self.render_img_frame(_)
-            self.effect.render_frame(_)
-            self.back_buffer.sync_with(self.effect.buffer)
+            self.render_img_frame(_) # img buf
+            self.effect.render_frame(_) # effect buf
+            self.back_buffer.sync_with(self.effect.buffer) 
             self.back_buffer.sync_over_top_img(self.image_buffer)
             self.push_front_to_screen()
             self.front_buffer.sync_with(self.back_buffer)
@@ -267,17 +269,8 @@ class CenterRenderer(BaseRenderer):
                             self.image_buffer.put_char(x, y, None)
             else:
                 for y in range(self.height):
-                    for x in range(self.width):
-                        if y >= self.img_y_start and y < self.img_y_start + self.img_height and x >= self.img_x_start and x < self.img_x_start + self.img_width:
-                            if self.transparent:
-                                if self.img[y-self.img_y_start][x-self.img_x_start] == " ":
-                                    self.image_buffer.put_char(x, y, None)
-                                else:
-                                    self.image_buffer.put_char(x, y, self.img[y-self.img_y_start][x-self.img_x_start])
-                            else:
-                                self.image_buffer.put_char(x, y, self.img[y-self.img_y_start][x-self.img_x_start])
-                        else:
-                            self.image_buffer.put_char(x, y, None)
+                    if y >= self.img_y_start and y < self.img_y_start + self.img_height:
+                        self.image_buffer.put_at_center(y, self.img[y-self.img_y_start])
 
 
 class PanRenderer(BaseRenderer):
@@ -286,7 +279,7 @@ class PanRenderer(BaseRenderer):
     Update the image_buffer only.
     """
     def __init__(self, screen, frames, time, img, effect_type="static", background=" ", transparent=False, direction="h", shift_rate=1, loop=False):
-        super().__init__(screen, frames, time, effect_type, background, transparent)
+        super(PanRenderer, self).__init__(screen, frames, time, effect_type, background, transparent)
         self.direction = direction if direction and direction in ["h", "v"] else "h"
         self.img = img
         self.shift_rate = int(shift_rate)
@@ -518,4 +511,30 @@ class FocusRenderer(BaseRenderer):
                 for row in self.current_board:
                     for value in row:
                         self.image_buffer.put_char(value[0], value[1], value[2], transparent=self.transparent)
-            
+
+
+class BackgroundColorRenderer(BaseRenderer):
+    def __init__(self, screen, frames, time, img, on_color_code, effect_type="static", background=" ", transparent=False):
+        super(BackgroundColorRenderer, self).__init__(screen, frames, time, effect_type, background, transparent)
+
+        self.img             = img
+        self.img_height      = len(self.img)
+        self.img_width       = len(self.img[0])
+        self.img_y_start     = (self.height - len(self.img)) // 2
+        self.img_x_start     = (self.width - len(self.img[0])) // 2
+        self.current_img_x   = self.img_x_start
+        self.current_img_y   = self.img_y_start
+
+        if not on_color_code:
+            raise Exception("a color code must be provided to BackgroundColorRenderer")
+        if not isinstance(on_color_code, int) or on_color_code < 0 or on_color_code > 255:
+            raise Exception("the color code must be an int value 0-255")
+        self.on_color_code = on_color_code
+
+    def render_img_frame(self, frame_number):
+        for y in range(self.height):
+            for x in range(self.width):
+                if (y >= self.img_y_start) and (y < (self.img_y_start + self.img_height)) and (x >= self.img_x_start) and (x < (self.img_x_start + self.img_width)):
+                    self.image_buffer.put_char(x, y, bruhcolored(self.img[y - self.img_y_start][x - self.img_x_start], on_color=self.on_color_code, support="full").colored)
+
+

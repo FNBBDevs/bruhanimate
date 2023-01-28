@@ -16,10 +16,9 @@ limitations under the License.
 """
 
 import math
-import time
 import random
-from abc import ABC, abstractmethod
-from bruhcolor import bruhcolored256 as bruhcolored
+from abc import abstractmethod
+from bruhcolor import bruhcolored
 
 
 _LIFE_COLORS = {
@@ -124,8 +123,7 @@ class NoiseEffect(BaseEffect):
     def __init__(self, buffer, background, intensity=200, color=False):
         super(NoiseEffect, self).__init__(buffer, background)
 
-        self.intensity = intensity / \
-            1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
+        self.intensity = intensity / 1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
 
         self.noise = " !@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
         self.noise_length = len(self.noise)
@@ -136,8 +134,7 @@ class NoiseEffect(BaseEffect):
         Function to update the intensity of the effect
         :param intensity: new intensity
         """
-        self.intensity = intensity / \
-            1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
+        self.intensity = intensity / 1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
         
     def update_color(self, color, characters):
         """
@@ -157,14 +154,14 @@ class NoiseEffect(BaseEffect):
                 for _ in range(self.buffer.width()):
                     if random.random() < self.intensity:
                         if self.characters:
-                            self.buffer.put_char(_, y, bruhcolored(self.noise[random.randint(0, self.noise_length - 1)], on_color=random.randint(0, 255)).colored)
+                            self.buffer.put_char(_, y, bruhcolored(self.noise[random.randint(0, self.noise_length - 1)], on_color=random.randint(0, 255), support="full").colored)
                         else:
-                            self.buffer.put_char(_, y, bruhcolored(' ', on_color=random.randint(0, 255)).colored)
+                            self.buffer.put_char(_, y, bruhcolored(' ', on_color=random.randint(0, 255), support="full").colored)
         else:
             for y in range(self.buffer.height()):
                 for _ in range(self.buffer.width()):
                     if random.random() < self.intensity:
-                        self.buffer.put_at(_, y,self.noise[random.randint(0, self.noise_length - 1)])
+                        self.buffer.put_char(_, y,self.noise[random.randint(0, self.noise_length - 1)])
 
 
 class StarEffect(NoiseEffect):
@@ -204,7 +201,7 @@ class StarEffect(NoiseEffect):
         for y in range(self.buffer.height()):
             for x in range(self.buffer.width()):
                 if random.random() < self.intensity:
-                    self.buffer.put_char(x, y, bruhcolored(self.stars[random.randint(0, self.stars_length - 1)], color=_LIFE_COLORS[self.color_type][random.randint(0, len(_LIFE_COLORS[self.color_type]) - 1)]).colored)
+                    self.buffer.put_char(x, y, bruhcolored(self.stars[random.randint(0, self.stars_length - 1)], color=_LIFE_COLORS[self.color_type][random.randint(0, len(_LIFE_COLORS[self.color_type]) - 1)], support="full").colored)
 
 
 class PlasmaEffect(BaseEffect):
@@ -299,10 +296,10 @@ class PlasmaEffect(BaseEffect):
                 if self.color:
                     if self.characters:
                         self.buffer.put_char(
-                            x, y, bruhcolored(self.scale[int((len(self.scale) - 1) * value)], color=self.colors[int((len(self.scale) - 1) * value)]).colored)
+                            x, y, bruhcolored(self.scale[int((len(self.scale) - 1) * value)], color=self.colors[int((len(self.scale) - 1) * value)], support="full").colored)
                     else:
                         self.buffer.put_char(
-                            x, y, bruhcolored(" ", on_color=self.colors[int((len(self.scale) - 1) * value)]).colored)
+                            x, y, bruhcolored(" ", on_color=self.colors[int((len(self.scale) - 1) * value)], support="full").colored)
                 else:
                     self.buffer.put_char(
                         x, y, self.scale[int((len(self.scale) - 1) * value)])
@@ -380,11 +377,11 @@ class GameOfLifeEffect(BaseEffect):
             for y in range(self.buffer.height()):
                 for x in range(self.buffer.width()):
                     if random.random() < 0.1:
-                        self.buffer.put_char(x, y, bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]).colored)
-                        self.board[y][x] =  (bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]), 9)
+                        self.buffer.put_char(x, y, bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE], support="full").colored)
+                        self.board[y][x] =  (bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE], support="full"), 9)
                     else:
-                        self.buffer.put_char(x, y, bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD]).colored)
-                        self.board[y][x] = (bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD]), 0)
+                        self.buffer.put_char(x, y, bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD], support="full").colored)
+                        self.board[y][x] = (bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD], support="full"), 0)
         else:  # RUN THE GAME
             all_neighbors = [[0 for _ in range(self.buffer.width())]for __ in range(self.buffer.height())]
             for y in range(len(all_neighbors)):
@@ -401,19 +398,19 @@ class GameOfLifeEffect(BaseEffect):
                             pass
                         else:  # MOVE TO THE FIRST DECAY STAGE
                             self.buffer.put_char(
-                                x, y, bruhcolored(self.grey_scale[self.ALIVE - 1], color=self.colors[self.ALIVE - 1]).colored)
-                            self.board[y][x] = (bruhcolored(self.grey_scale[self.ALIVE - 1], color=self.colors[self.ALIVE - 1]), self.ALIVE - 1)
+                                x, y, bruhcolored(self.grey_scale[self.ALIVE - 1], color=self.colors[self.ALIVE - 1], support="full").colored)
+                            self.board[y][x] = (bruhcolored(self.grey_scale[self.ALIVE - 1], color=self.colors[self.ALIVE - 1], support="full"), self.ALIVE - 1)
                     else:  # DEAD
                         if self.rules['death'][0] <= all_neighbors[y][x] <= self.rules['death'][1]:  # COME BACK TO LIFE
                             self.buffer.put_char(
-                                x, y, bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]).colored)
-                            self.board[y][x] = (bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]), self.ALIVE)
+                                x, y, bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE], support="full").colored)
+                            self.board[y][x] = (bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE], support="full"), self.ALIVE)
                         else:  # MOVE TO THE NEXT STAGE --> IF AT 0 STAY AT 0 i.e. don't decrement
                             current_greyscale_position = self.board[y][x][1]
                             current_greyscale_position = current_greyscale_position - 1 if current_greyscale_position > 0 else 0
                             self.buffer.put_char(
-                                x, y, bruhcolored(self.grey_scale[current_greyscale_position], color=self.colors[current_greyscale_position]).colored)
-                            self.board[y][x] = (bruhcolored(self.grey_scale[current_greyscale_position], color=self.colors[current_greyscale_position]), current_greyscale_position)
+                                x, y, bruhcolored(self.grey_scale[current_greyscale_position], color=self.colors[current_greyscale_position], support="full").colored)
+                            self.board[y][x] = (bruhcolored(self.grey_scale[current_greyscale_position], color=self.colors[current_greyscale_position], support="full"), current_greyscale_position)
 
 
 class RainEffect(BaseEffect):
