@@ -535,6 +535,6 @@ class BackgroundColorRenderer(BaseRenderer):
         for y in range(self.height):
             for x in range(self.width):
                 if (y >= self.img_y_start) and (y < (self.img_y_start + self.img_height)) and (x >= self.img_x_start) and (x < (self.img_x_start + self.img_width)):
-                    self.image_buffer.put_char(x, y, bruhcolored(self.img[y - self.img_y_start][x - self.img_x_start], on_color=self.on_color_code, support="full").colored)
+                    self.image_buffer.put_char(x, y, bruhcolored(self.img[y - self.img_y_start][x - self.img_x_start], on_color=self.on_color_code).colored)
 
 
