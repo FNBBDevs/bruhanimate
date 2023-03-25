@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import pyfiglet
+import bruhcolor
 
 BRUH = [r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ", r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ", r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ", r"loading BRUH         _             _           oading BRUH ", r"loading BRUH       /\ \          / /\          oading BRUH ", r"loading BRUH      /  \ \        / /  \         oading BRUH ", r"loading BRUH     / /\ \ \      / / /\ \        oading BRUH ", r"loading BRUH     \/_/\ \ \    / / /\ \ \       oading BRUH ", r"loading BRUH         / / /   /_/ /  \ \ \      oading BRUH ",
         r"loading BRUH        / / /    \ \ \   \ \ \     oading BRUH ", r"loading BRUH       / / /  _   \ \ \   \ \ \    oading BRUH ", r"loading BRUH      / / /_/\_\ _ \ \ \___\ \ \   oading BRUH ", r"loading BRUH     / /_____/ //\_\\ \/____\ \ \  oading BRUH ", r"loading BRUH     \________/ \/_/ \_________\/  oading BRUH ", r"loading BRUH                                   oading BRUH ", r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ", r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ", r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ",]
@@ -26,14 +27,14 @@ HEY = [f"    __  __          ", f"   / / / /__  __  __", f"  / /_/ / _ \/ / / /"
        f" / __  /  __/ /_/ / ", f"/_/ /_/\___/\__, /  ", f"           /____/   "]
 TWOPOINT = [r"                                                                               ",      r"   ____________ _   _ _   _  _____ _   _  _____ _      _       _____  _____    ", r"   | ___ \ ___ \ | | | | | |/  ___| | | ||  ___| |    | |     / __  \|  _  |   ", r"   | |_/ / |_/ / | | | |_| |\ `--.| |_| || |__ | |    | |     `' / /'| |/' |   ",
             r"   | ___ \    /| | | |  _  | `--. \  _  ||  __|| |    | |       / /  |  /| |   ", r"   | |_/ / |\ \| |_| | | | |/\__/ / | | || |___| |____| |____ ./ /___\ |_/ /   ", r"   \____/\_| \_|\___/\_| |_/\____/\_| |_/\____/\_____/\_____/ \_____(_)___/    ", r"                                                                               "]
+
 _REGISTERED_IMAGES = {
     "BRUH": BRUH,
     "BRUH_EMPTY": BRUH_EMPTY,
     "COMPUTER": COMPUTER,
     "HEY": HEY,
-    "TWOPOINT": TWOPOINT
+    "TWOPOINT": TWOPOINT,
 }
-
 
 def get_image(name):
     if name in _REGISTERED_IMAGES:
