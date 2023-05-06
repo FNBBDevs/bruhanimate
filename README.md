@@ -22,7 +22,7 @@ python -m pip install --upgrade bruhanimate
 ### From source
 
 ```bash
-git clone https://github.com/ethanlchristensen/bruhanimate
+git clone https://github.com/FNBBDevs/bruhanimate
 cd bruhanimate
 python -m pip install .
 ```
