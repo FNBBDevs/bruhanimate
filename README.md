@@ -16,7 +16,7 @@ bruhanimate offers a series of files to aid in rendering out animations in the t
 ### From PyPI
 
 ```bash
-python -m pip install --upgrade bruhanimate
+pip install --upgrade bruhanimate
 ```
 
 ### From source
