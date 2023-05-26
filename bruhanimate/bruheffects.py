@@ -35,6 +35,7 @@ _LIFE_SCALES = {
     "0": ' 000000000'
  }
 _PLASMA_COLORS = {
+    2 : [[232, 231]],
     8 : [[150, 93, 11, 38, 181, 250, 143, 12],
          [142, 167, 216, 161, 59, 228, 148, 219]],
     10: [[232, 16, 53, 55, 89, 91, 126, 163, 197, 196][::-1]],
@@ -42,9 +43,9 @@ _PLASMA_COLORS = {
          [195, 106, 89, 176, 162, 180, 201, 233, 124, 252, 104, 181, 2, 182, 4, 170]]
 }
 _VALID_DIRECTIONS = ["right", "left"]
-_OLD_GREY_SCALES = [' .:;rsA23hHG#9&@']
-_GREY_SCALES = [' .,:ilwW',' .,:ilwW%@', ' .:;rsA23hHG#9&@']
-_WIND_DIRECTIONS = ["east", "west", "none"]
+_OLD_GREY_SCALES =  [' .:;rsA23hHG#9&@']
+_GREY_SCALES =      [' .,:ilwW',' .,:ilwW%@', ' .:;rsA23hHG#9&@']
+_WIND_DIRECTIONS =  ["east", "west", "none"]
 _NOISE = "!@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
 
 
@@ -347,7 +348,7 @@ class GameOfLifeEffect(BaseEffect):
         Function to set the attributes of the effect
         """
         self.grey_scale = _LIFE_SCALES[random.choice(list(_LIFE_SCALES.keys()))] if self.decay and self.scale == "random" else _LIFE_SCALES[self.scale] if self.decay else " o"
-        self.colors = _LIFE_COLORS[self.color_type] if self.decay else [232, 231]
+        self.colors = [232, 231] if not self.decay else _LIFE_COLORS[self.color_type]
         self.ALIVE = len(self.grey_scale) - 1
         self.DEAD = 0
         self.mappings = {i: self.grey_scale[i]
@@ -378,12 +379,12 @@ class GameOfLifeEffect(BaseEffect):
                 for x in range(self.buffer.width()):
                     if random.random() < 0.1:
                         self.buffer.put_char(x, y, bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]).colored)
-                        self.board[y][x] =  (bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]), 9)
+                        self.board[y][x] =  (bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]), self.ALIVE)
                     else:
                         self.buffer.put_char(x, y, bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD]).colored)
                         self.board[y][x] = (bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD]), 0)
         else:  # RUN THE GAME
-            all_neighbors = [[0 for _ in range(self.buffer.width())]for __ in range(self.buffer.height())]
+            all_neighbors = [[0 for _ in range(self.buffer.width())] for __ in range(self.buffer.height())]
             for y in range(len(all_neighbors)):
                 for x in range(len(all_neighbors[y])):
                     neighbors = 0
