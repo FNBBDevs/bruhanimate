@@ -33,8 +33,12 @@ _VALID_EFFECTS = [
     "drawlines",
     "snow",
 ]
+
 HORIZONTAL = "h"
+
 VERTICAL = "v"
+
+INF = float("inf")
 
 
 def sleep(s):
@@ -190,14 +194,26 @@ class BaseRenderer:
         and stored into the back_buffer. After the front_buffer is rendered to the screen, the front_buffer is synced
         with the back_buffer. Why? So the effect and image, and there associated calculations can be done independently.
         """
-        for _ in range(self.frames):
-            sleep(self.time)
-            self.render_img_frame(_)  # img buf
-            self.effect.render_frame(_)  # effect buf
-            self.back_buffer.sync_with(self.effect.buffer)
-            self.back_buffer.sync_over_top_img(self.image_buffer)
-            self.push_front_to_screen()
-            self.front_buffer.sync_with(self.back_buffer)
+
+        if self.frames == INF:
+            frame = 0
+            while True:
+                self.render_img_frame(frame)
+                self.effect.render_frame(frame)
+                self.back_buffer.sync_with(self.effect.buffer)
+                self.back_buffer.sync_over_top_img(self.image_buffer)
+                self.push_front_to_screen()
+                self.front_buffer.sync_with(self.back_buffer)
+                frame += 1
+        else:
+            for frame in range(self.frames):
+                sleep(self.time)
+                self.render_img_frame(frame)
+                self.effect.render_frame(frame)
+                self.back_buffer.sync_with(self.effect.buffer)
+                self.back_buffer.sync_over_top_img(self.image_buffer)
+                self.push_front_to_screen()
+                self.front_buffer.sync_with(self.back_buffer)
 
         if end_message:
             self.render_exit()
