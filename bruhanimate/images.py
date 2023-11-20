@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import re
+import random
 import pyfiglet
 import bruhcolor
 
@@ -28,12 +30,31 @@ HEY = [f"    __  __          ", f"   / / / /__  __  __", f"  / /_/ / _ \/ / / /"
 TWOPOINT = [r"                                                                               ",      r"   ____________ _   _ _   _  _____ _   _  _____ _      _       _____  _____    ", r"   | ___ \ ___ \ | | | | | |/  ___| | | ||  ___| |    | |     / __  \|  _  |   ", r"   | |_/ / |_/ / | | | |_| |\ `--.| |_| || |__ | |    | |     `' / /'| |/' |   ",
             r"   | ___ \    /| | | |  _  | `--. \  _  ||  __|| |    | |       / /  |  /| |   ", r"   | |_/ / |\ \| |_| | | | |/\__/ / | | || |___| |____| |____ ./ /___\ |_/ /   ", r"   \____/\_| \_|\___/\_| |_/\____/\_| |_/\____/\_____/\_____/ \_____(_)___/    ", r"                                                                               "]
 
+CHRISTMAS_1 = [
+    "               ",
+    "     _\/_      ",
+    "      /\       ",
+    "      /\\       ",
+    "     /  \\      ",
+    "     /~~\\ o    ",
+    "    / o  \\     ",
+    "   /~~*~~~\\    ",
+    " o /    o \\    ",
+    "  /~~~~~~~~\\~` ",
+    " /__*_______\\  ",
+    "      ||       ",
+    "    \\====/     ",
+    "     \\__/      ",
+    "               "]
+
+
 _REGISTERED_IMAGES = {
     "BRUH": BRUH,
     "BRUH_EMPTY": BRUH_EMPTY,
     "COMPUTER": COMPUTER,
     "HEY": HEY,
     "TWOPOINT": TWOPOINT,
+    "CHRISTMAS_1": CHRISTMAS_1
 }
 
 def get_image(name):

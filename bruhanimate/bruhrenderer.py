@@ -16,13 +16,28 @@ limitations under the License.
 import sys
 import time
 import random
-from bruhanimate.bruhffer import Buffer
-from bruhanimate.bruheffects import *
+from bruhffer import Buffer
+# from bruhanimate.bruhffer import Buffer
+from bruheffects import *
+# from bruhanimate.bruheffects import *
 from bruhcolor import bruhcolored
 from abc import abstractmethod
-_VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma", "gol", "rain", "matrix", "drawlines"]
+
+_VALID_EFFECTS = [
+    "static",
+    "offset",
+    "noise",
+    "stars",
+    "plasma",
+    "gol",
+    "rain",
+    "matrix",
+    "drawlines",
+    "snow",
+]
 HORIZONTAL = "h"
-VERTICAL   = "v"
+VERTICAL = "v"
+
 
 def sleep(s):
     sys.stdout.flush()
@@ -34,20 +49,29 @@ class BaseRenderer:
     Defines the base methods, abstract methods, and base attributes
     for the render class, is an Effect Only Renderer
     """
-    def __init__(self, screen, frames, time, effect_type="static", background=" ", transparent=False, collision=False):
 
+    def __init__(
+        self,
+        screen,
+        frames,
+        time,
+        effect_type="static",
+        background=" ",
+        transparent=False,
+        collision=False,
+    ):
         # NECESSAARY INFO
-        self.screen            = screen
-        self.frames            = frames if frames else 100
-        self.time              = time   if time >= 0 else 0.1
-        self.effect_type       = effect_type if effect_type in _VALID_EFFECTS else "static"
-        self.transparent       = transparent
-        self.background        = background
-        self.height            = screen.height
-        self.width             = screen.width
+        self.screen = screen
+        self.frames = frames if frames else 100
+        self.time = time if time >= 0 else 0.1
+        self.effect_type = effect_type if effect_type in _VALID_EFFECTS else "static"
+        self.transparent = transparent
+        self.background = background
+        self.height = screen.height
+        self.width = screen.width
         self.smart_transparent = False
-        self.collision         = collision
-        
+        self.collision = collision
+
         # EFFECT
         effect_buffer = Buffer(self.height, self.width)
         if self.effect_type == "static":
@@ -69,13 +93,14 @@ class BaseRenderer:
             self.effect = MatrixEffect(effect_buffer, self.background)
         elif self.effect_type == "drawlines":
             self.effect = DrawLines(effect_buffer, self.background)
+        elif self.effect_type == "snow":
+            self.effect = SnowEffect(effect_buffer, self.background)
 
-        
         # BUFFERS
-        self.image_buffer  = Buffer(self.height, self.width)
+        self.image_buffer = Buffer(self.height, self.width)
         self.image_buffer.clear_buffer(val=None)
-        self.back_buffer   = Buffer(self.height, self.width)
-        self.front_buffer  = Buffer(self.height, self.width)
+        self.back_buffer = Buffer(self.height, self.width)
+        self.front_buffer = Buffer(self.height, self.width)
 
         # EXIT STATS
         self.msg1 = " Frames Are Done "
@@ -84,7 +109,7 @@ class BaseRenderer:
         self.wipe = False
         self.x_loc = 0
         self.y_loc = 1
-    
+
     def update_collision(self, collision):
         """
         Method for updating the collision for the rain effect
@@ -92,10 +117,35 @@ class BaseRenderer:
         if self.effect_type == "rain":
             try:
                 self.collision = collision
-                self.effect.update_collision(self.current_img_x, self.current_img_y, self.img_width, self.img_height, collision, self.smart_transparent, self.image_buffer)
+                self.effect.update_collision(
+                    self.current_img_x,
+                    self.current_img_y,
+                    self.img_width,
+                    self.img_height,
+                    collision,
+                    self.smart_transparent,
+                    self.image_buffer,
+                )
             except Exception as e:
-                self.effect.update_collision(None, None, None, None, collision, None, None)
-        
+                self.effect.update_collision(
+                    None, None, None, None, collision, None, None
+                )
+        elif self.effect_type == "snow":
+            try:
+                self.collision = collision
+                self.effect.update_collision(
+                    self.current_img_x,
+                    self.current_img_y,
+                    self.img_width,
+                    self.img_height,
+                    collision,
+                    self.image_buffer
+                )
+            except Exception as e:
+                self.effect.update_collision(
+                    None, None, None, None, collision, None
+                )
+
     def update_smart_transparent(self, smart_transparent):
         """
         Enable / Disable the smart transparency effect
@@ -118,7 +168,7 @@ class BaseRenderer:
         """
         for y, x, val in self.front_buffer.get_buffer_changes(self.back_buffer):
             self.screen.print_at(val, x, y, 1)
-    
+
     def render_exit(self):
         """
         Renders out the exit prompt to the screen.
@@ -129,8 +179,12 @@ class BaseRenderer:
             self.back_buffer.put_at_center(self.height // 2 - 1, self.msg1)
             self.back_buffer.put_at_center(self.height // 2, self.msg2)
         else:
-            self.back_buffer.put_at(self.x_loc, self.y_loc-1, self.msg1, transparent=False)
-            self.back_buffer.put_at(self.x_loc, self.y_loc, self.msg2, transparent=False)
+            self.back_buffer.put_at(
+                self.x_loc, self.y_loc - 1, self.msg1, transparent=False
+            )
+            self.back_buffer.put_at(
+                self.x_loc, self.y_loc, self.msg2, transparent=False
+            )
 
     def run(self, end_message=True):
         """
@@ -140,18 +194,20 @@ class BaseRenderer:
         """
         for _ in range(self.frames):
             sleep(self.time)
-            self.render_img_frame(_) # img buf
-            self.effect.render_frame(_) # effect buf
-            self.back_buffer.sync_with(self.effect.buffer) 
+            self.render_img_frame(_)  # img buf
+            self.effect.render_frame(_)  # effect buf
+            self.back_buffer.sync_with(self.effect.buffer)
             self.back_buffer.sync_over_top_img(self.image_buffer)
             self.push_front_to_screen()
             self.front_buffer.sync_with(self.back_buffer)
-        
+
         if end_message:
             self.render_exit()
             self.push_front_to_screen()
 
-    def update_exit_stats(self, msg1=None, msg2=None, wipe=None, x_loc=0, y_loc=1, centered=False):
+    def update_exit_stats(
+        self, msg1=None, msg2=None, wipe=None, x_loc=0, y_loc=1, centered=False
+    ):
         """
         Set the exit messages for when the animation finishes
         :param msg1: primary message
@@ -180,17 +236,28 @@ class EffectRenderer(BaseRenderer):
     """
     Class for rendering the Effect and only the Effect
     """
-    def __init__(self, screen, frames, time, effect_type="static", background=" ", transparent=False):
-        super(EffectRenderer, self).__init__(screen, frames, time, effect_type, background, transparent)
+
+    def __init__(
+        self,
+        screen,
+        frames,
+        time,
+        effect_type="static",
+        background=" ",
+        transparent=False,
+    ):
+        super(EffectRenderer, self).__init__(
+            screen, frames, time, effect_type, background, transparent
+        )
         self.background = self.effect.background
-    
+
     def render_effect_frame(self, frame_number):
         """
         We only need to render the effect, so we just call the effects render
         frame method to update the effect buffer
         """
         self.effect.render_frame(frame_number)
-    
+
     def run(self, end_message=True):
         """
         Generate the next effect frame and sync it with the back / front buffer
@@ -216,20 +283,31 @@ class CenterRenderer(BaseRenderer):
     A renderer to load an image in the center of the screen.
     Updates the image_buffer only
     """
-    def __init__(self, screen, frames, time, img, effect_type="static", background=" ", transparent=False):
-        super(CenterRenderer, self).__init__(screen, frames, time, effect_type, background, transparent)
-        self.background        = background if background else " "
-        self.transparent       = transparent if transparent else False
+
+    def __init__(
+        self,
+        screen,
+        frames,
+        time,
+        img,
+        effect_type="static",
+        background=" ",
+        transparent=False,
+    ):
+        super(CenterRenderer, self).__init__(
+            screen, frames, time, effect_type, background, transparent
+        )
+        self.background = background if background else " "
+        self.transparent = transparent if transparent else False
 
         # IMAGE
-        self.img             = img
-        self.img_height      = len(self.img)
-        self.img_width       = len(self.img[0])
-        self.img_y_start     = (self.height - len(self.img)) // 2
-        self.img_x_start     = (self.width - len(self.img[0])) // 2
-        self.current_img_x   = self.img_x_start
-        self.current_img_y   = self.img_y_start
-
+        self.img = img
+        self.img_height = len(self.img)
+        self.img_width = len(self.img[0])
+        self.img_y_start = (self.height - len(self.img)) // 2
+        self.img_x_start = (self.width - len(self.img[0])) // 2
+        self.current_img_x = self.img_x_start
+        self.current_img_y = self.img_y_start
 
     def render_img_frame(self, frame_number):
         """
@@ -242,14 +320,26 @@ class CenterRenderer(BaseRenderer):
                 # Place the image in it's entirerty
                 for y in range(self.height):
                     for x in range(self.width):
-                        if y >= self.img_y_start and y < self.img_y_start + self.img_height and x >= self.img_x_start and x < self.img_x_start + self.img_width:
-                            self.image_buffer.put_char(x, y, self.img[y-self.img_y_start][x-self.img_x_start])
-                # Now process spaces from left-to-right till a non-space character is hit. 
+                        if (
+                            y >= self.img_y_start
+                            and y < self.img_y_start + self.img_height
+                            and x >= self.img_x_start
+                            and x < self.img_x_start + self.img_width
+                        ):
+                            self.image_buffer.put_char(
+                                x,
+                                y,
+                                self.img[y - self.img_y_start][x - self.img_x_start],
+                            )
+                # Now process spaces from left-to-right till a non-space character is hit.
                 # Then do the same right-to-left. Place these spaces with None
                 for y in range(self.height):
                     if y >= self.img_y_start and y < self.img_y_start + self.img_height:
                         for x in range(self.width):
-                            if x >= self.img_x_start and x < self.img_x_start + self.img_width:
+                            if (
+                                x >= self.img_x_start
+                                and x < self.img_x_start + self.img_width
+                            ):
                                 if self.image_buffer.get_char(x, y) != " ":
                                     break
                                 else:
@@ -257,7 +347,10 @@ class CenterRenderer(BaseRenderer):
                             else:
                                 self.image_buffer.put_char(x, y, None)
                         for x in range(self.width - 1, -1, -1):
-                            if x >= self.img_x_start and x < self.img_x_start + self.img_width:
+                            if (
+                                x >= self.img_x_start
+                                and x < self.img_x_start + self.img_width
+                            ):
                                 if self.image_buffer.get_char(x, y) != " ":
                                     break
                                 else:
@@ -270,7 +363,10 @@ class CenterRenderer(BaseRenderer):
             else:
                 for y in range(self.height):
                     if y >= self.img_y_start and y < self.img_y_start + self.img_height:
-                        self.image_buffer.put_at_center(y, self.img[y-self.img_y_start])
+                        self.image_buffer.put_at_center(
+                            y, self.img[y - self.img_y_start],
+                            transparent=self.transparent
+                        )
 
 
 class PanRenderer(BaseRenderer):
@@ -278,24 +374,40 @@ class PanRenderer(BaseRenderer):
     A renderer to pan an image across the screen.
     Update the image_buffer only.
     """
-    def __init__(self, screen, frames, time, img, effect_type="static", background=" ", transparent=False, direction="h", shift_rate=1, loop=False):
-        super(PanRenderer, self).__init__(screen, frames, time, effect_type, background, transparent)
+
+    def __init__(
+        self,
+        screen,
+        frames,
+        time,
+        img,
+        effect_type="static",
+        background=" ",
+        transparent=False,
+        direction="h",
+        shift_rate=1,
+        loop=False,
+    ):
+        super(PanRenderer, self).__init__(
+            screen, frames, time, effect_type, background, transparent
+        )
         self.direction = direction if direction and direction in ["h", "v"] else "h"
         self.img = img
         self.shift_rate = int(shift_rate)
         self.loop = loop
-        if self.img: self._set_img_attributes()
-    
+        if self.img:
+            self._set_img_attributes()
+
     def _set_img_attributes(self):
         """
         Sets the attributes for the image given it exists
         """
         self.render_image = True
         self.img_height = len(self.img)
-        self.img_width  = len(self.img[0])
-        self.img_back   = -self.img_width-1
-        self.img_front  = -1
-        self.img_top    = (self.height - self.img_height) // 2
+        self.img_width = len(self.img[0])
+        self.img_back = -self.img_width - 1
+        self.img_front = -1
+        self.img_top = (self.height - self.img_height) // 2
         self.img_bottom = ((self.height - self.img_height) // 2) + self.img_height
         self.current_img_x = self.img_back
         self.current_img_y = self.img_top
@@ -310,21 +422,21 @@ class PanRenderer(BaseRenderer):
 
         if len(padding_vals) == 2:
             self.padding = padding_vals
-        
+
         left_right = self.padding[0]
         top_bottom = self.padding[1]
         if left_right > 0 or top_bottom > 0:
             tmp = []
             for _ in range(top_bottom):
-                tmp.append(" "*self.img_width)
+                tmp.append(" " * self.img_width)
             for line in self.img:
                 tmp.append(line)
             for _ in range(top_bottom):
-                tmp.append(" "*self.img_width)
+                tmp.append(" " * self.img_width)
 
             for i in range(len(tmp)):
-                tmp[i] = (" "*left_right) + tmp[i] + (" "*left_right)
-            
+                tmp[i] = (" " * left_right) + tmp[i] + (" " * left_right)
+
             self.img = [line for line in tmp]
             self._set_img_attributes()
 
@@ -347,18 +459,43 @@ class PanRenderer(BaseRenderer):
         Renders the next image frame for a horizontal pan
         """
         if self.shift_rate > 0:
-            if (0 <= frame_number <= self.img_width // self.shift_rate + 1) or not self.loop:
+            if (
+                0 <= frame_number <= self.img_width // self.shift_rate + 1
+            ) or not self.loop:
                 for y in range(self.height):
                     for x in range(self.width):
-                        if x >= self.img_back and x < self.img_front and y >= self.img_top and y < self.img_bottom:
-                            if (y-self.img_top) >= 0 and (y-self.img_bottom) < self.img_height and (x-self.img_back) >= 0 and (x-self.img_back) < self.img_width:
+                        if (
+                            x >= self.img_back
+                            and x < self.img_front
+                            and y >= self.img_top
+                            and y < self.img_bottom
+                        ):
+                            if (
+                                (y - self.img_top) >= 0
+                                and (y - self.img_bottom) < self.img_height
+                                and (x - self.img_back) >= 0
+                                and (x - self.img_back) < self.img_width
+                            ):
                                 if self.transparent:
-                                    if self.img[y-self.img_top][x-self.img_back]== " ":
+                                    if (
+                                        self.img[y - self.img_top][x - self.img_back]
+                                        == " "
+                                    ):
                                         self.image_buffer.put_char(x, y, None)
                                     else:
-                                        self.image_buffer.put_char(x, y, self.img[y-self.img_top][x-self.img_back])
+                                        self.image_buffer.put_char(
+                                            x,
+                                            y,
+                                            self.img[y - self.img_top][
+                                                x - self.img_back
+                                            ],
+                                        )
                                 else:
-                                    self.image_buffer.put_char(x, y, self.img[y-self.img_top][x-self.img_back])
+                                    self.image_buffer.put_char(
+                                        x,
+                                        y,
+                                        self.img[y - self.img_top][x - self.img_back],
+                                    )
                         else:
                             self.image_buffer.put_char(x, y, None)
                 if self.loop:
@@ -384,55 +521,110 @@ class FocusRenderer(BaseRenderer):
     A Renderer that takes an image and randomly spreads the characters around the screen.
     The characters are then pulled to the middle of the screen
     """
-    def __init__(self, screen, frames, time, img, effect_type="static", background=" ", transparent=False, start_frame=0, reverse=False, start_reverse=None):
-        super(FocusRenderer, self).__init__(screen, frames, time, effect_type, background, transparent)
-        self.background        = background if background else " "
-        self.transparent       = transparent if transparent else False
-        self.img               = img
-        self.start_frame       = start_frame
-        self.reverse           = reverse
-        self.start_reverse     = start_reverse
+
+    def __init__(
+        self,
+        screen,
+        frames,
+        time,
+        img,
+        effect_type="static",
+        background=" ",
+        transparent=False,
+        start_frame=0,
+        reverse=False,
+        start_reverse=None,
+    ):
+        super(FocusRenderer, self).__init__(
+            screen, frames, time, effect_type, background, transparent
+        )
+        self.background = background if background else " "
+        self.transparent = transparent if transparent else False
+        self.img = img
+        self.start_frame = start_frame
+        self.reverse = reverse
+        self.start_reverse = start_reverse
 
         if start_reverse < self.start_frame:
-            raise Exception(f"the frame to start the reverse can not be less than the start frame\n\tstart_frame: {self.start_frame}, start_reverse: {self.start_reverse}")
+            raise Exception(
+                f"the frame to start the reverse can not be less than the start frame\n\tstart_frame: {self.start_frame}, start_reverse: {self.start_reverse}"
+            )
 
         if self.reverse and self.start_reverse == None:
-            raise Exception("if reverse is enabled, and start_reverse frame must be provided")
+            raise Exception(
+                "if reverse is enabled, and start_reverse frame must be provided"
+            )
 
-        if self.img: self._set_img_attributes()
+        if self.img:
+            self._set_img_attributes()
 
     def _set_img_attributes(self):
         """
         Set the attributes of the img
         """
-        self.img_height      = len(self.img)
-        self.img_width       = len(self.img[0])
-        self.img_y_start     = (self.height - len(self.img)) // 2
-        self.img_x_start     = (self.width - len(self.img[0])) // 2
-        self.current_img_x   = self.img_x_start
-        self.current_img_y   = self.img_y_start
-        self.start_board     = [[[random.randint(0, self.width - 1), random.randint(0, self.height - 1), self.img[y][x], (x, y)] 
-                                  for x in range(self.img_width)] 
-                                  for y in range(self.img_height)]
-        self.current_board   = [[[self.start_board[y][x][0], self.start_board[y][x][1], self.img[y][x], (x, y)] 
-                                  for x in range(self.img_width)]
-                                  for y in range(self.img_height)]
-        self.end_board       = [[[self.img_x_start + x, self.img_y_start + y, self.img[y][x], (x, y)] 
-                                  for x in range(self.img_width)] 
-                                  for y in range(self.img_height)]
-        self.direction_board = [[[-1 if (self.end_board[y][x][0] - self.current_board[y][x][0]) < 0 else 1,
-                                  -1 if (self.end_board[y][x][1] - self.current_board[y][x][1]) < 0 else 1]
-                                  for x in range(self.img_width)] for y in range(self.img_height)]
+        self.img_height = len(self.img)
+        self.img_width = len(self.img[0])
+        self.img_y_start = (self.height - len(self.img)) // 2
+        self.img_x_start = (self.width - len(self.img[0])) // 2
+        self.current_img_x = self.img_x_start
+        self.current_img_y = self.img_y_start
+        self.start_board = [
+            [
+                [
+                    random.randint(0, self.width - 1),
+                    random.randint(0, self.height - 1),
+                    self.img[y][x],
+                    (x, y),
+                ]
+                for x in range(self.img_width)
+            ]
+            for y in range(self.img_height)
+        ]
+        self.current_board = [
+            [
+                [
+                    self.start_board[y][x][0],
+                    self.start_board[y][x][1],
+                    self.img[y][x],
+                    (x, y),
+                ]
+                for x in range(self.img_width)
+            ]
+            for y in range(self.img_height)
+        ]
+        self.end_board = [
+            [
+                [self.img_x_start + x, self.img_y_start + y, self.img[y][x], (x, y)]
+                for x in range(self.img_width)
+            ]
+            for y in range(self.img_height)
+        ]
+        self.direction_board = [
+            [
+                [
+                    -1
+                    if (self.end_board[y][x][0] - self.current_board[y][x][0]) < 0
+                    else 1,
+                    -1
+                    if (self.end_board[y][x][1] - self.current_board[y][x][1]) < 0
+                    else 1,
+                ]
+                for x in range(self.img_width)
+            ]
+            for y in range(self.img_height)
+        ]
 
     def update_reverse(self, reverse, start_reverse):
         """
         Function to update whether or not to reverse the Focus
         :param reverse: True / False
         """
-        self.reverse       = reverse
+        self.reverse = reverse
         self.start_reverse = start_reverse
         if start_reverse < self.start_frame:
-            raise Exception(f"the frame to start the reverse can not be less than the start frame\n\tstart_frame: {self.start_frame}, start_reverse: {self.start_reverse}")
+            raise Exception(
+                f"the frame to start the reverse can not be less than the start frame\n\tstart_frame: {self.start_frame}, start_reverse: {self.start_reverse}"
+            )
 
     def update_start_frame(self, frame_number):
         """
@@ -487,13 +679,15 @@ class FocusRenderer(BaseRenderer):
                             self.current_board[y][x][1] -= self.direction_board[y][x][1]
                         else:
                             y_check = True
-                        
+
                         if x_check and y_check:
                             self.current_board[y][x][2] = None
                 self.image_buffer.clear_buffer(val=None)
                 for row in self.current_board:
                     for value in row:
-                        self.image_buffer.put_char(value[0], value[1], value[2], transparent=self.transparent)
+                        self.image_buffer.put_char(
+                            value[0], value[1], value[2], transparent=self.transparent
+                        )
             else:
                 self.image_buffer.clear_buffer(val=None)
         elif frame_number >= self.start_frame:
@@ -510,31 +704,59 @@ class FocusRenderer(BaseRenderer):
                 self.image_buffer.clear_buffer(val=None)
                 for row in self.current_board:
                     for value in row:
-                        self.image_buffer.put_char(value[0], value[1], value[2], transparent=self.transparent)
+                        self.image_buffer.put_char(
+                            value[0], value[1], value[2], transparent=self.transparent
+                        )
 
 
 class BackgroundColorRenderer(BaseRenderer):
-    def __init__(self, screen, frames, time, img, on_color_code, effect_type="static", background=" ", transparent=False):
-        super(BackgroundColorRenderer, self).__init__(screen, frames, time, effect_type, background, transparent)
+    def __init__(
+        self,
+        screen,
+        frames,
+        time,
+        img,
+        on_color_code,
+        effect_type="static",
+        background=" ",
+        transparent=False,
+    ):
+        super(BackgroundColorRenderer, self).__init__(
+            screen, frames, time, effect_type, background, transparent
+        )
 
-        self.img             = img
-        self.img_height      = len(self.img)
-        self.img_width       = len(self.img[0])
-        self.img_y_start     = (self.height - len(self.img)) // 2
-        self.img_x_start     = (self.width - len(self.img[0])) // 2
-        self.current_img_x   = self.img_x_start
-        self.current_img_y   = self.img_y_start
+        self.img = img
+        self.img_height = len(self.img)
+        self.img_width = len(self.img[0])
+        self.img_y_start = (self.height - len(self.img)) // 2
+        self.img_x_start = (self.width - len(self.img[0])) // 2
+        self.current_img_x = self.img_x_start
+        self.current_img_y = self.img_y_start
 
         if not on_color_code:
             raise Exception("a color code must be provided to BackgroundColorRenderer")
-        if not isinstance(on_color_code, int) or on_color_code < 0 or on_color_code > 255:
+        if (
+            not isinstance(on_color_code, int)
+            or on_color_code < 0
+            or on_color_code > 255
+        ):
             raise Exception("the color code must be an int value 0-255")
         self.on_color_code = on_color_code
 
     def render_img_frame(self, frame_number):
         for y in range(self.height):
             for x in range(self.width):
-                if (y >= self.img_y_start) and (y < (self.img_y_start + self.img_height)) and (x >= self.img_x_start) and (x < (self.img_x_start + self.img_width)):
-                    self.image_buffer.put_char(x, y, bruhcolored(self.img[y - self.img_y_start][x - self.img_x_start], on_color=self.on_color_code).colored)
-
-
+                if (
+                    (y >= self.img_y_start)
+                    and (y < (self.img_y_start + self.img_height))
+                    and (x >= self.img_x_start)
+                    and (x < (self.img_x_start + self.img_width))
+                ):
+                    self.image_buffer.put_char(
+                        x,
+                        y,
+                        bruhcolored(
+                            self.img[y - self.img_y_start][x - self.img_x_start],
+                            on_color=self.on_color_code,
+                        ).colored,
+                    )

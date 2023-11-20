@@ -23,7 +23,6 @@ from __future__ import unicode_literals
 import os
 import signal
 
-
 import sys
 ENABLE_EXTENDED_FLAGS = 0x0080
 ENABLE_QUICK_EDIT_MODE = 0x0040
@@ -63,7 +62,7 @@ if sys.platform == 'win32':
             try:
                 if x != self._current_x or y != self._current_y:
                     self._stdout.SetConsoleCursorPosition(win32console.PyCOORDType(x, y))
-                self._stdout.WriteConsole(text)
+                self._stdout.WriteConsole(str(text))
                 self._current_x = x + width
                 self._current_y = y
             except pywintypes.error:

@@ -31,8 +31,9 @@ class Buffer:
         and buffer that was passed in
         :param in_buf: buffer to compare this buffer to
         """
-        if  self._height != len(in_buf.buffer) or self._width != len(in_buf.buffer[0]):
+        if self._height != len(in_buf.buffer) or self._width != len(in_buf.buffer[0]):
             return None
+
         for y in range(self._height):
             for x in range(self._width):
                 if self.buffer[y][x] != in_buf.buffer[y][x]:
@@ -72,8 +73,12 @@ class Buffer:
         Put the value at the given location
         """
         if 0 <= y < self._height and 0 <= x < self._width:
-            if self.buffer[y][x] != val:
-                self.buffer[y][x] = val
+            if not transparent:  
+                if self.buffer[y][x] != val:
+                    self.buffer[y][x] = val
+            else:
+                if self.buffer[y][x] != val and val != " ":
+                    self.buffer[y][x] = val
 
     def put_at(self, x, y, text, transparent=False):
         """
@@ -98,15 +103,22 @@ class Buffer:
                 if c != " ":
                     self.put_char(x+i, y, c)
     
-    def put_at_center(self, y, text):
+    def put_at_center(self, y, text, transparent=False):
         """
         Puts the given text in the center of the row given by y.
         :param y: row to place the text.
         :param text: text to write to the buffers.
         """
-        x = (self._width // 2) - len(text) // 2
-        for i, c in enumerate(text):
-            self.put_char(x+i, y, c)
+
+        if not transparent:
+            x = (self._width // 2) - len(text) // 2
+            for i, c in enumerate(text):
+                self.put_char(x+i, y, c)
+        else:
+            x = (self._width // 2) - len(text) // 2
+            for i, c in enumerate(text):
+                if c != " ":
+                    self.put_char(x+i, y, c)
 
     def scroll(self, shift):
         """
@@ -161,8 +173,8 @@ class Buffer:
         Sync this buffer with the given buffer
         :param in_buf: buffer to be applied to this buffer
         """
-        for i in range(self._height):
-            self.buffer[i][:] = in_buf.buffer[i][:]
+        for y in range(self._height):
+            self.buffer[y][:] = in_buf.buffer[y][:]
     
     def sync_over_top_img(self, img_buffer):
         """
