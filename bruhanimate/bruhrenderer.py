@@ -198,6 +198,7 @@ class BaseRenderer:
         if self.frames == INF:
             frame = 0
             while True:
+                sleep(self.time)
                 self.render_img_frame(frame)
                 self.effect.render_frame(frame)
                 self.back_buffer.sync_with(self.effect.buffer)
