@@ -1,15 +1,15 @@
 from bruhanimate.bruhscreen import Screen
 from bruhanimate.bruhrenderer import *
-from bruhanimate.images import text_to_image, get_image
+from bruhanimate.images import get_image
 
 import os
 os.system(" ")
 
-def chirstmas(screen):
+def holiday(screen):
     try:
         renderer = CenterRenderer(
             screen,
-            4000,
+            2000,
             0.075,
             get_image("CHRISTMAS_1"),
             effect_type="snow",
@@ -28,4 +28,10 @@ def chirstmas(screen):
     except KeyboardInterrupt:
         pass
 
-Screen.show(chirstmas)
+
+def run():
+    Screen.show(holiday)
+
+
+if __name__ == "__main__":
+    run()

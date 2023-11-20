@@ -16,10 +16,8 @@ limitations under the License.
 import sys
 import time
 import random
-from bruhffer import Buffer
-# from bruhanimate.bruhffer import Buffer
-from bruheffects import *
-# from bruhanimate.bruheffects import *
+from bruhanimate.bruhffer import Buffer
+from bruhanimate.bruheffects import *
 from bruhcolor import bruhcolored
 from abc import abstractmethod
 
