@@ -646,6 +646,8 @@ class RainEffect(BaseEffect):
             self.img_width = img_width
             self.smart_transparent = smart_transparent
             self.image_buffer = image_buffer
+        else:
+            self.image_buffer = None
 
     def update_swells(self, swells):
         """
@@ -840,6 +842,8 @@ class SnowEffect(BaseEffect):
             self.image_buffer = image_buffer
             self.image_x_boundaries = (img_start_x, img_start_x + img_width)
             self.image_y_boundaries = (img_start_y, img_start_y + img_height)
+        else:
+            self.image_buffer = None
     
     def render_frame(self, frame_number):
         for x in range(self.buffer.width()):

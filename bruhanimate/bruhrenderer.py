@@ -18,6 +18,7 @@ import time
 import random
 from bruhanimate.bruhffer import Buffer
 from bruhanimate.bruheffects import *
+from bruhanimate.bruhscreen import Screen
 from bruhcolor import bruhcolored
 from abc import abstractmethod
 
@@ -54,18 +55,18 @@ class BaseRenderer:
 
     def __init__(
         self,
-        screen,
-        frames,
-        time,
-        effect_type="static",
-        background=" ",
-        transparent=False,
-        collision=False,
+        screen: Screen,
+        frames: int = 100,
+        time: float = 0.1,
+        effect_type: str = "static",
+        background: str = " ",
+        transparent: bool = False,
+        collision: bool = False,
     ):
         # NECESSAARY INFO
         self.screen = screen
-        self.frames = frames if frames else 100
-        self.time = time if time >= 0 else 0.1
+        self.frames = frames
+        self.time = time
         self.effect_type = effect_type if effect_type in _VALID_EFFECTS else "static"
         self.transparent = transparent
         self.background = background
@@ -75,32 +76,32 @@ class BaseRenderer:
         self.collision = collision
 
         # EFFECT
-        effect_buffer = Buffer(self.height, self.width)
         if self.effect_type == "static":
-            self.effect = StaticEffect(effect_buffer, self.background)
+            self.effect = StaticEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "offset":
-            self.effect = OffsetEffect(effect_buffer, self.background)
+            self.effect = OffsetEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "noise":
-            self.effect = NoiseEffect(effect_buffer, self.background)
+            self.effect = NoiseEffect(Buffer(self.height, self.width), self.background)
             self.background = self.effect.background
         elif self.effect_type == "stars":
-            self.effect = StarEffect(effect_buffer, self.background)
+            self.effect = StarEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "plasma":
-            self.effect = PlasmaEffect(effect_buffer, self.background)
+            self.effect = PlasmaEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "gol":
-            self.effect = GameOfLifeEffect(effect_buffer, self.background)
+            self.effect = GameOfLifeEffect(
+                Buffer(self.height, self.width), self.background
+            )
         elif self.effect_type == "rain":
-            self.effect = RainEffect(effect_buffer, self.background)
+            self.effect = RainEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "matrix":
-            self.effect = MatrixEffect(effect_buffer, self.background)
+            self.effect = MatrixEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "drawlines":
-            self.effect = DrawLines(effect_buffer, self.background)
+            self.effect = DrawLines(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "snow":
-            self.effect = SnowEffect(effect_buffer, self.background)
+            self.effect = SnowEffect(Buffer(self.height, self.width), self.background)
 
         # BUFFERS
-        self.image_buffer = Buffer(self.height, self.width)
-        self.image_buffer.clear_buffer(val=None)
+        self.image_buffer = Buffer(self.height, self.width).clear_buffer(val=None)
         self.back_buffer = Buffer(self.height, self.width)
         self.front_buffer = Buffer(self.height, self.width)
 
@@ -141,12 +142,10 @@ class BaseRenderer:
                     self.img_width,
                     self.img_height,
                     collision,
-                    self.image_buffer
+                    self.image_buffer,
                 )
             except Exception as e:
-                self.effect.update_collision(
-                    None, None, None, None, collision, None
-                )
+                self.effect.update_collision(None, None, None, None, collision, None)
 
     def update_smart_transparent(self, smart_transparent):
         """
@@ -254,40 +253,48 @@ class EffectRenderer(BaseRenderer):
 
     def __init__(
         self,
-        screen,
-        frames,
-        time,
-        effect_type="static",
-        background=" ",
-        transparent=False,
+        screen: Screen,
+        frames: int = 100,
+        time: float = 0.1,
+        effect_type: str = "static",
+        background: str = " ",
+        transparent: bool = False,
     ):
         super(EffectRenderer, self).__init__(
             screen, frames, time, effect_type, background, transparent
         )
+
         self.background = self.effect.background
 
-    def render_effect_frame(self, frame_number):
+    def render_effect_frame(self, frame_number: int):
         """
         We only need to render the effect, so we just call the effects render
         frame method to update the effect buffer
         """
         self.effect.render_frame(frame_number)
 
-    def run(self, end_message=True):
+    def run(self, end_message: bool = True):
         """
         Generate the next effect frame and sync it with the back / front buffer
         """
-        start = time.time()
-        second = 1
-        for _ in range(self.frames):
-            self.render_effect_frame(_)
-            self.back_buffer.sync_with(self.effect.buffer)
-            self.push_front_to_screen()
-            self.front_buffer.sync_with(self.back_buffer)
-            sleep(self.time)
-            if time.time() - start >= 0.5:
-                second += 1
-                start = time.time()
+
+        if self.frames == INF:
+            frame = 0
+            while True:
+                sleep(self.time)
+                self.render_effect_frame(frame)
+                self.back_buffer.sync_with(self.effect.buffer)
+                self.push_front_to_screen()
+                self.front_buffer.sync_with(self.back_buffer)
+                frame += 1
+        else:
+            for frame in range(self.frames):
+                sleep(self.time)
+                self.render_effect_frame(frame)
+                self.back_buffer.sync_with(self.effect.buffer)
+                self.push_front_to_screen()
+                self.front_buffer.sync_with(self.back_buffer)
+
         if end_message:
             self.render_exit()
             self.push_front_to_screen()
@@ -301,26 +308,27 @@ class CenterRenderer(BaseRenderer):
 
     def __init__(
         self,
-        screen,
-        frames,
-        time,
-        img,
-        effect_type="static",
-        background=" ",
-        transparent=False,
+        screen: Screen,
+        img: list[str],
+        frames: int = 100,
+        time: float = 0.1,
+        effect_type: str = "static",
+        background: str = " ",
+        transparent: bool = False,
     ):
         super(CenterRenderer, self).__init__(
             screen, frames, time, effect_type, background, transparent
         )
-        self.background = background if background else " "
-        self.transparent = transparent if transparent else False
+        self.background = background
+
+        self.transparent = transparent
 
         # IMAGE
         self.img = img
         self.img_height = len(self.img)
         self.img_width = len(self.img[0])
-        self.img_y_start = (self.height - len(self.img)) // 2
-        self.img_x_start = (self.width - len(self.img[0])) // 2
+        self.img_y_start = (self.height - self.img_height) // 2
+        self.img_x_start = (self.width - self.img_width) // 2
         self.current_img_x = self.img_x_start
         self.current_img_y = self.img_y_start
 
@@ -330,9 +338,10 @@ class CenterRenderer(BaseRenderer):
         if there is no image passed into the renderer then
         the background is rendered on it's own
         """
+
+        # Image is only rendered once, on frame 0
         if frame_number == 0:
             if self.smart_transparent:
-                # Place the image in it's entirerty
                 for y in range(self.height):
                     for x in range(self.width):
                         if (
@@ -379,8 +388,9 @@ class CenterRenderer(BaseRenderer):
                 for y in range(self.height):
                     if y >= self.img_y_start and y < self.img_y_start + self.img_height:
                         self.image_buffer.put_at_center(
-                            y, self.img[y - self.img_y_start],
-                            transparent=self.transparent
+                            y,
+                            self.img[y - self.img_y_start],
+                            transparent=self.transparent,
                         )
 
 
@@ -392,20 +402,21 @@ class PanRenderer(BaseRenderer):
 
     def __init__(
         self,
-        screen,
-        frames,
-        time,
-        img,
-        effect_type="static",
-        background=" ",
-        transparent=False,
-        direction="h",
-        shift_rate=1,
-        loop=False,
+        screen: Screen,
+        img: list[str],
+        frames: int,
+        time: float,
+        effect_type: str = "static",
+        background: str = " ",
+        transparent: bool = False,
+        direction: str = "h",
+        shift_rate: int = 1,
+        loop: bool = False,
     ):
         super(PanRenderer, self).__init__(
             screen, frames, time, effect_type, background, transparent
         )
+
         self.direction = direction if direction and direction in ["h", "v"] else "h"
         self.img = img
         self.shift_rate = int(shift_rate)
