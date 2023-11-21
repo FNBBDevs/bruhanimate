@@ -32,7 +32,9 @@ def demo(screen, img, frames, time, effect, background, transparent):
         # CATCH THE END WITH INPUT() ON WINDOWS
         input()
     except KeyboardInterrupt:
-        pass
+        renderer.render_exit()
+        renderer.push_front_to_screen()
+        input()
 
 
 def run():
