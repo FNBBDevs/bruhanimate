@@ -45,7 +45,9 @@ def show(screen):
         input()
 
     except KeyboardInterrupt:
-        pass
+        renderer.render_exit()
+        renderer.push_front_to_screen()
+        input()
 
 
 def run():
