@@ -22,55 +22,43 @@ from bruhcolor import bruhcolored
 
 
 _LIFE_COLORS = {
-    "GREYSCALE"      : [232, 235, 239, 241, 244, 247, 248, 250, 254, 231],
-    "GREYSCALE_r"    : [232, 235, 239, 241, 244, 247, 248, 250, 254, 231][::-1],
+    "GREYSCALE": [232, 235, 239, 241, 244, 247, 248, 250, 254, 231],
+    "GREYSCALE_r": [232, 235, 239, 241, 244, 247, 248, 250, 254, 231][::-1],
     "GREYSCALE_MUTED": [232, 235, 235, 239, 239, 241, 241, 244, 244, 231],
-    "RAINBOW"        : [232, 202, 208, 190, 112, 27, 105, 129, 161, 231],
-    "RAINBOW_r"      : [231, 196, 208, 190, 112, 27, 105, 129, 161, 201][::-1],
+    "RAINBOW": [232, 202, 208, 190, 112, 27, 105, 129, 161, 231],
+    "RAINBOW_r": [231, 196, 208, 190, 112, 27, 105, 129, 161, 201][::-1],
 }
 
 _LIFE_SCALES = {
-    "default": ' .:-=+*%#@',
-    ".": ' .........',
-    "o": ' ooooooooo',
-    "0": ' 000000000'
- }
+    "default": " .:-=+*%#@",
+    ".": " .........",
+    "o": " ooooooooo",
+    "0": " 000000000",
+}
 
 _PLASMA_COLORS = {
-    2 : [[232, 231]],
-    8 : [[150, 93, 11, 38, 181, 250, 143, 12],
-         [142, 167, 216, 161, 59, 228, 148, 219]],
+    2: [[232, 231]],
+    8: [[150, 93, 11, 38, 181, 250, 143, 12], [142, 167, 216, 161, 59, 228, 148, 219]],
     10: [[232, 16, 53, 55, 89, 91, 126, 163, 197, 196][::-1]],
-    16: [[232, 16, 53, 55, 56, 89, 90, 91, 125, 126, 163, 199, 198, 197, 196, 39, 81, 231][::-1],
-         [195, 106, 89, 176, 162, 180, 201, 233, 124, 252, 104, 181, 2, 182, 4, 170]]
+    16: [[232,16,53,55,56,89,90,91,125,126,163,199,198,197,196,39,81,231][::-1],
+        [195, 106, 89, 176, 162, 180, 201, 233, 124, 252, 104, 181, 2, 182, 4, 170]],
 }
 
 _VALID_DIRECTIONS = ["right", "left"]
 
-_OLD_GREY_SCALES =  [' .:;rsA23hHG#9&@']
+_OLD_GREY_SCALES = [" .:;rsA23hHG#9&@"]
 
-_GREY_SCALES =      [' .,:ilwW',' .,:ilwW%@', ' .:;rsA23hHG#9&@']
+_GREY_SCALES = [" .,:ilwW", " .,:ilwW%@", " .:;rsA23hHG#9&@"]
 
-_WIND_DIRECTIONS =  ["east", "west", "none"]
+_WIND_DIRECTIONS = ["east", "west", "none"]
 
 _NOISE = "!@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
 
-_FLAKES = {
-    1: '*',
-    3: '+',
-    7: '.'
-}
+_FLAKES = {1: "*", 3: "+", 7: "."}
 
-_FLAKE_COLORS = {
-    1: 253,
-    3: 69,
-    7: 31
-}
+_FLAKE_COLORS = {1: 253, 3: 69, 7: 31}
 
 _FLAKE_JUMPS = {
-    # 1: [1],
-    # 3: [1],
-    # 7: [1],
     1: [1, 2, 3],
     3: [1, 2, 3],
     7: [1, 2],
@@ -81,17 +69,11 @@ _NEXT_FLAKE_MOVE = {
     ("center", "left"): -1,
     ("left", "center"): 1,
     ("right", "center"): -1,
-    ("right", "left"): None, # not valid
-    ("left", "right"): None, # not valid
+    ("right", "left"): None,  # not valid
+    ("left", "right"): None,  # not valid
 }
 
-_FLAKE_WEIGHT_CHARS = {
-    1: ",",
-    4: ";",
-    7: "*",
-    12: "@",
-    18: "#"
-}
+_FLAKE_WEIGHT_CHARS = {1: ",", 4: ";", 7: "*", 12: "@", 18: "#"}
 
 _FLAKE_FLIPS = {
     1: ["*", "1"],
@@ -121,6 +103,7 @@ class StaticEffect(BaseEffect):
     """
     Class for generating a static background.
     """
+
     def __init__(self, buffer, background):
         super(StaticEffect, self).__init__(buffer, background)
 
@@ -129,8 +112,15 @@ class StaticEffect(BaseEffect):
         Renders the background to the screen
         """
         for y in range(self.buffer.height()):
-            self.buffer.put_at(0, y, self.background * (self.buffer.width() //
-                            self.background_length + self.background_length))
+            self.buffer.put_at(
+                0,
+                y,
+                self.background
+                * (
+                    self.buffer.width() // self.background_length
+                    + self.background_length
+                ),
+            )
 
 
 class OffsetEffect(BaseEffect):
@@ -156,8 +146,10 @@ class OffsetEffect(BaseEffect):
         Function to render the next frame of the Offset effect
         """
         for y in range(self.buffer.height()):
-            row = (self.background[y % self.background_length:] + self.background[:y % self.background_length]) * (
-                self.buffer.width() // self.background_length + self.background_length)
+            row = (
+                self.background[y % self.background_length :]
+                + self.background[: y % self.background_length]
+            ) * (self.buffer.width() // self.background_length + self.background_length)
             if self.direction == "right":
                 self.buffer.put_at(0, y, row[::-1])
             else:
@@ -175,7 +167,9 @@ class NoiseEffect(BaseEffect):
     def __init__(self, buffer, background, intensity=200, color=False):
         super(NoiseEffect, self).__init__(buffer, background)
 
-        self.intensity = intensity / 1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
+        self.intensity = (
+            intensity / 1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
+        )
 
         self.noise = " !@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
         self.noise_length = len(self.noise)
@@ -186,15 +180,17 @@ class NoiseEffect(BaseEffect):
         Function to update the intensity of the effect
         :param intensity: new intensity
         """
-        self.intensity = intensity / 1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
-        
+        self.intensity = (
+            intensity / 1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
+        )
+
     def update_color(self, color, characters):
         """
         Function to enable / disable color for the effect
         :param color: True / False
         :param character: True / False to make characters visable
         """
-        self.color      = color
+        self.color = color
         self.characters = characters
 
     def render_frame(self, frame_number):
@@ -206,14 +202,31 @@ class NoiseEffect(BaseEffect):
                 for _ in range(self.buffer.width()):
                     if random.random() < self.intensity:
                         if self.characters:
-                            self.buffer.put_char(_, y, bruhcolored(self.noise[random.randint(0, self.noise_length - 1)], on_color=random.randint(0, 255)).colored)
+                            self.buffer.put_char(
+                                _,
+                                y,
+                                bruhcolored(
+                                    self.noise[
+                                        random.randint(0, self.noise_length - 1)
+                                    ],
+                                    on_color=random.randint(0, 255),
+                                ).colored,
+                            )
                         else:
-                            self.buffer.put_char(_, y, bruhcolored(' ', on_color=random.randint(0, 255)).colored)
+                            self.buffer.put_char(
+                                _,
+                                y,
+                                bruhcolored(
+                                    " ", on_color=random.randint(0, 255)
+                                ).colored,
+                            )
         else:
             for y in range(self.buffer.height()):
                 for _ in range(self.buffer.width()):
                     if random.random() < self.intensity:
-                        self.buffer.put_char(_, y,self.noise[random.randint(0, self.noise_length - 1)])
+                        self.buffer.put_char(
+                            _, y, self.noise[random.randint(0, self.noise_length - 1)]
+                        )
 
 
 class StarEffect(NoiseEffect):
@@ -253,22 +266,38 @@ class StarEffect(NoiseEffect):
         for y in range(self.buffer.height()):
             for x in range(self.buffer.width()):
                 if random.random() < self.intensity:
-                    self.buffer.put_char(x, y, bruhcolored(self.stars[random.randint(0, self.stars_length - 1)], color=_LIFE_COLORS[self.color_type][random.randint(0, len(_LIFE_COLORS[self.color_type]) - 1)]).colored)
+                    self.buffer.put_char(
+                        x,
+                        y,
+                        bruhcolored(
+                            self.stars[random.randint(0, self.stars_length - 1)],
+                            color=_LIFE_COLORS[self.color_type][
+                                random.randint(
+                                    0, len(_LIFE_COLORS[self.color_type]) - 1
+                                )
+                            ],
+                        ).colored,
+                    )
 
 
 class PlasmaEffect(BaseEffect):
     """
     Function to generate a plasma like effect
     """
+
     def __init__(self, buffer, background):
         super(PlasmaEffect, self).__init__(buffer, background)
-        self.info  = False
+        self.info = False
         self.random = False
         self.scale = random.choice(_GREY_SCALES)
-        self.ayo   = 0
+        self.ayo = 0
         self.color = False
-        self.vals  = [random.randint(1, 50), random.randint(
-            1, 50), random.randint(1, 50), random.randint(1, 50)]
+        self.vals = [
+            random.randint(1, 50),
+            random.randint(1, 50),
+            random.randint(1, 50),
+            random.randint(1, 50),
+        ]
 
     def update_info_visibility(self, visible):
         """
@@ -281,13 +310,17 @@ class PlasmaEffect(BaseEffect):
         Function to change the size of the grey scale
         """
         if size in [8, 10, 16]:
-            self.scale  = random.choice([scale for scale in _GREY_SCALES if len(scale) == size])
+            self.scale = random.choice(
+                [scale for scale in _GREY_SCALES if len(scale) == size]
+            )
             if not self.random:
                 self.colors = random.choice(_PLASMA_COLORS[size])
             else:
                 self.colors = [random.randint(0, 255) for _ in range(len(self.scale))]
         else:
-            raise Exception(f"only 8, 10, and 16 are supported grey scale sizes, you provided {size}")
+            raise Exception(
+                f"only 8, 10, and 16 are supported grey scale sizes, you provided {size}"
+            )
 
     def update_color_properties(self, color, characters=True, random_color=False):
         """
@@ -313,7 +346,9 @@ class PlasmaEffect(BaseEffect):
             if len(colors) == len(self.scale):
                 self.colors = colors
             else:
-                raise Exception(f"update_color(..) must be provided a list of {len(self.scale)} colors, you provided {len(colors)}")
+                raise Exception(
+                    f"update_color(..) must be provided a list of {len(self.scale)} colors, you provided {len(colors)}"
+                )
 
     def update_background(self, background):
         """
@@ -323,7 +358,13 @@ class PlasmaEffect(BaseEffect):
         self.background = background
         self.background_length = len(self.background)
 
-    def update_plasma_values(self, a=random.randint(1, 50), b=random.randint(1, 50), c=random.randint(1, 50), d=random.randint(1, 50)):
+    def update_plasma_values(
+        self,
+        a=random.randint(1, 50),
+        b=random.randint(1, 50),
+        c=random.randint(1, 50),
+        d=random.randint(1, 50),
+    ):
         """
         Function to set the plasma values
         """
@@ -333,8 +374,12 @@ class PlasmaEffect(BaseEffect):
         """
         Function to generate a new-random set of plasma values
         """
-        self.vals = [random.randint(1, 50), random.randint(
-            1, 50), random.randint(1, 50), random.randint(1, 50)]
+        self.vals = [
+            random.randint(1, 50),
+            random.randint(1, 50),
+            random.randint(1, 50),
+            random.randint(1, 50),
+        ]
 
     def render_frame(self, frame_number):
         """
@@ -343,20 +388,44 @@ class PlasmaEffect(BaseEffect):
         self.ayo += 1
         for y in range(self.buffer.height()):
             for x in range(self.buffer.width()):
-                value = abs(self.func(x + self.ayo / 3, y, 1/4, 1/3, self.vals[0]) + self.func(x, y, 1/8, 1/5, self.vals[1])
-                            + self.func(x, y + self.ayo / 3, 1/2, 1/5, self.vals[2]) + self.func(x, y, 3/4, 4/5, self.vals[3])) / 4.0
+                value = (
+                    abs(
+                        self.func(x + self.ayo / 3, y, 1 / 4, 1 / 3, self.vals[0])
+                        + self.func(x, y, 1 / 8, 1 / 5, self.vals[1])
+                        + self.func(x, y + self.ayo / 3, 1 / 2, 1 / 5, self.vals[2])
+                        + self.func(x, y, 3 / 4, 4 / 5, self.vals[3])
+                    )
+                    / 4.0
+                )
                 if self.color:
                     if self.characters:
                         self.buffer.put_char(
-                            x, y, bruhcolored(self.scale[int((len(self.scale) - 1) * value)], color=self.colors[int((len(self.scale) - 1) * value)]).colored)
+                            x,
+                            y,
+                            bruhcolored(
+                                self.scale[int((len(self.scale) - 1) * value)],
+                                color=self.colors[int((len(self.scale) - 1) * value)],
+                            ).colored,
+                        )
                     else:
                         self.buffer.put_char(
-                            x, y, bruhcolored(" ", on_color=self.colors[int((len(self.scale) - 1) * value)]).colored)
+                            x,
+                            y,
+                            bruhcolored(
+                                " ",
+                                on_color=self.colors[
+                                    int((len(self.scale) - 1) * value)
+                                ],
+                            ).colored,
+                        )
                 else:
                     self.buffer.put_char(
-                        x, y, self.scale[int((len(self.scale) - 1) * value)])
+                        x, y, self.scale[int((len(self.scale) - 1) * value)]
+                    )
         if self.info:
-            self.buffer.put_at(0, 0, f"COLORS: {' '.join([str(val) for val in self.colors])}")
+            self.buffer.put_at(
+                0, 0, f"COLORS: {' '.join([str(val) for val in self.colors])}"
+            )
             for i in range(1, 5):
                 self.buffer.put_at(0, i, f"VAL {i}: {str(self.vals[i-1]):>3s} ")
 
@@ -364,14 +433,30 @@ class PlasmaEffect(BaseEffect):
         """
         Helper function to calculate the plasma value given the four plasma values
         """
-        return math.sin(math.sqrt((x - self.buffer.width() * a) ** 2 + 4 * ((y - self.buffer.height() * b)) ** 2) * math.pi / n)
+        return math.sin(
+            math.sqrt(
+                (x - self.buffer.width() * a) ** 2
+                + 4 * ((y - self.buffer.height() * b)) ** 2
+            )
+            * math.pi
+            / n
+        )
 
 
 class GameOfLifeEffect(BaseEffect):
     """
     Effect ot simulate Conway's Game of Life
     """
-    def __init__(self, buffer, background, decay=False, color=False, color_type=None, scale="random"):
+
+    def __init__(
+        self,
+        buffer,
+        background,
+        decay=False,
+        color=False,
+        color_type=None,
+        scale="random",
+    ):
         super(GameOfLifeEffect, self).__init__(buffer, background)
         self.decay = decay
         self.scale = scale
@@ -386,24 +471,29 @@ class GameOfLifeEffect(BaseEffect):
             [1, 1],
             [1, -1],
             [-1, 1],
-            [-1, -1]
+            [-1, -1],
         ]
-        self.rules = {
-            "life" : [2, 3],
-            "death": [3, 3]
-        }
-        self.board = [[" " for _ in range(self.buffer.width())] for __ in range(self.buffer.height())]
+        self.rules = {"life": [2, 3], "death": [3, 3]}
+        self.board = [
+            [" " for _ in range(self.buffer.width())]
+            for __ in range(self.buffer.height())
+        ]
 
     def _set_attributes(self):
         """
         Function to set the attributes of the effect
         """
-        self.grey_scale = _LIFE_SCALES[random.choice(list(_LIFE_SCALES.keys()))] if self.decay and self.scale == "random" else _LIFE_SCALES[self.scale] if self.decay else " o"
+        self.grey_scale = (
+            _LIFE_SCALES[random.choice(list(_LIFE_SCALES.keys()))]
+            if self.decay and self.scale == "random"
+            else _LIFE_SCALES[self.scale]
+            if self.decay
+            else " o"
+        )
         self.colors = [232, 231] if not self.decay else _LIFE_COLORS[self.color_type]
         self.ALIVE = len(self.grey_scale) - 1
         self.DEAD = 0
-        self.mappings = {i: self.grey_scale[i]
-                         for i in range(len(self.grey_scale))}
+        self.mappings = {i: self.grey_scale[i] for i in range(len(self.grey_scale))}
 
     def update_decay(self, decay, color_type="GREYSCALE", scale="random"):
         """
@@ -418,8 +508,8 @@ class GameOfLifeEffect(BaseEffect):
         self._set_attributes()
 
     def update_rules(self, life_rule, death_rule):
-        self.rules['life']  = life_rule
-        self.rules['death'] = death_rule
+        self.rules["life"] = life_rule
+        self.rules["death"] = death_rule
 
     def render_frame(self, frame_number):
         """
@@ -429,60 +519,157 @@ class GameOfLifeEffect(BaseEffect):
             for y in range(self.buffer.height()):
                 for x in range(self.buffer.width()):
                     if random.random() < 0.1:
-                        self.buffer.put_char(x, y, bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]).colored)
-                        self.board[y][x] =  (bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]), self.ALIVE)
+                        self.buffer.put_char(
+                            x,
+                            y,
+                            bruhcolored(
+                                self.grey_scale[self.ALIVE],
+                                color=self.colors[self.ALIVE],
+                            ).colored,
+                        )
+                        self.board[y][x] = (
+                            bruhcolored(
+                                self.grey_scale[self.ALIVE],
+                                color=self.colors[self.ALIVE],
+                            ),
+                            self.ALIVE,
+                        )
                     else:
-                        self.buffer.put_char(x, y, bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD]).colored)
-                        self.board[y][x] = (bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD]), 0)
+                        self.buffer.put_char(
+                            x,
+                            y,
+                            bruhcolored(
+                                self.grey_scale[self.DEAD], color=self.colors[self.DEAD]
+                            ).colored,
+                        )
+                        self.board[y][x] = (
+                            bruhcolored(
+                                self.grey_scale[self.DEAD], color=self.colors[self.DEAD]
+                            ),
+                            0,
+                        )
         else:  # RUN THE GAME
-            all_neighbors = [[0 for _ in range(self.buffer.width())] for __ in range(self.buffer.height())]
+            all_neighbors = [
+                [0 for _ in range(self.buffer.width())]
+                for __ in range(self.buffer.height())
+            ]
             for y in range(len(all_neighbors)):
                 for x in range(len(all_neighbors[y])):
                     neighbors = 0
                     for direction in self.direcitons:
-                        if 0 <= y+direction[0] < self.buffer.height() and 0 <= x+direction[1] < self.buffer.width() and self.board[y+direction[0]][x+direction[1]][1] == self.ALIVE:
+                        if (
+                            0 <= y + direction[0] < self.buffer.height()
+                            and 0 <= x + direction[1] < self.buffer.width()
+                            and self.board[y + direction[0]][x + direction[1]][1]
+                            == self.ALIVE
+                        ):
                             neighbors += 1
                     all_neighbors[y][x] = neighbors
             for y in range(self.buffer.height()):
                 for x in range(self.buffer.width()):
                     if self.board[y][x][1] == self.ALIVE:  # ALIVE
-                        if self.rules['life'][0] <= all_neighbors[y][x] <= self.rules['life'][1]:  # STAY ALIVE
+                        if (
+                            self.rules["life"][0]
+                            <= all_neighbors[y][x]
+                            <= self.rules["life"][1]
+                        ):  # STAY ALIVE
                             pass
                         else:  # MOVE TO THE FIRST DECAY STAGE
                             self.buffer.put_char(
-                                x, y, bruhcolored(self.grey_scale[self.ALIVE - 1], color=self.colors[self.ALIVE - 1]).colored)
-                            self.board[y][x] = (bruhcolored(self.grey_scale[self.ALIVE - 1], color=self.colors[self.ALIVE - 1]), self.ALIVE - 1)
+                                x,
+                                y,
+                                bruhcolored(
+                                    self.grey_scale[self.ALIVE - 1],
+                                    color=self.colors[self.ALIVE - 1],
+                                ).colored,
+                            )
+                            self.board[y][x] = (
+                                bruhcolored(
+                                    self.grey_scale[self.ALIVE - 1],
+                                    color=self.colors[self.ALIVE - 1],
+                                ),
+                                self.ALIVE - 1,
+                            )
                     else:  # DEAD
-                        if self.rules['death'][0] <= all_neighbors[y][x] <= self.rules['death'][1]:  # COME BACK TO LIFE
+                        if (
+                            self.rules["death"][0]
+                            <= all_neighbors[y][x]
+                            <= self.rules["death"][1]
+                        ):  # COME BACK TO LIFE
                             self.buffer.put_char(
-                                x, y, bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]).colored)
-                            self.board[y][x] = (bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]), self.ALIVE)
+                                x,
+                                y,
+                                bruhcolored(
+                                    self.grey_scale[self.ALIVE],
+                                    color=self.colors[self.ALIVE],
+                                ).colored,
+                            )
+                            self.board[y][x] = (
+                                bruhcolored(
+                                    self.grey_scale[self.ALIVE],
+                                    color=self.colors[self.ALIVE],
+                                ),
+                                self.ALIVE,
+                            )
                         else:  # MOVE TO THE NEXT STAGE --> IF AT 0 STAY AT 0 i.e. don't decrement
                             current_greyscale_position = self.board[y][x][1]
-                            current_greyscale_position = current_greyscale_position - 1 if current_greyscale_position > 0 else 0
+                            current_greyscale_position = (
+                                current_greyscale_position - 1
+                                if current_greyscale_position > 0
+                                else 0
+                            )
                             self.buffer.put_char(
-                                x, y, bruhcolored(self.grey_scale[current_greyscale_position], color=self.colors[current_greyscale_position]).colored)
-                            self.board[y][x] = (bruhcolored(self.grey_scale[current_greyscale_position], color=self.colors[current_greyscale_position]), current_greyscale_position)
+                                x,
+                                y,
+                                bruhcolored(
+                                    self.grey_scale[current_greyscale_position],
+                                    color=self.colors[current_greyscale_position],
+                                ).colored,
+                            )
+                            self.board[y][x] = (
+                                bruhcolored(
+                                    self.grey_scale[current_greyscale_position],
+                                    color=self.colors[current_greyscale_position],
+                                ),
+                                current_greyscale_position,
+                            )
 
 
 class RainEffect(BaseEffect):
     """
     Effect to emmulate the look of rain
     """
-    def __init__(self, buffer, background, img_start_x=None, img_start_y=None, img_width=None, img_height=None, collision=False, intensity=1, swells=False, wind_direction="none"):
+
+    def __init__(
+        self,
+        buffer,
+        background,
+        img_start_x=None,
+        img_start_y=None,
+        img_width=None,
+        img_height=None,
+        collision=False,
+        intensity=1,
+        swells=False,
+        wind_direction="none",
+    ):
         super(RainEffect, self).__init__(buffer, background)
 
-        self.img_present = True if img_start_x and img_start_y and img_width and img_height else False
+        self.image_present = (
+            True if img_start_x and img_start_y and img_width and img_height else False
+        )
         self.collision = collision
         self.intensity = intensity
         self.swells = swells
         self.swell_direction = 1
         self.multiplier = 1
-        self.wind_direction = wind_direction if wind_direction in _WIND_DIRECTIONS else "none"
+        self.wind_direction = (
+            wind_direction if wind_direction in _WIND_DIRECTIONS else "none"
+        )
         self.wind_mappings = {
             "east": [".\\", -1, ["\\", "."]],
-            "none": [".|",   0, ["|", "."]],
-            "west": ["./",   1, ["/", "."]]
+            "none": [".|", 0, ["|", "."]],
+            "west": ["./", 1, ["/", "."]],
         }
         self._set_rain()
 
@@ -530,7 +717,16 @@ class RainEffect(BaseEffect):
             self.intensity = intensity if intensity < 1000 else 999
         self._set_rain()
 
-    def update_collision(self, img_start_x, img_start_y, img_width, img_height, collision, smart_transparent=False, image_buffer=None):
+    def update_collision(
+        self,
+        img_start_x,
+        img_start_y,
+        img_width,
+        img_height,
+        collision,
+        smart_transparent=False,
+        image_buffer=None,
+    ):
         """
         Function to set whether or not to visually see the rain collide with the ground
         or images if they are present
@@ -542,9 +738,11 @@ class RainEffect(BaseEffect):
         :param smart_transparent: update smart_transparent
         :param image_buffer: the buffer that contains the image
         """
-        self.img_present = True if img_start_x and img_start_y and img_width and img_height else False
+        self.image_present = (
+            True if img_start_x and img_start_y and img_width and img_height else False
+        )
         self.collision = collision
-        if self.img_present:
+        if self.image_present:
             self.img_start_x = img_start_x
             self.img_start_y = img_start_y
             self.img_height = img_height
@@ -568,13 +766,31 @@ class RainEffect(BaseEffect):
         if self.swells:
             self.update_intensity(None)
         if frame_number == 0:
-            self.buffer.put_at(0, 0, ''.join([self.rain[random.randint(
-                0, self.rain_length - 1)] for _ in range(self.buffer.width())]))
+            self.buffer.put_at(
+                0,
+                0,
+                "".join(
+                    [
+                        self.rain[random.randint(0, self.rain_length - 1)]
+                        for _ in range(self.buffer.width())
+                    ]
+                ),
+            )
         else:
-            self.buffer.shift(self.wind_mappings[self.wind_direction][1] * self.multiplier)
+            self.buffer.shift(
+                self.wind_mappings[self.wind_direction][1] * self.multiplier
+            )
             self.buffer.scroll(-1 * self.multiplier)
-            self.buffer.put_at(0, 0, ''.join([self.rain[random.randint(
-                0, self.rain_length - 1)] for _ in range(self.buffer.width())]))
+            self.buffer.put_at(
+                0,
+                0,
+                "".join(
+                    [
+                        self.rain[random.randint(0, self.rain_length - 1)]
+                        for _ in range(self.buffer.width())
+                    ]
+                ),
+            )
 
             if self.collision:
                 for y in range(self.buffer.height()):
@@ -583,16 +799,26 @@ class RainEffect(BaseEffect):
                         if self.buffer.get_char(x, y) == "v":
                             self.buffer.put_char(x, y, " ")
                         else:
-                            if self.img_present:
+                            if self.image_present:
                                 # if we are inscope of the image we need to process impacts
                                 if self.image_buffer:
                                     if 0 <= y + 1 < self.buffer.height():
-                                        if not self.image_buffer.buffer[y+1][x] in [" ", None] and self.buffer.get_char(x, y) in self.wind_mappings[self.wind_direction][2]:
+                                        if (
+                                            not self.image_buffer.buffer[y + 1][x]
+                                            in [" ", None]
+                                            and self.buffer.get_char(x, y)
+                                            in self.wind_mappings[self.wind_direction][
+                                                2
+                                            ]
+                                        ):
                                             self.buffer.put_char(x, y, "v")
 
                             # impacting the bottom
                             if y == self.buffer.height() - 1:
-                                if self.buffer.get_char(x, y) in self.wind_mappings[self.wind_direction][2]:
+                                if (
+                                    self.buffer.get_char(x, y)
+                                    in self.wind_mappings[self.wind_direction][2]
+                                ):
                                     self.buffer.put_char(x, y, "v")
 
 
@@ -600,6 +826,7 @@ class MatrixEffect(BaseEffect):
     """
     Effect to mimic the cliche coding backgroud with falling random characters
     """
+
     def __init__(self, buffer, background):
         super(MatrixEffect, self).__init__(buffer, background)
         self.col = self.buffer.width() // 2
@@ -613,8 +840,18 @@ class MatrixEffect(BaseEffect):
         Renders the next frame for the Matrix effect into the effect buffer
         """
         if frame_number == 0:
-            self.buffer.put_at(0, 0, ''.join([_NOISE[random.randint(0, len(
-                _NOISE) - 1)] if random.random() < 0.2 else " " for _ in range(self.buffer.width())]))
+            self.buffer.put_at(
+                0,
+                0,
+                "".join(
+                    [
+                        _NOISE[random.randint(0, len(_NOISE) - 1)]
+                        if random.random() < 0.2
+                        else " "
+                        for _ in range(self.buffer.width())
+                    ]
+                ),
+            )
         else:
             row = []
             for _ in range(self.buffer.width()):
@@ -637,8 +874,8 @@ class MatrixEffect(BaseEffect):
 class _LINE:
     def __init__(self, p1, p2):
         if p1 and p2:
-            self.p1 = (p1[0]*2, p1[1]*2)
-            self.p2 = (p2[0]*2, p2[1]*2)
+            self.p1 = (p1[0] * 2, p1[1] * 2)
+            self.p2 = (p2[0] * 2, p2[1] * 2)
         else:
             self.p1 = None
             self.p2 = None
@@ -664,10 +901,20 @@ class DrawLines(BaseEffect):
     def render_frame(self, frame_number):
         if frame_number == 0 and len(self.lines) > 0:
             for y in range(self.buffer.height()):
-                self.buffer.put_at(0, y,  self. background*self.buffer.width())
+                self.buffer.put_at(0, y, self.background * self.buffer.width())
             for line in self.lines:
-                if ((line.p1[0] < 0 and line.p2[0]) < 0 or (line.p1[0] >= self.buffer.width() * 2 and line.p2[0] > self.buffer.width() * 2)
-                        or (line.p1[1] < 0 and line.p2[1] < 0) or (line.p1[1] >= self.buffer.height() * 2 and line.p2[1] >= self.buffer.height() * 2)):
+                if (
+                    (line.p1[0] < 0 and line.p2[0]) < 0
+                    or (
+                        line.p1[0] >= self.buffer.width() * 2
+                        and line.p2[0] > self.buffer.width() * 2
+                    )
+                    or (line.p1[1] < 0 and line.p2[1] < 0)
+                    or (
+                        line.p1[1] >= self.buffer.height() * 2
+                        and line.p2[1] >= self.buffer.height() * 2
+                    )
+                ):
                     return
 
                 line_chars = " ''^.|/7.\\|Ywbd#"
@@ -702,7 +949,8 @@ class DrawLines(BaseEffect):
 
                         if self.char is None:
                             self.buffer.put_char(
-                                px // 2, py // 2, line_chars[next_char])
+                                px // 2, py // 2, line_chars[next_char]
+                            )
                         else:
                             self.buffer.put_char(px // 2, py // 2, self.char)
 
@@ -726,15 +974,17 @@ class DrawLines(BaseEffect):
 
                         if self.char is None:
                             self.buffer.put_char(
-                                px // 2, py // 2, line_chars[next_char])
+                                px // 2, py // 2, line_chars[next_char]
+                            )
                         else:
                             self.buffer.put_char(px // 2, py // 2, self.char)
+
                 if dy == 0 and self.thin and self.char is None:
                     pass
                 elif dx > dy:
-                    x_draw(line.p1[0], line.p1[1]+1)
+                    x_draw(line.p1[0], line.p1[1] + 1)
                 else:
-                    y_draw(line.p1[0]+1, line.p1[1])
+                    y_draw(line.p1[0] + 1, line.p1[1])
 
 
 class _FLAKE:
@@ -749,7 +999,7 @@ class _FLAKE:
         self.char = bruhcolored(_FLAKES[index], color=self.color).colored
         self.current_position = "center"
         self.on_ground = False
-    
+
     def flip_flake(self):
         if self.char == _FLAKE_FLIPS[self.index][0]:
             self.char = _FLAKE_FLIPS[self.index][1]
@@ -758,36 +1008,41 @@ class _FLAKE:
 
     def next_position(self, current_x, current_y, frame_number):
         if self.on_ground:
-            return(current_x, current_y)
+            return (current_x, current_y)
 
         if frame_number % self.index != 0:
             return (current_x, current_y)
 
         if random.random() < 0.10:
             return (current_x, current_y)
-                
+
         current_y = current_y + random.choice(_FLAKE_JUMPS[self.index])
 
         next_position = random.choice(["left", "center", "right"])
 
-        next_flake_move = _NEXT_FLAKE_MOVE[(self.current_position, next_position)] if self.current_position != next_position else None
+        next_flake_move = (
+            _NEXT_FLAKE_MOVE[(self.current_position, next_position)]
+            if self.current_position != next_position
+            else None
+        )
 
         if next_flake_move:
             current_x = current_x + next_flake_move
             self.current_position = next_position
 
         return (current_x, current_y)
-    
 
     def update_position(self, x, y):
         self.x = x
-        self.y = y    
+        self.y = y
 
     def set_to_on_ground(self):
         self.weight = 1
         self.on_ground = True
-        self.color = 190 if random.random() < .01 else 255
-        self.char = bruhcolored(_FLAKE_WEIGHT_CHARS[self.weight], color=self.color).colored
+        self.color = 190 if random.random() < 0.01 else 255
+        self.char = bruhcolored(
+            _FLAKE_WEIGHT_CHARS[self.weight], color=self.color
+        ).colored
 
     def increment_flake_weight(self):
         self.weight += 1
@@ -798,7 +1053,9 @@ class _FLAKE:
     def update_ground_flake(self):
         if self.char != list(_FLAKE_WEIGHT_CHARS.values())[-1]:
             if self.weight in _FLAKE_WEIGHT_CHARS.keys():
-                self.char =  bruhcolored(_FLAKE_WEIGHT_CHARS[self.weight], color=self.color).colored
+                self.char = bruhcolored(
+                    _FLAKE_WEIGHT_CHARS[self.weight], color=self.color
+                ).colored
 
     def __str__(self):
         return self.char
@@ -808,7 +1065,7 @@ class _FLAKE:
 
     def __len__(self):
         return 1
-    
+
     def copy(self):
         new_flake = _FLAKE(index=self.index, x=self.x, y=self.y)
         new_flake.weight = self.weight
@@ -819,14 +1076,137 @@ class _FLAKE:
         return new_flake
 
 
+class _FLAKEv2:
+    def __init__(self, index, x, y):
+        self.index = index
+        self.x = x
+        self.y = y
+        self.prev_x = x
+        self.prev_y = y
+        self.weight = 1
+        self.color = _FLAKE_COLORS[index]
+        self.char = bruhcolored(_FLAKES[index], color=self.color).colored
+        self.current_position = "center"
+        self.on_ground = False
+
+    def flip_flake(self):
+        if self.char == _FLAKE_FLIPS[self.index][0]:
+            self.char = _FLAKE_FLIPS[self.index][1]
+        else:
+            self.char = _FLAKE_FLIPS[self.index][0]
+
+    def next_position(self, frame_number):
+        if self.on_ground:
+            return
+
+        if frame_number % self.index != 0:
+            return
+
+        if random.random() < 0.10:
+            return
+
+        self.prev_x = self.x
+        self.prev_y = self.y
+
+        self.y = self.y + random.choice(_FLAKE_JUMPS[self.index])
+
+        next_position = random.choice(["left", "center", "right"])
+
+        next_flake_move = (
+            _NEXT_FLAKE_MOVE[(self.current_position, next_position)]
+            if self.current_position != next_position
+            else None
+        )
+
+        if next_flake_move:
+            self.x = self.x + next_flake_move
+            self.current_position = next_position
+
+    def update_position(self, x, y):
+        self.prev_x = self.x
+        self.prev_y = self.y
+        self.x = x
+        self.y = y
+
+    def set_to_on_ground(self):
+        self.weight = 1
+        self.on_ground = True
+        self.color = 190 if random.random() < 0.01 else 255
+        self.char = bruhcolored(
+            _FLAKE_WEIGHT_CHARS[self.weight], color=self.color
+        ).colored
+
+    def increment_flake_weight(self):
+        self.weight += 1
+        if self.weight > max(_FLAKE_WEIGHT_CHARS.keys()):
+            self.weight = max(_FLAKE_WEIGHT_CHARS.keys())
+        self.update_ground_flake()
+
+    def update_ground_flake(self):
+        if self.char != list(_FLAKE_WEIGHT_CHARS.values())[-1]:
+            if self.weight in _FLAKE_WEIGHT_CHARS.keys():
+                self.char = bruhcolored(
+                    _FLAKE_WEIGHT_CHARS[self.weight], color=self.color
+                ).colored
+
+    def __str__(self):
+        return self.char
+
+    def __repr__(self):
+        return self.char
+
+    def __len__(self):
+        return 1
+
+    def __eq__(self, other):
+        return self.char == other
+
+    def copy(self):
+        new_flake = _FLAKEv2(index=self.index, x=self.x, y=self.y)
+        new_flake.weight = self.weight
+        new_flake.char = self.char
+        new_flake.current_position = self.current_position
+        new_flake.color = self.color
+        new_flake.on_ground = self.on_ground
+        new_flake.x = self.x
+        new_flake.y = self.y
+        new_flake.prev_x = self.prev_x
+        new_flake.prev_y = self.prev_y
+        return new_flake
+
+
 class SnowEffect(BaseEffect):
-    def __init__(self, buffer, background, img_start_x=None, img_start_y=None, img_width=None, img_height=None, collision=False):
+    def __init__(
+        self,
+        buffer,
+        background,
+        img_start_x=None,
+        img_start_y=None,
+        img_width=None,
+        img_height=None,
+        collision=False,
+        show_info=False,
+    ):
         super(SnowEffect, self).__init__(buffer, background)
-        self.img_present = True if img_start_x and img_start_y and img_width and img_height else False
+        self.image_present = (
+            True if img_start_x and img_start_y and img_width and img_height else False
+        )
         self.collision = collision
         self.total_ground_flakes = 0
-    
-    def update_collision(self, img_start_x, img_start_y, img_width, img_height, collision, image_buffer=None):
+        self._show_info = show_info
+        self._flakes = []
+        self._ground_flakes = [None for _ in range(self.buffer.width())]
+        self._image_collide_flakes = [None for _ in range(self.buffer.width())]
+
+    def update_collision(
+        self,
+        img_start_x,
+        img_start_y,
+        img_width,
+        img_height,
+        collision,
+        image_buffer=None,
+    ):
         """
         Function to set whether or not to visually see the snow collide with the ground
         or images if they are present
@@ -836,9 +1216,11 @@ class SnowEffect(BaseEffect):
         :param img_height:  the height of the image
         :param collision:   update collision variable
         """
-        self.img_present = True if img_start_x and img_start_y and img_width and img_height else False
+        self.image_present = (
+            True if img_start_x and img_start_y and img_width and img_height else False
+        )
         self.collision = collision
-        if self.img_present:
+        if self.image_present:
             self.img_start_x = img_start_x
             self.img_start_y = img_start_y
             self.img_height = img_height
@@ -848,74 +1230,101 @@ class SnowEffect(BaseEffect):
             self.image_y_boundaries = (img_start_y, img_start_y + img_height)
         else:
             self.image_buffer = None
-    
+        
+
+    def show_info(self, show_info: bool):
+        self._show_info = show_info
+
     def render_frame(self, frame_number):
+        # calc each flakes next position
+        for flake in self._flakes:
+            flake.next_position(frame_number)
+
+        # generate the next set of flakes
         for x in range(self.buffer.width()):
             if random.random() < 0.01:
-                flake = _FLAKE(index=random.choice([1, 3, 7]), x=x, y=0)
-                self.buffer.put_char(x, 0, flake)
+                flake = _FLAKEv2(index=random.choice([1, 3, 7]), x=x, y=0)
+                self._flakes.append(flake)
+        
+        # determine what flakes are hitting the ground or need to be deleted
+        for idx, flake in enumerate(self._flakes):
+            # ground flake?
+            if (
+                flake.x >= 0
+                and flake.x < self.buffer.width()
+                and flake.y >= self.buffer.height() - 1
+            ):
+                if isinstance(self._ground_flakes[flake.x], _FLAKEv2):
+                    ground_flake: _FLAKEv2 = self._ground_flakes[flake.x]
+                    ground_flake.increment_flake_weight()
+                    self._ground_flakes[flake.x] = ground_flake.copy()
+                    del ground_flake
+                else:
+                    tmp_flake = flake.copy()
+                    tmp_flake.set_to_on_ground()
+                    tmp_flake.y = self.buffer.height() - 1
+                    self._ground_flakes[flake.x] = tmp_flake
+                self._flakes[idx] = None
+                self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
+            elif (
+                flake.x < 0
+                or flake.x >= self.buffer.width()
+                or flake.y < 0
 
-        for y in range(self.buffer.height()-2, -1, -1):
-            for x in range(self.buffer.width()):
-                if (flake := self.buffer.get_char(x, y)) not in [" ", "X", "G"]:
-                    if isinstance(flake, _FLAKE):
-                        flake = flake.copy()
-
-                        dx, dy = flake.next_position(x, y, frame_number)
-
-                        if dy > self.buffer.height() - 1:
-                            dy = self.buffer.height() - 1
-                        
-                        if dx != x or dy != y:
-                            self.buffer.put_char(x, y, " ")
-
-                        if dy == self.buffer.height() - 1:
-                            # moving into the ground
-                            # already a flake where we want to move?
-                            if dy != y:
-                                look_ahead_flake = self.buffer.get_char(dx, dy)
-                                if isinstance(look_ahead_flake, _FLAKE):
-                                    look_ahead_flake = look_ahead_flake.copy()
-                                    look_ahead_flake.increment_flake_weight()
-                                    self.buffer.put_char(dx, dy, look_ahead_flake)
-                                else:
-                                    flake.set_to_on_ground()
-                                    self.total_ground_flakes += 1
-                                    self.buffer.put_char(dx, dy, flake)
-                                    flake.update_position(dx, dy)
-                        elif self.collision and self.image_buffer and self.img_present:
-                            if (
-                                y == self.image_y_boundaries[0] - 1
-                                and x > self.image_x_boundaries[0]
-                                and x < self.image_x_boundaries[1] - 1
-                            ):
-                                pass
-                            elif (
-                                dy >= self.image_y_boundaries[0] - 1
-                                and dy < self.image_y_boundaries[1] - 1
-                                and dx > self.image_x_boundaries[0] - 1
-                                and dx < self.image_x_boundaries[1] - 1
-                            ):
-                                dy = self.image_y_boundaries[0] - 1
-                                if dy != y:
-                                    look_ahead_flake = self.buffer.get_char(dx, dy)
-                                    if isinstance(look_ahead_flake, _FLAKE):
-                                        look_ahead_flake = look_ahead_flake.copy()
-                                        look_ahead_flake.increment_flake_weight()
-                                        self.buffer.put_char(dx, dy, look_ahead_flake)
-                                    else:
-                                        flake.set_to_on_ground()
-                                        self.total_ground_flakes += 1
-                                        self.buffer.put_char(dx, dy, flake)
-                                        flake.update_position(dx, dy)
-                            else:
-                                self.buffer.put_char(dx, dy, flake)
-                                flake.update_position(dx, dy)
-                        # not near the image
+            ):
+                self._flakes[idx] = None
+                self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
+            else:
+                if not self.smart_transparent:
+                    if (
+                        self.image_present and
+                        flake.x >= self.image_x_boundaries[0] and
+                        flake.x <= self.image_x_boundaries[1] and
+                        flake.y >= self.image_y_boundaries[0] and
+                        flake.y <= self.image_y_boundaries[1]
+                    ):
+                        # colliding with image
+                        if isinstance(self._image_collide_flakes[flake.x], _FLAKEv2):
+                            ground_flake: _FLAKEv2 = self._image_collide_flakes[flake.x].copy()
+                            ground_flake.increment_flake_weight()
+                            self._image_collide_flakes[flake.x] = ground_flake
+                            del ground_flake
                         else:
-                            self.buffer.put_char(dx, dy, flake)
-                            flake.update_position(dx, dy)
-        self.buffer.put_at(0, 0, f"Width: {self.buffer.width()}")
-        self.buffer.put_at(0, 1, f"Height: {self.buffer.height()}")
-        self.buffer.put_at(0, 2, f"Total ground flakes: {self.total_ground_flakes}")
-        self.buffer.put_at(0, 3, f"Total falling flakes: {len([1 for y in range(self.buffer.height()-2, -1, -1) for x in range(self.buffer.width()) if isinstance(self.buffer.get_char(x, y), _FLAKE)])}")
+                            tmp_flake = flake.copy()
+                            tmp_flake.set_to_on_ground()
+                            tmp_flake.y = self.image_y_boundaries[0] - 1
+                            self._image_collide_flakes[flake.x] = tmp_flake
+                        self._flakes[idx] = None
+                        self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
+                else:
+                    pass
+        
+        self._flakes = [flake for flake in self._flakes if flake]
+
+        # place the flakes into the buffer
+        for flake in self._flakes:
+            self.buffer.put_char(flake.x, flake.y, flake)
+            self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
+
+        # place the ground flakes
+        if self.collision:
+            for flake in self._ground_flakes:
+                if flake:
+                    self.buffer.put_char(flake.x, flake.y, flake)
+            for flake in self._image_collide_flakes:
+                if flake:
+                    self.buffer.put_char(flake.x, flake.y, flake)
+
+        if self._show_info:
+            self.buffer.put_at(0, 1, f"Width: {self.buffer.width()}")
+            self.buffer.put_at(0, 2, f"Height: {self.buffer.height()}")
+            self.buffer.put_at(0, 3, f"Collision Enabled: {self.collision}")
+            self.buffer.put_at(0, 4, f"Total  flakes: {len(self._flakes):3d}")
+            self.buffer.put_at(
+                0, 5, f"Ground flakes: {len([0 for _ in self._ground_flakes if _]):3d}"
+            )
+            self.buffer.put_at(0, 6, f"Image present: {self.image_present}")
+            if self.image_present:
+                self.buffer.put_at(0, 7, f"Total flakes on image: {len([0 for _ in self._image_collide_flakes if _]):3d}")
+                self.buffer.put_at(0, 8, f"Image x boundaries: {self.image_x_boundaries}")
+                self.buffer.put_at(0, 9, f"Image y boundaries: {self.image_y_boundaries}")

@@ -103,6 +103,8 @@ class BaseRenderer:
         elif self.effect_type == "snow":
             self.effect = SnowEffect(Buffer(self.height, self.width), self.background)
 
+        self.effect.smart_transparent = False
+
         # BUFFERS
         self.image_buffer = Buffer(self.height, self.width).clear_buffer(val=None)
         self.back_buffer = Buffer(self.height, self.width)
@@ -156,6 +158,7 @@ class BaseRenderer:
         :param smart_transparent: True / False
         """
         self.smart_transparent = smart_transparent
+        self.effect.smart_transparent = smart_transparent
 
     def update_points(self, p1, p2):
         """
@@ -232,6 +235,7 @@ class BaseRenderer:
         :param wipe: whether to clear the buffer
         :param x_loc: where to put the message along the xaxis
         :param y_loc: where to put the message along the yaxis
+        :param centered: whether or not the message should be centered
         """
         if msg1:
             self.msg1 = msg1.replace("\n", "")

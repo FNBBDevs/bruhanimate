@@ -9,19 +9,21 @@ os.system(" ")
 
 def holiday(screen):
     try:
-        renderer = EffectRenderer(
+        renderer = CenterRenderer(
             screen=screen,
-            frames=float("inf"),
-            time=0.075,
-            # img=get_image("CHRISTMAS_1"),
+            frames=1000,
+            time=0.0,
+            img=get_image("COMPUTER"),
             effect_type="snow",
             background=" ",
             transparent=True,
         )
 
-        renderer.update_collision(True)
+        # renderer.effect.show_info(True)
 
-        renderer.update_smart_transparent(True)
+        # renderer.update_smart_transparent(True)
+
+        renderer.update_collision(True)
 
         renderer.run()
 
