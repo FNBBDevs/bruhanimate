@@ -1225,13 +1225,13 @@ class SnowEffect(BaseEffect):
             self.img_start_y = img_start_y
             self.img_height = img_height
             self.img_width = img_width
+            self.img_end_y = img_start_y + img_height
             self.image_buffer = image_buffer
             self.image_x_boundaries = (img_start_x, img_start_x + img_width)
             self.image_y_boundaries = (img_start_y, img_start_y + img_height)
         else:
             self.image_buffer = None
         
-
     def show_info(self, show_info: bool):
         self._show_info = show_info
 
@@ -1246,9 +1246,21 @@ class SnowEffect(BaseEffect):
                 flake = _FLAKEv2(index=random.choice([1, 3, 7]), x=x, y=0)
                 self._flakes.append(flake)
         
+        if self.smart_transparent and frame_number == 0:
+            self.smart_bound_line = {}
+            for x in range(self.img_width):
+                tmp_flag = False
+                for y in range(self.img_height):
+                    if self.image_buffer.buffer[y + self.img_start_y][x + self.img_start_x] not in [" ", None]:
+                        self.smart_bound_line[x + self.img_start_x] = y + self.img_start_y - 1
+                        tmp_flag = True
+                        break
+                if not tmp_flag:
+                    self.smart_bound_line[x + self.img_start_x] = None
+
         # determine what flakes are hitting the ground or need to be deleted
         for idx, flake in enumerate(self._flakes):
-            # ground flake?
+            # ground flake
             if (
                 flake.x >= 0
                 and flake.x < self.buffer.width()
@@ -1275,6 +1287,7 @@ class SnowEffect(BaseEffect):
                 self._flakes[idx] = None
                 self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
             else:
+                # image collision flake
                 if not self.smart_transparent:
                     if (
                         self.image_present and
@@ -1296,8 +1309,28 @@ class SnowEffect(BaseEffect):
                             self._image_collide_flakes[flake.x] = tmp_flake
                         self._flakes[idx] = None
                         self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
-                else:
-                    pass
+                elif frame_number != 0:
+                    if flake.x in self.smart_bound_line.keys():
+                        if start_bound := self.smart_bound_line[flake.x]:
+                            if (
+                                flake.y >= start_bound and
+                                flake.y <= self.img_end_y
+                            ):
+                                # colliding with image
+                                self._flakes[idx] = None
+                                self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
+
+                                if isinstance(self.buffer.get_char(flake.x, start_bound), _FLAKEv2):
+                                    ground_flake: _FLAKEv2 = self._image_collide_flakes[flake.x].copy()
+                                    ground_flake.increment_flake_weight()
+                                    self._image_collide_flakes[flake.x] = ground_flake
+                                    del ground_flake
+                                else:
+                                    tmp_flake = flake.copy()
+                                    tmp_flake.set_to_on_ground()
+                                    tmp_flake.y = start_bound
+                                    self._image_collide_flakes[flake.x] = tmp_flake
+
         
         self._flakes = [flake for flake in self._flakes if flake]
 
@@ -1328,3 +1361,5 @@ class SnowEffect(BaseEffect):
                 self.buffer.put_at(0, 7, f"Total flakes on image: {len([0 for _ in self._image_collide_flakes if _]):3d}")
                 self.buffer.put_at(0, 8, f"Image x boundaries: {self.image_x_boundaries}")
                 self.buffer.put_at(0, 9, f"Image y boundaries: {self.image_y_boundaries}")
+                self.buffer.put_at(0, 10, f"Image y bottom: {self.img_end_y}")
+

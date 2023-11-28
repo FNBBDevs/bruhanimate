@@ -26,7 +26,7 @@ from bruhanimate.bruhrenderer import (
 from bruhanimate import images
 from bruhanimate.demos import line_demo, plasma_demo, snow_demo, holiday
 
-__version__ = "0.1.92"
+__version__ = "0.1.93"
 
 __all__ = [
     "Screen",
