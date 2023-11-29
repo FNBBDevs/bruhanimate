@@ -1246,7 +1246,7 @@ class SnowEffect(BaseEffect):
                 flake = _FLAKEv2(index=random.choice([1, 3, 7]), x=x, y=0)
                 self._flakes.append(flake)
         
-        if self.smart_transparent and frame_number == 0:
+        if self.smart_transparent and frame_number == 0 and self.image_present:
             self.smart_bound_line = {}
             for x in range(self.img_width):
                 tmp_flag = False
@@ -1310,7 +1310,7 @@ class SnowEffect(BaseEffect):
                         self._flakes[idx] = None
                         self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
                 elif frame_number != 0:
-                    if flake.x in self.smart_bound_line.keys():
+                    if self.image_present and flake.x in self.smart_bound_line.keys():
                         if start_bound := self.smart_bound_line[flake.x]:
                             if (
                                 flake.y >= start_bound and
