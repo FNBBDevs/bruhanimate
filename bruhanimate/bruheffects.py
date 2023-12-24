@@ -872,20 +872,20 @@ class MatrixEffect(BaseEffect):
 
 
 class _LINE:
-    def __init__(self, p1, p2):
-        if p1 and p2:
-            self.p1 = (p1[0] * 2, p1[1] * 2)
-            self.p2 = (p2[0] * 2, p2[1] * 2)
+    def __init__(self, start_point, end_point):
+        if start_point and end_point:
+            self.start_point = (start_point[0] * 2, start_point[1] * 2)
+            self.end_point = (end_point[0] * 2, end_point[1] * 2)
         else:
-            self.p1 = None
-            self.p2 = None
+            self.start_point = None
+            self.end_point = None
 
-    def update_points(self, p1, p2):
-        self.p1 = (p1[0], p1[1])
-        self.p2 = (p2[0], p2[1])
+    def update_points(self, start_point, end_point):
+        self.start_point = (start_point[0], start_point[1])
+        self.end_point = (end_point[0], end_point[1])
 
     def get_points(self):
-        return self.p1, self.p2
+        return self.start_point, self.end_point
 
 
 class DrawLines(BaseEffect):
@@ -895,8 +895,8 @@ class DrawLines(BaseEffect):
         self.char = char
         self.thin = thin
 
-    def add_line(self, p1, p2):
-        self.lines.append(_LINE(p1, p2))
+    def add_line(self, start_point, end_point):
+        self.lines.append(_LINE(start_point, end_point))
 
     def render_frame(self, frame_number):
         if frame_number == 0 and len(self.lines) > 0:
@@ -904,25 +904,25 @@ class DrawLines(BaseEffect):
                 self.buffer.put_at(0, y, self.background * self.buffer.width())
             for line in self.lines:
                 if (
-                    (line.p1[0] < 0 and line.p2[0]) < 0
+                    (line.start_point[0] < 0 and line.end_point[0]) < 0
                     or (
-                        line.p1[0] >= self.buffer.width() * 2
-                        and line.p2[0] > self.buffer.width() * 2
+                        line.start_point[0] >= self.buffer.width() * 2
+                        and line.end_point[0] > self.buffer.width() * 2
                     )
-                    or (line.p1[1] < 0 and line.p2[1] < 0)
+                    or (line.start_point[1] < 0 and line.end_point[1] < 0)
                     or (
-                        line.p1[1] >= self.buffer.height() * 2
-                        and line.p2[1] >= self.buffer.height() * 2
+                        line.start_point[1] >= self.buffer.height() * 2
+                        and line.end_point[1] >= self.buffer.height() * 2
                     )
                 ):
                     return
 
                 line_chars = " ''^.|/7.\\|Ywbd#"
-                dx = abs(line.p2[0] - line.p1[0])
-                dy = abs(line.p2[1] - line.p1[1])
+                dx = abs(line.end_point[0] - line.start_point[0])
+                dy = abs(line.end_point[1] - line.start_point[1])
 
-                cx = -1 if line.p1[0] > line.p2[0] else 1
-                cy = -1 if line.p1[1] > line.p2[1] else 1
+                cx = -1 if line.start_point[0] > line.end_point[0] else 1
+                cy = -1 if line.start_point[1] > line.end_point[1] else 1
 
                 def get_start(x, y):
                     c = self.buffer.get_char(x, y)
@@ -935,7 +935,7 @@ class DrawLines(BaseEffect):
                     px = ix - 2
                     py = iy - 2
                     next_char = 0
-                    while ix != line.p2[0]:
+                    while ix != line.end_point[0]:
                         if ix < px or ix - px >= 2 or iy < py or iy - py >= 2:
                             px = ix & ~1
                             py = iy & ~1
@@ -960,7 +960,7 @@ class DrawLines(BaseEffect):
                     py = iy - 2
                     next_char = 0
 
-                    while iy != line.p2[1]:
+                    while iy != line.end_point[1]:
                         if ix < px or ix - px >= 2 or iy < py or iy - py >= 2:
                             px = ix & ~1
                             py = iy & ~1
@@ -982,9 +982,9 @@ class DrawLines(BaseEffect):
                 if dy == 0 and self.thin and self.char is None:
                     pass
                 elif dx > dy:
-                    x_draw(line.p1[0], line.p1[1] + 1)
+                    x_draw(line.start_point[0], line.start_point[1] + 1)
                 else:
-                    y_draw(line.p1[0] + 1, line.p1[1])
+                    y_draw(line.start_point[0] + 1, line.start_point[1])
 
 
 class _FLAKE:
@@ -999,95 +999,7 @@ class _FLAKE:
         self.char = bruhcolored(_FLAKES[index], color=self.color).colored
         self.current_position = "center"
         self.on_ground = False
-
-    def flip_flake(self):
-        if self.char == _FLAKE_FLIPS[self.index][0]:
-            self.char = _FLAKE_FLIPS[self.index][1]
-        else:
-            self.char = _FLAKE_FLIPS[self.index][0]
-
-    def next_position(self, current_x, current_y, frame_number):
-        if self.on_ground:
-            return (current_x, current_y)
-
-        if frame_number % self.index != 0:
-            return (current_x, current_y)
-
-        if random.random() < 0.10:
-            return (current_x, current_y)
-
-        current_y = current_y + random.choice(_FLAKE_JUMPS[self.index])
-
-        next_position = random.choice(["left", "center", "right"])
-
-        next_flake_move = (
-            _NEXT_FLAKE_MOVE[(self.current_position, next_position)]
-            if self.current_position != next_position
-            else None
-        )
-
-        if next_flake_move:
-            current_x = current_x + next_flake_move
-            self.current_position = next_position
-
-        return (current_x, current_y)
-
-    def update_position(self, x, y):
-        self.x = x
-        self.y = y
-
-    def set_to_on_ground(self):
-        self.weight = 1
-        self.on_ground = True
-        self.color = 190 if random.random() < 0.01 else 255
-        self.char = bruhcolored(
-            _FLAKE_WEIGHT_CHARS[self.weight], color=self.color
-        ).colored
-
-    def increment_flake_weight(self):
-        self.weight += 1
-        if self.weight > max(_FLAKE_WEIGHT_CHARS.keys()):
-            self.weight = max(_FLAKE_WEIGHT_CHARS.keys())
-        self.update_ground_flake()
-
-    def update_ground_flake(self):
-        if self.char != list(_FLAKE_WEIGHT_CHARS.values())[-1]:
-            if self.weight in _FLAKE_WEIGHT_CHARS.keys():
-                self.char = bruhcolored(
-                    _FLAKE_WEIGHT_CHARS[self.weight], color=self.color
-                ).colored
-
-    def __str__(self):
-        return self.char
-
-    def __repr__(self):
-        return self.char
-
-    def __len__(self):
-        return 1
-
-    def copy(self):
-        new_flake = _FLAKE(index=self.index, x=self.x, y=self.y)
-        new_flake.weight = self.weight
-        new_flake.char = self.char
-        new_flake.current_position = self.current_position
-        new_flake.color = self.color
-        new_flake.on_ground = self.on_ground
-        return new_flake
-
-
-class _FLAKEv2:
-    def __init__(self, index, x, y):
-        self.index = index
-        self.x = x
-        self.y = y
-        self.prev_x = x
-        self.prev_y = y
-        self.weight = 1
-        self.color = _FLAKE_COLORS[index]
-        self.char = bruhcolored(_FLAKES[index], color=self.color).colored
-        self.current_position = "center"
-        self.on_ground = False
+        self.full = False
 
     def flip_flake(self):
         if self.char == _FLAKE_FLIPS[self.index][0]:
@@ -1137,17 +1049,21 @@ class _FLAKEv2:
         ).colored
 
     def increment_flake_weight(self):
-        self.weight += 1
-        if self.weight > max(_FLAKE_WEIGHT_CHARS.keys()):
-            self.weight = max(_FLAKE_WEIGHT_CHARS.keys())
+        if self.weight < 18:
+            self.weight += 1
+            
         self.update_ground_flake()
+        
+        if self.weight == 18:
+            self.full = True
 
     def update_ground_flake(self):
-        if self.char != list(_FLAKE_WEIGHT_CHARS.values())[-1]:
-            if self.weight in _FLAKE_WEIGHT_CHARS.keys():
-                self.char = bruhcolored(
-                    _FLAKE_WEIGHT_CHARS[self.weight], color=self.color
-                ).colored
+        if not self.full:
+            if self.char != list(_FLAKE_WEIGHT_CHARS.values())[-1]:
+                if self.weight in _FLAKE_WEIGHT_CHARS.keys():
+                    self.char = bruhcolored(
+                        _FLAKE_WEIGHT_CHARS[self.weight], color=self.color
+                    ).colored
 
     def __str__(self):
         return self.char
@@ -1162,7 +1078,7 @@ class _FLAKEv2:
         return self.char == other
 
     def copy(self):
-        new_flake = _FLAKEv2(index=self.index, x=self.x, y=self.y)
+        new_flake = _FLAKE(index=self.index, x=self.x, y=self.y)
         new_flake.weight = self.weight
         new_flake.char = self.char
         new_flake.current_position = self.current_position
@@ -1172,6 +1088,7 @@ class _FLAKEv2:
         new_flake.y = self.y
         new_flake.prev_x = self.prev_x
         new_flake.prev_y = self.prev_y
+        new_flake.full = self.full
         return new_flake
 
 
@@ -1195,7 +1112,7 @@ class SnowEffect(BaseEffect):
         self.total_ground_flakes = 0
         self._show_info = show_info
         self._flakes = []
-        self._ground_flakes = [None for _ in range(self.buffer.width())]
+        self._ground_flakes = [[None for _ in range(self.buffer.width())] for __ in range(self.buffer.height())]
         self._image_collide_flakes = [None for _ in range(self.buffer.width())]
 
     def update_collision(
@@ -1243,7 +1160,7 @@ class SnowEffect(BaseEffect):
         # generate the next set of flakes
         for x in range(self.buffer.width()):
             if random.random() < 0.01:
-                flake = _FLAKEv2(index=random.choice([1, 3, 7]), x=x, y=0)
+                flake = _FLAKE(index=random.choice([1, 3, 7]), x=x, y=0)
                 self._flakes.append(flake)
         
         if self.smart_transparent and frame_number == 0 and self.image_present:
@@ -1266,16 +1183,21 @@ class SnowEffect(BaseEffect):
                 and flake.x < self.buffer.width()
                 and flake.y >= self.buffer.height() - 1
             ):
-                if isinstance(self._ground_flakes[flake.x], _FLAKEv2):
-                    ground_flake: _FLAKEv2 = self._ground_flakes[flake.x]
+                y_check = flake.y
+                
+                if y_check >= self.buffer.height():
+                    y_check = self.buffer.height() - 1
+                
+                if isinstance(self._ground_flakes[y_check][flake.x], _FLAKE):
+                    ground_flake: _FLAKE = self._ground_flakes[y_check][flake.x]
                     ground_flake.increment_flake_weight()
-                    self._ground_flakes[flake.x] = ground_flake.copy()
+                    self._ground_flakes[y_check][flake.x] = ground_flake.copy()
                     del ground_flake
                 else:
                     tmp_flake = flake.copy()
                     tmp_flake.set_to_on_ground()
-                    tmp_flake.y = self.buffer.height() - 1
-                    self._ground_flakes[flake.x] = tmp_flake
+                    tmp_flake.y = y_check
+                    self._ground_flakes[y_check][flake.x] = tmp_flake
                 self._flakes[idx] = None
                 self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
             elif (
@@ -1297,8 +1219,8 @@ class SnowEffect(BaseEffect):
                         flake.y <= self.image_y_boundaries[1]
                     ):
                         # colliding with image
-                        if isinstance(self._image_collide_flakes[flake.x], _FLAKEv2):
-                            ground_flake: _FLAKEv2 = self._image_collide_flakes[flake.x].copy()
+                        if isinstance(self._image_collide_flakes[flake.x], _FLAKE):
+                            ground_flake: _FLAKE = self._image_collide_flakes[flake.x].copy()
                             ground_flake.increment_flake_weight()
                             self._image_collide_flakes[flake.x] = ground_flake
                             del ground_flake
@@ -1320,8 +1242,8 @@ class SnowEffect(BaseEffect):
                                 self._flakes[idx] = None
                                 self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
 
-                                if isinstance(self.buffer.get_char(flake.x, start_bound), _FLAKEv2):
-                                    ground_flake: _FLAKEv2 = self._image_collide_flakes[flake.x].copy()
+                                if isinstance(self.buffer.get_char(flake.x, start_bound), _FLAKE):
+                                    ground_flake: _FLAKE = self._image_collide_flakes[flake.x].copy()
                                     ground_flake.increment_flake_weight()
                                     self._image_collide_flakes[flake.x] = ground_flake
                                     del ground_flake
@@ -1341,9 +1263,11 @@ class SnowEffect(BaseEffect):
 
         # place the ground flakes
         if self.collision:
-            for flake in self._ground_flakes:
-                if flake:
-                    self.buffer.put_char(flake.x, flake.y, flake)
+            for y in range(self.buffer.height()):
+                for x in range(self.buffer.width()):
+                    flake = self._ground_flakes[y][x]
+                    if flake:
+                        self.buffer.put_char(flake.x, flake.y, flake)
             for flake in self._image_collide_flakes:
                 if flake:
                     self.buffer.put_char(flake.x, flake.y, flake)
@@ -1354,12 +1278,16 @@ class SnowEffect(BaseEffect):
             self.buffer.put_at(0, 3, f"Collision Enabled: {self.collision}")
             self.buffer.put_at(0, 4, f"Total  flakes: {len(self._flakes):3d}")
             self.buffer.put_at(
-                0, 5, f"Ground flakes: {len([0 for _ in self._ground_flakes if _]):3d}"
+                0, 5, f"Ground flakes: {sum([sum([1 for x in range(len(self._ground_flakes[0])) if self._ground_flakes[y][x]]) for y in range(len(self._ground_flakes))]):3d}"
             )
-            self.buffer.put_at(0, 6, f"Image present: {self.image_present}")
+            self.buffer.put_at(0, 6, f"Full flakes: {sum([1 for flake in [j for sub in self._ground_flakes for j in sub] if flake and flake.full]):3d}")
+            self.buffer.put_at(0, 7, f"Image present: {self.image_present}")
             if self.image_present:
-                self.buffer.put_at(0, 7, f"Total flakes on image: {len([0 for _ in self._image_collide_flakes if _]):3d}")
-                self.buffer.put_at(0, 8, f"Image x boundaries: {self.image_x_boundaries}")
-                self.buffer.put_at(0, 9, f"Image y boundaries: {self.image_y_boundaries}")
-                self.buffer.put_at(0, 10, f"Image y bottom: {self.img_end_y}")
+                self.buffer.put_at(0, 8, f"Total flakes on image: {len([0 for _ in self._image_collide_flakes if _]):3d}")
+                self.buffer.put_at(0, 9, f"Image x boundaries: {self.image_x_boundaries}")
+                self.buffer.put_at(0, 10, f"Image y boundaries: {self.image_y_boundaries}")
+                self.buffer.put_at(0, 11, f"Image y bottom: {self.img_end_y}")
 
+        # for flake in [j for sub in self._ground_flakes for j in sub]:
+        #     if flake:
+        #         print(f"{flake.weight} - {flake.char} - {flake.full}")
