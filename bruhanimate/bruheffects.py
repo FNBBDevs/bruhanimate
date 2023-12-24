@@ -1183,27 +1183,38 @@ class SnowEffect(BaseEffect):
                 and flake.x < self.buffer.width()
                 and flake.y >= self.buffer.height() - 1
             ):
-                y_check = flake.y
+                true_y = flake.y
                 
-                if y_check >= self.buffer.height():
-                    y_check = self.buffer.height() - 1
+                # need to set the y value to be the actual net available y val
+                # what isn't a valid y value? 
+                # a -> value that exceeds the buffer height
+                # b -> value that intercepts a full flake in the column
+                true_y = self.buffer.height() - 1
+                for y in range(self.buffer.height()-1, -1, -1):
+                    if self._ground_flakes[y][flake.x] is None or not self._ground_flakes[y][flake.x].full:
+                        true_y = y
+                        break
                 
-                if isinstance(self._ground_flakes[y_check][flake.x], _FLAKE):
-                    ground_flake: _FLAKE = self._ground_flakes[y_check][flake.x]
+                if isinstance(self._ground_flakes[true_y][flake.x], _FLAKE) and not self._ground_flakes[true_y][flake.x].full:
+                    ground_flake: _FLAKE = self._ground_flakes[true_y][flake.x]
                     ground_flake.increment_flake_weight()
-                    self._ground_flakes[y_check][flake.x] = ground_flake.copy()
+                    self._ground_flakes[true_y][flake.x] = ground_flake.copy()
                     del ground_flake
+                elif isinstance(self._ground_flakes[true_y][flake.x], _FLAKE):
+                    tmp_flake = flake.copy()
+                    tmp_flake.set_to_on_ground()
+                    tmp_flake.y = true_y - 1
+                    self._ground_flakes[true_y - 1][flake.x] = tmp_flake
                 else:
                     tmp_flake = flake.copy()
                     tmp_flake.set_to_on_ground()
-                    tmp_flake.y = y_check
-                    self._ground_flakes[y_check][flake.x] = tmp_flake
+                    tmp_flake.y = true_y
+                    self._ground_flakes[true_y][flake.x] = tmp_flake
                 self._flakes[idx] = None
                 self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
             elif (
                 flake.x < 0
                 or flake.x >= self.buffer.width()
-                or flake.y < 0
 
             ):
                 self._flakes[idx] = None
