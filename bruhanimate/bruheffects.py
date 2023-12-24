@@ -1183,18 +1183,21 @@ class SnowEffect(BaseEffect):
                 and flake.x < self.buffer.width()
                 and flake.y >= self.buffer.height() - 1
             ):
-                true_y = flake.y
+                # true_y = flake.y
                 
                 # need to set the y value to be the actual net available y val
                 # what isn't a valid y value? 
                 # a -> value that exceeds the buffer height
                 # b -> value that intercepts a full flake in the column
-                true_y = self.buffer.height() - 1
+                true_y = None
                 for y in range(self.buffer.height()-1, -1, -1):
                     if self._ground_flakes[y][flake.x] is None or not self._ground_flakes[y][flake.x].full:
                         true_y = y
                         break
                 
+                if true_y is None:
+                    break
+                               
                 if isinstance(self._ground_flakes[true_y][flake.x], _FLAKE) and not self._ground_flakes[true_y][flake.x].full:
                     ground_flake: _FLAKE = self._ground_flakes[true_y][flake.x]
                     ground_flake.increment_flake_weight()
