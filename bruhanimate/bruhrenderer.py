@@ -36,7 +36,7 @@ _VALID_EFFECTS = [
     "matrix",
     "drawlines",
     "snow",
-    "fade"
+    "twinkle"
 ]
 
 HORIZONTAL = "h"
@@ -103,8 +103,8 @@ class BaseRenderer:
             self.effect = DrawLines(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "snow":
             self.effect = SnowEffect(Buffer(self.height, self.width), self.background)
-        elif self.effect_type == "fade":
-            self.effect = FadeEffect(Buffer(self.height, self.width), self.background)
+        elif self.effect_type == "twinkle":
+            self.effect = TwinkleEffect(Buffer(self.height, self.width), self.background)
 
         self.effect.smart_transparent = False
 
