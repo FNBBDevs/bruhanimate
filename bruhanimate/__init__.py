@@ -24,9 +24,9 @@ from bruhanimate.bruhrenderer import (
     BackgroundColorRenderer,
 )
 from bruhanimate import images
-from bruhanimate.demos import line_demo, plasma_demo, snow_demo, holiday
+from bruhanimate.demos import line_demo, plasma_demo, snow_demo, holiday, stars_demo, twinkle_demo, noise_demo, matrix_demo, gol_demo, rain_demo, offset_demo, static_demo
 
-__version__ = "0.1.98"
+__version__ = "0.2.0"
 
 __all__ = [
     "Screen",
@@ -34,6 +34,14 @@ __all__ = [
     "line_demo",
     "holiday",
     "snow_demo",
+    "stars_demo",
+    "twinkle_demo",
+    "noise_demo",
+    "matrix_demo",
+    "gol_demo",
+    "rain_demo",
+    "offset_demo",
+    "static_demo",
     "BaseEffect",
     "StaticEffect",
     "OffsetEffect",

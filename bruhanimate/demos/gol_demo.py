@@ -3,24 +3,23 @@ from bruhanimate.bruhrenderer import CenterRenderer
 import bruhanimate.images as images
 
 import os
+
 os.system(" ")
 
-def snow(screen):
+
+def gol(screen):
     try:
-        CenterRenderer()
         renderer = CenterRenderer(
             screen=screen,
-            img=images.text_to_image("SNOW!"),
             frames=float("inf"),
-            time=0.075,
-            effect_type="snow",
+            img=images.text_to_image("GOL!"),
+            time=0.0,
+            effect_type="gol",
             background=" ",
-            transparent=True
+            transparent=False,
         )
-        
-        renderer.update_collision(True)
 
-        renderer.update_smart_transparent(True)
+        renderer.effect.update_decay(True, "RAINBOW", "default")
 
         renderer.run()
 
@@ -33,7 +32,7 @@ def snow(screen):
 
 
 def run():
-    Screen.show(snow)
+    Screen.show(gol)
 
 
 if __name__ == "__main__":

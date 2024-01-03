@@ -6,7 +6,7 @@ import bruhanimate.images as images
 def show(screen):
     try:
         image = images.text_to_image(
-            "Welcome!", padding_top_bottom=1, padding_left_right=3
+            "PLASMA!", padding_top_bottom=1, padding_left_right=3
         )
 
         # Create the renderer
