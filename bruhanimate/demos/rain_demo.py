@@ -13,7 +13,7 @@ def rain(screen):
             screen=screen,
             frames=float("inf"),
             img=images.text_to_image("RAIN!"),
-            time=0.0,
+            time=0.01,
             effect_type="rain",
             background=" ",
             transparent=False,
@@ -22,7 +22,7 @@ def rain(screen):
         renderer.update_collision(True)
         renderer.update_smart_transparent(True)
         
-        renderer.effect.set_rain_intensity(0)
+        renderer.effect.update_intensity(0)
         renderer.effect.update_swells(True)
         renderer.effect.update_wind_direction("east")
 

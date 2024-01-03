@@ -7,7 +7,6 @@ os.system(" ")
 
 def snow(screen):
     try:
-        CenterRenderer()
         renderer = CenterRenderer(
             screen=screen,
             img=images.text_to_image("SNOW!"),
