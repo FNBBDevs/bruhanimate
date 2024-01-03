@@ -1305,3 +1305,44 @@ class SnowEffect(BaseEffect):
         # for flake in [j for sub in self._ground_flakes for j in sub]:
         #     if flake:
         #         print(f"{flake.weight} - {flake.char} - {flake.full}")
+
+
+_FADE_COLORS = {idx:val for idx, val in enumerate(range(232, 256))}
+
+class _FADE_SPEC:
+    def __init__(self, char, value):
+        self.char = char
+        self.value = value
+        self.fade = bruhcolored(self.char, _FADE_COLORS[self.value])
+
+    def __str__(self):
+        return self.fade.colored
+
+    def __repr__(self):
+        return self.fade.colored
+    
+    def next(self):
+        self.value = (self.value + 1) % 24
+        self.fade = bruhcolored(self.char, _FADE_COLORS[self.value])
+        return self
+    
+    def copy(self):
+        new_fade_spec = _FADE_SPEC(self.char, self.value)
+        return new_fade_spec
+
+
+class FadeEffect(BaseEffect):
+    def __init__(self, buffer, background):
+        super(FadeEffect, self).__init__(buffer, background)
+    
+    def render_frame(self, frame_number):
+        if frame_number == 0:
+            for y in range(self.buffer.height()):
+                for x in range(self.buffer.width()):
+                    new_fade_spec = _FADE_SPEC(".", random.randint(0, 23))
+                    self.buffer.put_char(x, y, new_fade_spec)        
+        else:
+            for y in range(self.buffer.height()):
+                for x in range(self.buffer.width()):
+                    self.buffer.buffer[y][x].next()
+                    self.buffer.put_char(x, y, self.buffer.buffer[y][x].copy())
