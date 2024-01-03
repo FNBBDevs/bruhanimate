@@ -30,6 +30,26 @@ cd bruhanimate
 python -m pip install .
 ```
 
+# Quick Start
+Use some of the built in demos to see what is possible. There are demos for each effect. Simply import `<effect>_demo` from bruhanimate and call the `<effect>_demo.run()` to run the demo!
+- static
+- offset
+- noise
+- stars
+- snow
+- rain
+- plasma
+- gol (Conway's Game of Life)
+- matrix
+- twinkle
+
+```py
+# Import a demo
+from bruhanimate import plasma_demo
+# run the demo
+plasma_demo.run()
+```
+
 # Usage
 Here are some examples on how bruhanimate might be used. <br/><br/>
 ```py
