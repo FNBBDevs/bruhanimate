@@ -1342,17 +1342,18 @@ class _TWINKLE_SPEC:
 class TwinkleEffect(BaseEffect):
     def __init__(self, buffer, background):
         super(TwinkleEffect, self).__init__(buffer, background)
+        self.specs = []
     
     def render_frame(self, frame_number):
         if frame_number == 0:
             for y in range(self.buffer.height()):
                 for x in range(self.buffer.width()):
-                    if random.random() < 0.1:
+                    if random.random() < 0.05:
                         new_TWINKLE_SPEC = _TWINKLE_SPEC(".", random.randint(0, 23))
-                        self.buffer.put_char(x, y, new_TWINKLE_SPEC)        
+                        self.buffer.put_char(x, y, new_TWINKLE_SPEC)
+                        self.specs.append((x, y))   
         else:
-            for y in range(self.buffer.height()):
-                for x in range(self.buffer.width()):
-                    if isinstance(self.buffer.get_char(x, y), _TWINKLE_SPEC):
-                        self.buffer.buffer[y][x].next()
-                        self.buffer.put_char(x, y, self.buffer.buffer[y][x].copy())
+            for x, y in self.specs:
+                spec = self.buffer.get_char(x, y)
+                self.buffer.put_char(x, y, spec.next().copy())
+                del spec
