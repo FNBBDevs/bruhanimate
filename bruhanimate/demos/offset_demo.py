@@ -3,24 +3,21 @@ from bruhanimate.bruhrenderer import CenterRenderer
 import bruhanimate.images as images
 
 import os
+
 os.system(" ")
 
-def snow(screen):
+
+def offset(screen):
     try:
-        CenterRenderer()
         renderer = CenterRenderer(
             screen=screen,
-            img=images.text_to_image("SNOW!"),
             frames=float("inf"),
-            time=0.075,
-            effect_type="snow",
-            background=" ",
-            transparent=True
+            img=images.text_to_image("OFFSET!"),
+            time=0.0,
+            effect_type="offset",
+            background="!!@@##$$%%^^&&**(())__++",
+            transparent=False,
         )
-        
-        renderer.update_collision(True)
-
-        renderer.update_smart_transparent(True)
 
         renderer.run()
 
@@ -33,7 +30,7 @@ def snow(screen):
 
 
 def run():
-    Screen.show(snow)
+    Screen.show(offset)
 
 
 if __name__ == "__main__":
