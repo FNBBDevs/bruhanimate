@@ -31,6 +31,8 @@ def show(screen):
         renderer.effect.update_grey_scale_size(10)
 
         renderer.effect.update_plasma_values(10, 26, 19, 41)
+        
+        renderer.effect.update_info_visibility(True)
 
         # Run the animation
         renderer.update_exit_stats(
