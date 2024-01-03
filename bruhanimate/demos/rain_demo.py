@@ -13,7 +13,7 @@ def rain(screen):
             screen=screen,
             frames=float("inf"),
             img=images.text_to_image("RAIN!"),
-            time=0.0,
+            time=0.05,
             effect_type="rain",
             background=" ",
             transparent=False,
