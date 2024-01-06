@@ -2,6 +2,10 @@ from bruhanimate.bruhrenderer import *
 from bruhanimate.bruhscreen import Screen
 import bruhanimate.images as images
 
+import os
+import sys
+
+os.system("")
 
 def demo(screen, img, frames, time, effect, background, transparent):
     try:
@@ -29,12 +33,14 @@ def demo(screen, img, frames, time, effect, background, transparent):
         # RUN THE ANIMATION
         renderer.run(end_message=False)
 
-        # CATCH THE END WITH INPUT() ON WINDOWS
-        input()
+        if sys.platform == 'win32':
+            input()
+            
     except KeyboardInterrupt:
         renderer.render_exit()
         renderer.push_front_to_screen()
-        input()
+        if sys.platform == 'win32':
+            input()
 
 
 def run():

@@ -3,6 +3,7 @@ from bruhanimate.bruhrenderer import *
 from bruhanimate.images import get_image
 
 import os
+import sys
 
 os.system(" ")
 
@@ -25,12 +26,14 @@ def holiday(screen):
 
         renderer.run()
 
-        input()
+        if sys.platform == 'win32':
+            input()
 
     except KeyboardInterrupt:
         renderer.render_exit()
         renderer.push_front_to_screen()
-        input()
+        if sys.platform == 'win32':
+            input()
 
 
 def run():

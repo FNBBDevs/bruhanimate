@@ -2,6 +2,11 @@ from bruhanimate.bruhrenderer import *
 from bruhanimate.bruhscreen import Screen
 import bruhanimate.images as images
 
+import os
+import sys
+
+os.system("")
+
 
 def show(screen):
     try:
@@ -43,13 +48,14 @@ def show(screen):
         )
         renderer.run(end_message=True)
 
-        # Catch the end with input() --> for Win-Systems --> no input() is needed for Unix-Systems
-        input()
+        if sys.platform == 'win32':
+            input()
 
     except KeyboardInterrupt:
         renderer.render_exit()
         renderer.push_front_to_screen()
-        input()
+        if sys.platform == 'win32':
+            input()
 
 
 def run():

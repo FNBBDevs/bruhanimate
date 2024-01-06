@@ -1322,6 +1322,9 @@ class _TWINKLE_SPEC:
     def __repr__(self):
         return self.fade.colored
     
+    def __len__(self):
+        return 1
+    
     def next(self):
         if self.value >= 23:
             self.mode = -1
