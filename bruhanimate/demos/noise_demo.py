@@ -3,6 +3,7 @@ from bruhanimate.bruhrenderer import CenterRenderer
 import bruhanimate.images as images
 
 import os
+import sys
 
 os.system(" ")
 
@@ -23,12 +24,14 @@ def noise(screen):
 
         renderer.run()
 
-        input()
+        if sys.platform == 'win32':
+            input()
 
     except KeyboardInterrupt:
         renderer.render_exit()
         renderer.push_front_to_screen()
-        input()
+        if sys.platform == 'win32':
+            input()
 
 
 def run():

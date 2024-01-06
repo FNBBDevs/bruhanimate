@@ -72,7 +72,7 @@ if sys.platform == 'win32':
             try:
                 left_pad = (self.width - width) // 2
                 self._stdout.SetConsoleCursorPosition(win32console.PyCOORDType(left_pad, y))
-                self._stdout.WriteConsole(text)
+                self._stdout.WriteConsole(str(text))
                 self._current_x = left_pad + width
                 self._current_y = y
             except pywintypes.error:
@@ -225,7 +225,7 @@ else:
             if x != self._cur_x or y != self._cur_y:
                 cursor = curses.tparm(self._move_y_x, y, x).decode("utf-8")
             try:
-                self._safe_write(cursor + text)
+                self._safe_write(cursor + str(text))
             except UnicodeEncodeError:
                 self._safe_write(cursor + "?" * len(text))
 
