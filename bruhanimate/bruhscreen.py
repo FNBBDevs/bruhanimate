@@ -90,6 +90,18 @@ if sys.platform == 'win32':
             self._stdout.SetConsoleCursorPosition(
                 win32console.PyCOORDType(0, 0))
         
+        def has_resized(self):
+            re_sized = False
+            info = self._stdout.GetConsoleScreenBufferInfo()['Window']
+            width = info.Right - info.Left + 1
+            height = info.Bottom - info.Top + 1
+            if width != self._last_width or height != self._last_height:
+                re_sized = True
+            return re_sized
+
+        def set_title(self, title):
+            win32console.SetConsoleTitle(title)
+        
         @classmethod
         def open(cls):
             old_out = win32console.PyConsoleScreenBufferType(win32file.CreateFile("CONOUT$", win32file.GENERIC_READ | win32file.GENERIC_WRITE,

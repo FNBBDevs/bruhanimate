@@ -22,8 +22,9 @@ class Buffer:
     def __init__(self, height, width):
         self._height = height
         self._width = width
-        line = [u" " for _ in range(self._width)]
-        self.buffer = [line[:] for _ in range(self._height)]
+        self._center = self._width // 2
+        self._line = line = [u" " for _ in range(self._width)]
+        self.buffer = [self._line[:] for _ in range(self._height)]
     
     def get_buffer_changes(self, in_buf):
         """
@@ -31,7 +32,7 @@ class Buffer:
         and buffer that was passed in
         :param in_buf: buffer to compare this buffer to
         """
-        if self._height != len(in_buf.buffer) or self._width != len(in_buf.buffer[0]):
+        if self._height != in_buf.height() or self._width != in_buf.width():
             return None
 
         for y in range(self._height):
@@ -73,11 +74,10 @@ class Buffer:
         Put the value at the given location
         """
         if 0 <= y < self._height and 0 <= x < self._width:
-            if not transparent:  
-                if self.buffer[y][x] != val:
+            if self.buffer[y][x] != val:
+                if transparent and val != " ":  
                     self.buffer[y][x] = val
-            else:
-                if self.buffer[y][x] != val and val != " ":
+                else:
                     self.buffer[y][x] = val
 
     def put_at(self, x, y, text, transparent=False):
@@ -95,7 +95,6 @@ class Buffer:
             text = text[:self._width-x]
         
         if not transparent:
-            #self.buffer[y] = self.buffer[y][:x] + [c for c in text] + self.buffer[y][x + len(text):]
             for i, c in enumerate(text):
                 self.put_char(x+i, y, c)
         else:
@@ -109,13 +108,12 @@ class Buffer:
         :param y: row to place the text.
         :param text: text to write to the buffers.
         """
-
         if not transparent:
-            x = (self._width // 2) - len(text) // 2
+            x = self._center - len(text) // 2
             for i, c in enumerate(text):
                 self.put_char(x+i, y, c)
         else:
-            x = (self._width // 2) - len(text) // 2
+            x = self._center - len(text) // 2
             for i, c in enumerate(text):
                 if c != " ":
                     self.put_char(x+i, y, c)
@@ -126,20 +124,18 @@ class Buffer:
         by the shift value. '-' -> scroll down, '+' -> scroll up
         :param shift: amount to shift up or down
         """
-        line = [u" " for _ in range(self._width)]
-
         if shift > 0:
             shift = min(shift, self._height)
             for y in range(0, self._height - shift):
                 self.buffer[y] = self.buffer[y + shift]
             for y in range(self._height - shift, self._height):
-                self.buffer[y] = line[:]
+                self.buffer[y] = self._line[:]
         else:
             shift = max(shift, -self._height)
             for y in range(self._height - 1, -shift - 1, -1):
                 self.buffer[y] = self.buffer[y + shift]
             for y in range(0, -shift):
-                self.buffer[y] = line[:]
+                self.buffer[y] = self._line[:]
     
     def shift_line(self, y, shift):
         """
@@ -176,23 +172,19 @@ class Buffer:
         for y in range(self._height):
             self.buffer[y][:] = in_buf.buffer[y][:]
     
-    def sync_over_top_img(self, img_buffer):
+    def sync_over_top(self, in_buf):
         """
-        Apply the image overtop this buffer. Image takes priority.
+        Apply non-none values over top this buffer from
+        the in_buffer
+        :param in_buf: buffer to take non-none values from
         """
         for y in range(self._height):
             for x in range(self._width):
-                if img_buffer.buffer[y][x] != None:
-                    self.buffer[y][x] = img_buffer.buffer[y][x]
+                if in_buf.buffer[y][x] != None:
+                    self.buffer[y][x] = in_buf.buffer[y][x]
 
     def height(self):
-        """
-        Height attribute
-        """
         return self._height
 
     def width(self):
-        """
-        Width attribute
-        """
         return self._width

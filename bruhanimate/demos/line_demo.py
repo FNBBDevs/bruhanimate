@@ -7,40 +7,34 @@ import sys
 
 os.system("")
 
+
 def demo(screen, img, frames, time, effect, background, transparent):
-    try:
-        # CREATE THE RENDERER
-        renderer = PanRenderer(
-            screen=screen,
-            frames=frames,
-            time=time,
-            img=img,
-            effect_type=effect,
-            background=background,
-            transparent=transparent,
-            loop=True,
-        )
+    # CREATE THE RENDERER
+    renderer = PanRenderer(
+        screen=screen,
+        frames=frames,
+        time=time,
+        img=img,
+        effect_type=effect,
+        background=background,
+        transparent=transparent,
+        loop=True,
+    )
 
-        # REGISTER THE LINES - LET'S MAKE A DECENT 3D TRIANGLE
-        renderer.effect.add_line((15, 15), (30, 30))
-        renderer.effect.add_line((30, 30), (50, 20))
-        renderer.effect.add_line((50, 20), (15, 15))
+    # REGISTER THE LINES - LET'S MAKE A DECENT 3D TRIANGLE
+    renderer.effect.add_line((15, 15), (30, 30))
+    renderer.effect.add_line((30, 30), (50, 20))
+    renderer.effect.add_line((50, 20), (15, 15))
 
-        renderer.effect.add_line((30, 30), (32, 22))
-        renderer.effect.add_line((32, 22), (15, 15))
-        renderer.effect.add_line((32, 22), (50, 20))
+    renderer.effect.add_line((30, 30), (32, 22))
+    renderer.effect.add_line((32, 22), (15, 15))
+    renderer.effect.add_line((32, 22), (50, 20))
 
-        # RUN THE ANIMATION
-        renderer.run(end_message=False)
+    # RUN THE ANIMATION
+    renderer.run(end_message=False)
 
-        if sys.platform == 'win32':
-            input()
-            
-    except KeyboardInterrupt:
-        renderer.render_exit()
-        renderer.push_front_to_screen()
-        if sys.platform == 'win32':
-            input()
+    if sys.platform == "win32":
+        input()
 
 
 def run():

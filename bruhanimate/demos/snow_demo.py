@@ -7,32 +7,23 @@ import sys
 
 os.system(" ")
 
+
 def snow(screen):
-    try:
-        renderer = CenterRenderer(
-            screen=screen,
-            img=images.text_to_image("SNOW!"),
-            frames=float("inf"),
-            time=0.075,
-            effect_type="snow",
-            background=" ",
-            transparent=True
-        )
-        
-        renderer.update_collision(True)
+    renderer = CenterRenderer(
+        screen=screen,
+        img=images.text_to_image("SNOW!"),
+        frames=float("inf"),
+        time=0.075,
+        effect_type="snow",
+        background=" ",
+        transparent=True,
+    )
 
-        renderer.update_smart_transparent(True)
+    renderer.update_collision(True)
 
-        renderer.run()
+    renderer.update_smart_transparent(True)
 
-        if sys.platform == 'win32':
-            input()
-
-    except KeyboardInterrupt:
-        renderer.render_exit()
-        renderer.push_front_to_screen()
-        if sys.platform == 'win32':
-            input()
+    renderer.run()
 
 
 def run():
