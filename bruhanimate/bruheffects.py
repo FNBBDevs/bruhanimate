@@ -916,7 +916,7 @@ class DrawLines(BaseEffect):
         self.char = char
         self.thin = thin
 
-    def addLine(self, start_point, end_point):
+    def add_line(self, start_point, end_point):
         self.lines.append(Line(start_point, end_point))
 
     def render_frame(self, frame_number):
