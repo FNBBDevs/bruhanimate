@@ -1,5 +1,5 @@
 @echo off
-git checout main
+git checkout main
 git pull
 git checkout dev
 git merge main
