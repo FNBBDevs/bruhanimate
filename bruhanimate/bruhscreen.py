@@ -201,6 +201,9 @@ else:
         def _continue_handler(self, *_):
             self.force_update(full_refresh=True)
 
+        def has_resized(self):
+            return self._re_sized
+
         def close(self, restore=True):
             self.signal_state.restore()
             if restore:
