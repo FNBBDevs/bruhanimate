@@ -92,9 +92,7 @@ class BaseRenderer:
         elif self.effect_type == "plasma":
             self.effect = PlasmaEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "gol":
-            self.effect = GameOfLifeEffect(
-                Buffer(self.height, self.width), self.background
-            )
+            self.effect = GameOfLifeEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "rain":
             self.effect = RainEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "matrix":
@@ -203,33 +201,42 @@ class BaseRenderer:
         with the back_buffer. Why? So the effect and image, and there associated calculations can be done independently.
         """
 
-        if self.frames == INF:
-            frame = 0
-            while True:
-                sleep(self.time)
-                self.render_img_frame(frame)
-                self.effect.render_frame(frame)
-                self.back_buffer.sync_with(self.effect.buffer)
-                self.back_buffer.sync_over_top_img(self.image_buffer)
+        try:
+            if self.frames == INF:
+                frame = 0
+                while True:
+                    if self.screen.has_resized(): raise Exception("An error was encounter. The Screen was resized.")
+                    sleep(self.time)
+                    self.render_img_frame(frame)
+                    self.effect.render_frame(frame)
+                    self.back_buffer.sync_with(self.effect.buffer)
+                    self.back_buffer.sync_over_top(self.image_buffer)
+                    self.push_front_to_screen()
+                    self.front_buffer.sync_with(self.back_buffer)
+                    frame += 1
+            else:
+                for frame in range(self.frames):
+                    if self.screen.has_resized(): raise Exception("An error was encounter. The Screen was resized.")
+                    sleep(self.time)
+                    self.render_img_frame(frame)
+                    self.effect.render_frame(frame)
+                    self.back_buffer.sync_with(self.effect.buffer)
+                    self.back_buffer.sync_over_top(self.image_buffer)
+                    self.push_front_to_screen()
+                    self.front_buffer.sync_with(self.back_buffer)
+            
+            if end_message:
+                self.render_exit()
                 self.push_front_to_screen()
-                self.front_buffer.sync_with(self.back_buffer)
-                frame += 1
-        else:
-            for frame in range(self.frames):
-                sleep(self.time)
-                self.render_img_frame(frame)
-                self.effect.render_frame(frame)
-                self.back_buffer.sync_with(self.effect.buffer)
-                self.back_buffer.sync_over_top_img(self.image_buffer)
+            if sys.platform == 'win32': input()
+        except KeyboardInterrupt:
+            if end_message:
+                self.render_exit()
                 self.push_front_to_screen()
-                self.front_buffer.sync_with(self.back_buffer)
-
-        if end_message:
-            self.render_exit()
-            self.push_front_to_screen()
+            if sys.platform == 'win32': input()
 
     def update_exit_stats(
-        self, msg1=None, msg2=None, wipe=None, x_loc=0, y_loc=1, centered=False
+        self, msg1=None, msg2=None, wipe=None, x_loc=None, y_loc=None, centered=False
     ):
         """
         Set the exit messages for when the animation finishes
@@ -246,7 +253,8 @@ class BaseRenderer:
             self.msg2 = msg2.replace("\n", "")
         if wipe:
             self.wipe = wipe
-        self.x_loc, self.y_loc = x_loc, y_loc
+        if x_loc and y_loc:
+            self.x_loc, self.y_loc = x_loc, y_loc
         self.centered = centered
 
     @abstractmethod
@@ -291,6 +299,7 @@ class EffectRenderer(BaseRenderer):
         if self.frames == INF:
             frame = 0
             while True:
+                if self.screen.has_resized(): raise Exception("An error was encounter. The Screen was resized.")
                 sleep(self.time)
                 self.render_effect_frame(frame)
                 self.back_buffer.sync_with(self.effect.buffer)
@@ -299,6 +308,7 @@ class EffectRenderer(BaseRenderer):
                 frame += 1
         else:
             for frame in range(self.frames):
+                if self.screen.has_resized(): raise Exception("An error was encounter. The Screen was resized.")
                 sleep(self.time)
                 self.render_effect_frame(frame)
                 self.back_buffer.sync_with(self.effect.buffer)
@@ -330,10 +340,9 @@ class CenterRenderer(BaseRenderer):
             screen, frames, time, effect_type, background, transparent
         )
         self.background = background
-
         self.transparent = transparent
 
-        # IMAGE
+        # Image attributes
         self.img = img
         self.img_height = len(self.img)
         self.img_width = len(self.img[0])
@@ -341,6 +350,7 @@ class CenterRenderer(BaseRenderer):
         self.img_x_start = (self.width - self.img_width) // 2
         self.current_img_x = self.img_x_start
         self.current_img_y = self.img_y_start
+        self.none_fill_char = None
 
     def render_img_frame(self, frame_number):
         """
@@ -570,6 +580,7 @@ class FocusRenderer(BaseRenderer):
         start_frame=0,
         reverse=False,
         start_reverse=None,
+        loop=True
     ):
         super(FocusRenderer, self).__init__(
             screen, frames, time, effect_type, background, transparent
@@ -580,15 +591,19 @@ class FocusRenderer(BaseRenderer):
         self.start_frame = start_frame
         self.reverse = reverse
         self.start_reverse = start_reverse
-
-        if start_reverse < self.start_frame:
-            raise Exception(
-                f"the frame to start the reverse can not be less than the start frame\n\tstart_frame: {self.start_frame}, start_reverse: {self.start_reverse}"
-            )
+        if self.start_reverse:
+            self.frame_gap = start_reverse - start_frame
+        self.loop = True if loop == True and reverse == True else False
+        self.loops = 1
 
         if self.reverse and self.start_reverse == None:
             raise Exception(
                 "if reverse is enabled, and start_reverse frame must be provided"
+            )
+
+        if self.reverse and start_reverse < self.start_frame:
+            raise Exception(
+                f"the frame to start the reverse can not be less than the start frame\n\tstart_frame: {self.start_frame}, start_reverse: {self.start_reverse}"
             )
 
         if self.img:
@@ -699,8 +714,8 @@ class FocusRenderer(BaseRenderer):
     def render_img_frame(self, frame_number):
         """
         Renders the next image frame into the image buffer
-        """
-        if frame_number >= self.start_reverse:
+        """        
+        if self.reverse and frame_number >= self.start_reverse:
             if not self.solved(end_state="start"):
                 for y in range(len(self.current_board)):
                     for x in range(len(self.current_board[y])):
@@ -725,6 +740,11 @@ class FocusRenderer(BaseRenderer):
                             value[0], value[1], value[2], transparent=self.transparent
                         )
             else:
+                if self.loop:
+                    self.loops += 1
+                    self.start_frame = self.start_reverse + self.frame_gap
+                    self.start_reverse = self.start_frame + self.frame_gap
+                    self._set_img_attributes()
                 self.image_buffer.clear_buffer(val=None)
         elif frame_number >= self.start_frame:
             if not self.solved(end_state="end"):

@@ -9,28 +9,17 @@ os.system(" ")
 
 
 def twinkle(screen):
-    try:
-        renderer = CenterRenderer(
-            screen=screen,
-            img=images.text_to_image("TWINKLE!"),
-            frames=float("inf"),
-            time=0.05,
-            effect_type="twinkle",
-            background=" ",
-            transparent=False,
-        )
+    renderer = CenterRenderer(
+        screen=screen,
+        img=images.text_to_image("TWINKLE!"),
+        frames=float("inf"),
+        time=0.05,
+        effect_type="twinkle",
+        background=" ",
+        transparent=False,
+    )
 
-        renderer.run()
-
-        if sys.platform == 'win32':
-            input()
-        
-
-    except KeyboardInterrupt:
-        renderer.render_exit()
-        renderer.push_front_to_screen()
-        if sys.platform == 'win32':
-            input()
+    renderer.run()
 
 
 def run():

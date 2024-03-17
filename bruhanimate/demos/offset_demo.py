@@ -9,27 +9,17 @@ os.system(" ")
 
 
 def offset(screen):
-    try:
-        renderer = CenterRenderer(
-            screen=screen,
-            frames=float("inf"),
-            img=images.text_to_image("OFFSET!"),
-            time=0.0,
-            effect_type="offset",
-            background="!!@@##$$%%^^&&**(())__++",
-            transparent=False,
-        )
+    renderer = CenterRenderer(
+        screen=screen,
+        frames=float("inf"),
+        img=images.text_to_image("OFFSET!"),
+        time=0.0,
+        effect_type="offset",
+        background="!!@@##$$%%^^&&**(())__++",
+        transparent=False,
+    )
 
-        renderer.run()
-
-        if sys.platform == 'win32':
-            input()
-
-    except KeyboardInterrupt:
-        renderer.render_exit()
-        renderer.push_front_to_screen()
-        if sys.platform == 'win32':
-            input()
+    renderer.run()
 
 
 def run():

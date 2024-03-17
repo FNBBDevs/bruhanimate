@@ -16,6 +16,7 @@ limitations under the License.
 """
 
 import math
+import string
 import random
 from abc import abstractmethod
 from bruhcolor import bruhcolored
@@ -199,11 +200,11 @@ class NoiseEffect(BaseEffect):
         """
         if self.color:
             for y in range(self.buffer.height()):
-                for _ in range(self.buffer.width()):
+                for x in range(self.buffer.width()):
                     if random.random() < self.intensity:
                         if self.characters:
                             self.buffer.put_char(
-                                _,
+                                x,
                                 y,
                                 bruhcolored(
                                     self.noise[
@@ -214,7 +215,7 @@ class NoiseEffect(BaseEffect):
                             )
                         else:
                             self.buffer.put_char(
-                                _,
+                                x,
                                 y,
                                 bruhcolored(
                                     " ", on_color=random.randint(0, 255)
@@ -222,10 +223,10 @@ class NoiseEffect(BaseEffect):
                             )
         else:
             for y in range(self.buffer.height()):
-                for _ in range(self.buffer.width()):
+                for x in range(self.buffer.width()):
                     if random.random() < self.intensity:
                         self.buffer.put_char(
-                            _, y, self.noise[random.randint(0, self.noise_length - 1)]
+                            x, y, self.noise[random.randint(0, self.noise_length - 1)]
                         )
 
 
@@ -293,10 +294,10 @@ class PlasmaEffect(BaseEffect):
         self.ayo = 0
         self.color = False
         self.vals = [
-            random.randint(1, 50),
-            random.randint(1, 50),
-            random.randint(1, 50),
-            random.randint(1, 50),
+            random.randint(1, 100),
+            random.randint(1, 100),
+            random.randint(1, 100),
+            random.randint(1, 100),
         ]
 
     def update_info_visibility(self, visible):
@@ -827,51 +828,71 @@ class MatrixEffect(BaseEffect):
     Effect to mimic the cliche coding backgroud with falling random characters
     """
 
-    def __init__(self, buffer, background):
+    def __init__(self, buffer, background, chracter_halt_range = (1, 2), color_halt_range = (1, 2), character_randomness_one = 0.70, character_randomness_two = 0.60, color_randomness = 0.50, gradient_length = 1):
         super(MatrixEffect, self).__init__(buffer, background)
-        self.col = self.buffer.width() // 2
-        self.c_count = 0
-        self.s_count = 0
-        self.chars = random.randint(0, self.buffer.height() - 30)
-        self.spaces = self.buffer.height() - self.chars
-
+        self.__character_choices = string.ascii_letters + "1234567890!@#$%^&*()_+-=<>,.:\";'{}[]?/"
+        self.__character_halt_range = chracter_halt_range
+        self.__color_halt_range = color_halt_range
+        self.__character_halts = [random.randint(self.__character_halt_range[0], self.__character_halt_range[1]) for _ in range(self.buffer.height())]
+        self.__color_halts = [random.randint(self.__color_halt_range[0], self.__color_halt_range[1]) for _ in range(self.buffer.height())]
+        self.__character_randomness_one = character_randomness_one
+        self.__character_randomness_two = character_randomness_two
+        self.__color_randomness = color_randomness
+        self.__gradient_length = gradient_length
+        self.__base_gradient = [232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255]
+        self.__gradient = [color for color in self.__base_gradient for _ in range(self.__gradient_length)]
+        self.__character_frame_numbers = [0 for _ in range(self.buffer.height())]
+        self.__color_frame_numbers = [0 for _ in range(self.buffer.height())]
+        self.__buffer_characters = [[" " for x in range(self.buffer.width())] for y in range(self.buffer.height())]
+    
+    def set_matrix_properties(self, chacter_halt_range = (1, 2), color_halt_range = (1, 2), character_randomness_one = 0.70, character_randomness_two = 0.60, color_randomness = 0.50, gradient_length = 1):
+        self.__character_randomness_one = character_randomness_one
+        self.__character_randomness_two = character_randomness_two
+        self.__color_randomness = color_randomness
+        self.__character_halt_range = chacter_halt_range
+        self.__color_halt_range = color_halt_range
+        self.__gradient_length = gradient_length
+        self.__gradient = [color for color in self.__base_gradient for _ in range(self.__gradient_length)]
+        self.__character_halts = [random.randint(self.__character_halt_range[0], self.__character_halt_range[1]) for _ in range(self.buffer.height())]
+        self.__color_halts = [random.randint(self.__color_halt_range[0], self.__color_halt_range[1]) for _ in range(self.buffer.height())]
+        
+        
+    def set_matrix_gradient(self, gradient):
+        self.__base_gradient = gradient
+        self.__gradient = [color for color in self.__base_gradient for _ in range(self.__gradient_length)]
+    
+    def get_gradient(self):
+        return self.__base_gradient
+    
+    def __initialize_buffer(self):
+        for y in range(self.buffer.height()):
+            for x in range(self.buffer.width()):
+                self.__buffer_characters[y][x] = random.choice(self.__character_choices)
+            for x in range(self.buffer.width()):
+                self.buffer.put_char(x, y, bruhcolored(self.__buffer_characters[y][x], self.__gradient[x % len(self.__gradient)]).colored)
+        
     def render_frame(self, frame_number):
         """
         Renders the next frame for the Matrix effect into the effect buffer
         """
         if frame_number == 0:
-            self.buffer.put_at(
-                0,
-                0,
-                "".join(
-                    [
-                        _NOISE[random.randint(0, len(_NOISE) - 1)]
-                        if random.random() < 0.2
-                        else " "
-                        for _ in range(self.buffer.width())
-                    ]
-                ),
-            )
+            self.__initialize_buffer()
         else:
-            row = []
-            for _ in range(self.buffer.width()):
-                if self.buffer.get_char(_, 0) != " ":
-                    # IF THERE IS A CHAR BELOW US THEN RANDOMLY DECIDE TO CONTINUE THE CHAIN
-                    if random.random() < 0.5:
-                        row.append(_NOISE[random.randint(0, len(_NOISE) - 1)])
-                    else:
-                        row.append(" ")
-                else:
-                    if random.random() < 0.01:
-                        row.append(_NOISE[random.randint(0, len(_NOISE) - 1)])
-                    else:
-                        row.append(" ")
-            self.buffer.scroll(-1)
-            if len(row) > 0:
-                self.buffer.put_at(0, 0, "".join(row))
+            for y in range(self.buffer.height()):
+                if frame_number % self.__character_halts[y] == 0 and random.random() < self.__character_randomness_one:
+                    self.__character_frame_numbers[y] += 1
+                    for x in range(self.buffer.width()):
+                        if random.random() < self.__character_randomness_two:
+                            self.__buffer_characters[y][x] = random.choice(self.__character_choices)
+                
+                if frame_number % self.__color_halts[y] == 0 and random.random() < self.__color_randomness:
+                    self.__color_frame_numbers[y] += 1
+                    for x in range(self.buffer.width()):
+                        self.buffer.put_char(x, y, bruhcolored(self.__buffer_characters[y][x], color=self.__gradient[(x - self.__color_frame_numbers[y]) % len(self.__gradient)]))
+                        
+                
 
-
-class _LINE:
+class Line:
     def __init__(self, start_point, end_point):
         if start_point and end_point:
             self.start_point = (start_point[0] * 2, start_point[1] * 2)
@@ -895,8 +916,8 @@ class DrawLines(BaseEffect):
         self.char = char
         self.thin = thin
 
-    def add_line(self, start_point, end_point):
-        self.lines.append(_LINE(start_point, end_point))
+    def addLine(self, start_point, end_point):
+        self.lines.append(Line(start_point, end_point))
 
     def render_frame(self, frame_number):
         if frame_number == 0 and len(self.lines) > 0:
@@ -1164,16 +1185,16 @@ class SnowEffect(BaseEffect):
                 self._flakes.append(flake)
         
         if self.smart_transparent and frame_number == 0 and self.image_present:
-            self.smart_bound_line = {}
+            self.smart_boundLine = {}
             for x in range(self.img_width):
                 tmp_flag = False
                 for y in range(self.img_height):
                     if self.image_buffer.buffer[y + self.img_start_y][x + self.img_start_x] not in [" ", None]:
-                        self.smart_bound_line[x + self.img_start_x] = y + self.img_start_y - 1
+                        self.smart_boundLine[x + self.img_start_x] = y + self.img_start_y - 1
                         tmp_flag = True
                         break
                 if not tmp_flag:
-                    self.smart_bound_line[x + self.img_start_x] = None
+                    self.smart_boundLine[x + self.img_start_x] = None
 
         # determine what flakes are hitting the ground or need to be deleted
         for idx, flake in enumerate(self._flakes):
@@ -1246,8 +1267,8 @@ class SnowEffect(BaseEffect):
                         self._flakes[idx] = None
                         self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
                 elif frame_number != 0:
-                    if self.image_present and flake.x in self.smart_bound_line.keys():
-                        if start_bound := self.smart_bound_line[flake.x]:
+                    if self.image_present and flake.x in self.smart_boundLine.keys():
+                        if start_bound := self.smart_boundLine[flake.x]:
                             if (
                                 flake.y >= start_bound and
                                 flake.y <= self.img_end_y

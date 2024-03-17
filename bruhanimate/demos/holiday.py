@@ -9,31 +9,21 @@ os.system(" ")
 
 
 def holiday(screen):
-    try:
-        renderer = CenterRenderer(
-            screen=screen,
-            frames=2000,
-            time=0.075,
-            img=get_image("CHRISTMAS_1"),
-            effect_type="snow",
-            background=" ",
-            transparent=True,
-        )
+    renderer = CenterRenderer(
+        screen=screen,
+        frames=2000,
+        time=0.075,
+        img=get_image("CHRISTMAS_1"),
+        effect_type="snow",
+        background=" ",
+        transparent=True,
+    )
 
-        renderer.update_collision(True)
+    renderer.update_collision(True)
 
-        renderer.update_smart_transparent(True)
+    renderer.update_smart_transparent(True)
 
-        renderer.run()
-
-        if sys.platform == 'win32':
-            input()
-
-    except KeyboardInterrupt:
-        renderer.render_exit()
-        renderer.push_front_to_screen()
-        if sys.platform == 'win32':
-            input()
+    renderer.run()
 
 
 def run():
