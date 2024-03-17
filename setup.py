@@ -8,7 +8,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
     long_description = "\n" + fh.read()
 
-VERSION = "0.2.27"
+VERSION = "0.2.28"
 DESCRIPTION = 'ASCII Terminal Animation Package'
 LONG_DESCRIPTION = 'A package that allows for various animations in the terminal'
 
