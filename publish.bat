@@ -29,4 +29,9 @@ for %%i in (%folders%) do (
     )
 )
 
+echo Pushing to Github.
+git add .
+git commit -m "version bump"
+git push
+
 echo Publish complete.
