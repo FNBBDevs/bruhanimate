@@ -36,7 +36,8 @@ _VALID_EFFECTS = [
     "matrix",
     "drawlines",
     "snow",
-    "twinkle"
+    "twinkle",
+    "audio"
 ]
 
 HORIZONTAL = "h"
@@ -103,6 +104,8 @@ class BaseRenderer:
             self.effect = SnowEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "twinkle":
             self.effect = TwinkleEffect(Buffer(self.height, self.width), self.background)
+        elif self.effect_type == "audio":
+            self.effect = AudioEffect(Buffer(self.height, self.width), self.background)
 
         self.effect.smart_transparent = False
 

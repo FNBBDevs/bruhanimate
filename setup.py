@@ -26,7 +26,9 @@ setup(
     install_requires=[
         "future",
         "bruhcolor",
-        "pyfiglet"
+        "pyfiglet",
+        "pyaudio",
+        "numpy"
     ],
     extras_require={
         ':sys_platform == "win32"': ['pywin32'],
