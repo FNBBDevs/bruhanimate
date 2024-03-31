@@ -1,7 +1,7 @@
 from bruhanimate.bruhscreen import Screen
 from bruhanimate.bruhrenderer import CenterRenderer
 import bruhanimate.images as images
-from bruhanimate.bruheffects import _GRADIENTS
+from bruhanimate import _GRADIENTS
 
 import os
 os.system(" ")
