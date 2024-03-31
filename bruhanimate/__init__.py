@@ -17,6 +17,23 @@ from bruhanimate.bruheffects import (
     DrawLines,
     _FLAKE,
     SnowEffect,
+    _LIFE_COLORS,
+    _LIFE_SCALES,
+    _PLASMA_COLORS,
+    _PLASMA_VALUES,
+    _GRADIENTS,
+    _VALID_DIRECTIONS,
+    _OLD_GREY_SCALES,
+    _GREY_SCALES,
+    _WIND_DIRECTIONS,
+    _NOISE,
+    _FLAKES,
+    _FLAKE_COLORS,
+    _FLAKE_JUMPS,
+    _NEXT_FLAKE_MOVE,
+    _FLAKE_WEIGHT_CHARS,
+    _FLAKE_FLIPS,
+    _TWINKLE_COLORS
 )
 from bruhanimate.bruhffer import Buffer
 from bruhanimate.bruhrenderer import (
@@ -28,9 +45,9 @@ from bruhanimate.bruhrenderer import (
     BackgroundColorRenderer,
 )
 from bruhanimate import images
-from bruhanimate.demos import line_demo, plasma_demo, snow_demo, holiday, stars_demo, twinkle_demo, noise_demo, matrix_demo, gol_demo, rain_demo, offset_demo, static_demo
+from bruhanimate.demos import line_demo, plasma_demo, snow_demo, holiday, stars_demo, twinkle_demo, noise_demo, matrix_demo, gol_demo, rain_demo, offset_demo, static_demo, audio_demo
 
-__version__ = "0.2.31"
+__version__ = "0.2.32"
 __valid_demos__ = [demo.split(".")[0] for demo in os.listdir(os.path.join(here, "demos")) if "init" not in demo and "pycache" not in demo]
 
 __all__ = [
@@ -47,6 +64,7 @@ __all__ = [
     "rain_demo",
     "offset_demo",
     "static_demo",
+    "audio_demo",
     "BaseEffect",
     "StaticEffect",
     "OffsetEffect",
@@ -69,5 +87,22 @@ __all__ = [
     "BackgroundColorRenderer",
     "images",
     "__version__",
-    "__valid_demos__"
+    "__valid_demos__",
+    "_LIFE_COLORS",
+    "_LIFE_SCALES",
+    "_PLASMA_COLORS",
+    "_PLASMA_VALUES",
+    "_GRADIENTS",
+    "_VALID_DIRECTIONS",
+    "_OLD_GREY_SCALES",
+    "_GREY_SCALES",
+    "_WIND_DIRECTIONS",
+    "_NOISE",
+    "_FLAKES",
+    "_FLAKE_COLORS",
+    "_FLAKE_JUMPS",
+    "_NEXT_FLAKE_MOVE",
+    "_FLAKE_WEIGHT_CHARS",
+    "_FLAKE_FLIPS",
+    "_TWINKLE_COLOR",
 ]

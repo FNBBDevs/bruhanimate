@@ -95,6 +95,9 @@ _FLAKE_FLIPS = {
     7: [".", "7"],
 }
 
+_TWINKLE_COLORS = {idx:val for idx, val in enumerate(range(232, 256))}
+
+
 
 class BaseEffect:
     """
@@ -1340,8 +1343,6 @@ class SnowEffect(BaseEffect):
         #         print(f"{flake.weight} - {flake.char} - {flake.full}")
 
 
-_TWINKLE_COLORS = {idx:val for idx, val in enumerate(range(232, 256))}
-
 class _TWINKLE_SPEC:
     def __init__(self, char, value):
         self.char = char
@@ -1428,7 +1429,7 @@ class AudioEffect(BaseEffect):
         self.non_gradient_color = non_gradient_color
     
     def evenly_distribute_original_values(self, original_list, desired_width):
-        repeat_count = desired_width // len(original_list)
+        repeat_count = desired_width // len(original_list) 
         extra_elements = desired_width % len(original_list)
         expanded_list = []
         for value in original_list:
