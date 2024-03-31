@@ -12,7 +12,7 @@ def audio(screen):
         screen=screen,
         frames=float("inf"),
         img=images.text_to_image("AUDIO!"),
-        time=0.0,
+        time=0.01,
         effect_type="audio",
         background=" ",
         transparent=False,
