@@ -8,7 +8,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
     long_description = "\n" + fh.read()
 
-VERSION = "0.2.31"
+VERSION = "0.2.34"
 DESCRIPTION = 'ASCII Terminal Animation Package'
 LONG_DESCRIPTION = 'A package that allows for various animations in the terminal'
 
@@ -26,7 +26,9 @@ setup(
     install_requires=[
         "future",
         "bruhcolor",
-        "pyfiglet"
+        "pyfiglet",
+        "pyaudio",
+        "numpy"
     ],
     extras_require={
         ':sys_platform == "win32"': ['pywin32'],
