@@ -1403,7 +1403,7 @@ class AudioEffect(BaseEffect):
         self.CHANNELS = 1
         self.RATE = 44100
         self.CHUNK = 1024
-        self.BANDS = num_bands
+        self.BANDS = num_bands + 1
         self.audio_halt = audio_halt
         self.bands = []
         self.p = pyaudio.PyAudio()
@@ -1413,7 +1413,11 @@ class AudioEffect(BaseEffect):
         self.stream = self.p.open(format=self.FORMAT, channels=self.CHANNELS, rate=self.RATE, input=True, frames_per_buffer=self.CHUNK, stream_callback=self.process_audio)
         self.gradient_mode = "extend"
         self.base_gradient = [232, 233, 235, 237, 239, 241, 243, 245, 247, 249, 251, 253, 255]
-        self.gradient = [color for color in self.base_gradient for _ in range(self.BANDS)]
+        self.gradient = []
+        for _ in range(self.BANDS):
+            self.gradient += self.base_gradient
+        while len(self.gradient) < self.buffer.width():
+            self.gradient += self.base_gradient
         self.true_gradient = [self.gradient[idx] for idx in range(self.buffer.width())]
         self.use_gradient = True
         self.non_gradient_color = 27
@@ -1454,6 +1458,8 @@ class AudioEffect(BaseEffect):
             self.gradient = []
             for _ in range(self.BANDS):
                 self.gradient += self.base_gradient
+            while len(self.gradient) < self.buffer.width():
+                self.gradient += self.base_gradient
             self.true_gradient = [self.gradient[idx] for idx in range(self.buffer.width())]
         else:
             self.gradient = self.evenly_distribute_original_values(gradient, self.buffer.width())
@@ -1490,7 +1496,7 @@ class AudioEffect(BaseEffect):
         if frame_number % self.audio_halt == 0:
             try:
                 self.buffer.clear_buffer()
-                mapped_bands = self.map_bands_to_range(self.upper_band_bound)
+                mapped_bands = self.map_bands_to_range(self.upper_band_bound)[1:]
                 for idx, band_group in enumerate(zip(mapped_bands, self.band_ranges)):
                     band, band_range = band_group
                     for y_change in range(band):

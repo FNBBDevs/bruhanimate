@@ -17,7 +17,7 @@ def audio(screen):
         background=" ",
         transparent=False,
     )
-    renderer.effect.set_audio_properties(num_bands=screen.width, audio_halt=1, use_gradient=True)
+    renderer.effect.set_audio_properties(num_bands=screen.width, audio_halt=15, use_gradient=True)
     renderer.effect.set_audio_gradient(_GRADIENTS[0], mode="repeat")
     renderer.effect.set_orientation("top")
     renderer.run()
