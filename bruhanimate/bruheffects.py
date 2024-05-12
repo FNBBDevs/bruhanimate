@@ -1966,7 +1966,7 @@ class ChatbotEffect(BaseEffect):
 
         self.gradient_noise_char_halt = 1
         self.gradient_noise_color_halt = 1
-        self.blink_halt = 500
+        self.blink_halt = 20
         self.blink_color_one = 255
         self.blink_color_two = 232
         self.cursor_char_color = 255
