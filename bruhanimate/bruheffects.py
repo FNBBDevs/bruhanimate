@@ -16,12 +16,20 @@ limitations under the License.
 """
 
 import math
+import time
+import json
+import openai
 import string
 import random
+import asyncio
 import pyaudio
+import requests
 import numpy as np
+from threading import Thread
 from abc import abstractmethod
 from bruhcolor import bruhcolored
+from .bruhscreen import Screen
+from .bruhffer import Buffer
 
 
 _LIFE_COLORS = {
@@ -43,16 +51,32 @@ _PLASMA_COLORS = {
     2: [[232, 231]],
     8: [[150, 93, 11, 38, 181, 250, 143, 12], [142, 167, 216, 161, 59, 228, 148, 219]],
     10: [[232, 16, 53, 55, 89, 91, 126, 163, 197, 196][::-1]],
-    16: [[232,16,53,55,56,89,90,91,125,126,163,199,198,197,196,39,81,231][::-1],
-        [195, 106, 89, 176, 162, 180, 201, 233, 124, 252, 104, 181, 2, 182, 4, 170]],
+    16: [
+        [
+            232,
+            16,
+            53,
+            55,
+            56,
+            89,
+            90,
+            91,
+            125,
+            126,
+            163,
+            199,
+            198,
+            197,
+            196,
+            39,
+            81,
+            231,
+        ][::-1],
+        [195, 106, 89, 176, 162, 180, 201, 233, 124, 252, 104, 181, 2, 182, 4, 170],
+    ],
 }
 
-_PLASMA_VALUES = [
-    [43, 15, 8, 24],
-    [15, 42, 47, 23],
-    [35, 29, 31, 27],
-    [10, 26, 19, 41]
-]
+_PLASMA_VALUES = [[43, 15, 8, 24], [15, 42, 47, 23], [35, 29, 31, 27], [10, 26, 19, 41]]
 
 _GRADIENTS = [
     [21, 57, 93, 129, 165, 201, 165, 129, 93, 57],
@@ -95,8 +119,7 @@ _FLAKE_FLIPS = {
     7: [".", "7"],
 }
 
-_TWINKLE_COLORS = {idx:val for idx, val in enumerate(range(232, 256))}
-
+_TWINKLE_COLORS = {idx: val for idx, val in enumerate(range(232, 256))}
 
 
 class BaseEffect:
@@ -503,9 +526,7 @@ class GameOfLifeEffect(BaseEffect):
         self.grey_scale = (
             _LIFE_SCALES[random.choice(list(_LIFE_SCALES.keys()))]
             if self.decay and self.scale == "random"
-            else _LIFE_SCALES[self.scale]
-            if self.decay
-            else " o"
+            else _LIFE_SCALES[self.scale] if self.decay else " o"
         )
         self.colors = [232, 231] if not self.decay else _LIFE_COLORS[self.color_type]
         self.ALIVE = len(self.grey_scale) - 1
@@ -844,49 +865,131 @@ class MatrixEffect(BaseEffect):
     Effect to mimic the cliche coding backgroud with falling random characters
     """
 
-    def __init__(self, buffer, background, chracter_halt_range = (1, 2), color_halt_range = (1, 2), character_randomness_one = 0.70, character_randomness_two = 0.60, color_randomness = 0.50, gradient_length = 1):
+    def __init__(
+        self,
+        buffer,
+        background,
+        chracter_halt_range=(1, 2),
+        color_halt_range=(1, 2),
+        character_randomness_one=0.70,
+        character_randomness_two=0.60,
+        color_randomness=0.50,
+        gradient_length=1,
+    ):
         super(MatrixEffect, self).__init__(buffer, background)
-        self.__character_choices = string.ascii_letters + "1234567890!@#$%^&*()_+-=<>,.:\";'{}[]?/"
+        self.__character_choices = (
+            string.ascii_letters + "1234567890!@#$%^&*()_+-=<>,.:\";'{}[]?/"
+        )
         self.__character_halt_range = chracter_halt_range
         self.__color_halt_range = color_halt_range
-        self.__character_halts = [random.randint(self.__character_halt_range[0], self.__character_halt_range[1]) for _ in range(self.buffer.height())]
-        self.__color_halts = [random.randint(self.__color_halt_range[0], self.__color_halt_range[1]) for _ in range(self.buffer.height())]
+        self.__character_halts = [
+            random.randint(
+                self.__character_halt_range[0], self.__character_halt_range[1]
+            )
+            for _ in range(self.buffer.height())
+        ]
+        self.__color_halts = [
+            random.randint(self.__color_halt_range[0], self.__color_halt_range[1])
+            for _ in range(self.buffer.height())
+        ]
         self.__character_randomness_one = character_randomness_one
         self.__character_randomness_two = character_randomness_two
         self.__color_randomness = color_randomness
         self.__gradient_length = gradient_length
-        self.__base_gradient = [232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255]
-        self.__gradient = [color for color in self.__base_gradient for _ in range(self.__gradient_length)]
+        self.__base_gradient = [
+            232,
+            233,
+            234,
+            235,
+            236,
+            237,
+            238,
+            239,
+            240,
+            241,
+            242,
+            243,
+            244,
+            245,
+            246,
+            247,
+            248,
+            249,
+            250,
+            251,
+            252,
+            253,
+            254,
+            255,
+        ]
+        self.__gradient = [
+            color
+            for color in self.__base_gradient
+            for _ in range(self.__gradient_length)
+        ]
         self.__character_frame_numbers = [0 for _ in range(self.buffer.height())]
         self.__color_frame_numbers = [0 for _ in range(self.buffer.height())]
-        self.__buffer_characters = [[" " for x in range(self.buffer.width())] for y in range(self.buffer.height())]
-    
-    def set_matrix_properties(self, chacter_halt_range = (1, 2), color_halt_range = (1, 2), character_randomness_one = 0.70, character_randomness_two = 0.60, color_randomness = 0.50, gradient_length = 1):
+        self.__buffer_characters = [
+            [" " for x in range(self.buffer.width())]
+            for y in range(self.buffer.height())
+        ]
+
+    def set_matrix_properties(
+        self,
+        chacter_halt_range=(1, 2),
+        color_halt_range=(1, 2),
+        character_randomness_one=0.70,
+        character_randomness_two=0.60,
+        color_randomness=0.50,
+        gradient_length=1,
+    ):
         self.__character_randomness_one = character_randomness_one
         self.__character_randomness_two = character_randomness_two
         self.__color_randomness = color_randomness
         self.__character_halt_range = chacter_halt_range
         self.__color_halt_range = color_halt_range
         self.__gradient_length = gradient_length
-        self.__gradient = [color for color in self.__base_gradient for _ in range(self.__gradient_length)]
-        self.__character_halts = [random.randint(self.__character_halt_range[0], self.__character_halt_range[1]) for _ in range(self.buffer.height())]
-        self.__color_halts = [random.randint(self.__color_halt_range[0], self.__color_halt_range[1]) for _ in range(self.buffer.height())]
-        
-        
+        self.__gradient = [
+            color
+            for color in self.__base_gradient
+            for _ in range(self.__gradient_length)
+        ]
+        self.__character_halts = [
+            random.randint(
+                self.__character_halt_range[0], self.__character_halt_range[1]
+            )
+            for _ in range(self.buffer.height())
+        ]
+        self.__color_halts = [
+            random.randint(self.__color_halt_range[0], self.__color_halt_range[1])
+            for _ in range(self.buffer.height())
+        ]
+
     def set_matrix_gradient(self, gradient):
         self.__base_gradient = gradient
-        self.__gradient = [color for color in self.__base_gradient for _ in range(self.__gradient_length)]
-    
+        self.__gradient = [
+            color
+            for color in self.__base_gradient
+            for _ in range(self.__gradient_length)
+        ]
+
     def get_gradient(self):
         return self.__base_gradient
-    
+
     def __initialize_buffer(self):
         for y in range(self.buffer.height()):
             for x in range(self.buffer.width()):
                 self.__buffer_characters[y][x] = random.choice(self.__character_choices)
             for x in range(self.buffer.width()):
-                self.buffer.put_char(x, y, bruhcolored(self.__buffer_characters[y][x], self.__gradient[x % len(self.__gradient)]).colored)
-        
+                self.buffer.put_char(
+                    x,
+                    y,
+                    bruhcolored(
+                        self.__buffer_characters[y][x],
+                        self.__gradient[x % len(self.__gradient)],
+                    ).colored,
+                )
+
     def render_frame(self, frame_number):
         """
         Renders the next frame for the Matrix effect into the effect buffer
@@ -895,17 +998,35 @@ class MatrixEffect(BaseEffect):
             self.__initialize_buffer()
         else:
             for y in range(self.buffer.height()):
-                if frame_number % self.__character_halts[y] == 0 and random.random() < self.__character_randomness_one:
+                if (
+                    frame_number % self.__character_halts[y] == 0
+                    and random.random() < self.__character_randomness_one
+                ):
                     self.__character_frame_numbers[y] += 1
                     for x in range(self.buffer.width()):
                         if random.random() < self.__character_randomness_two:
-                            self.__buffer_characters[y][x] = random.choice(self.__character_choices)
-                
-                if frame_number % self.__color_halts[y] == 0 and random.random() < self.__color_randomness:
+                            self.__buffer_characters[y][x] = random.choice(
+                                self.__character_choices
+                            )
+
+                if (
+                    frame_number % self.__color_halts[y] == 0
+                    and random.random() < self.__color_randomness
+                ):
                     self.__color_frame_numbers[y] += 1
                     for x in range(self.buffer.width()):
-                        self.buffer.put_char(x, y, bruhcolored(self.__buffer_characters[y][x], color=self.__gradient[(x - self.__color_frame_numbers[y]) % len(self.__gradient)]))
-                        
+                        self.buffer.put_char(
+                            x,
+                            y,
+                            bruhcolored(
+                                self.__buffer_characters[y][x],
+                                color=self.__gradient[
+                                    (x - self.__color_frame_numbers[y])
+                                    % len(self.__gradient)
+                                ],
+                            ),
+                        )
+
 
 class Line:
     def __init__(self, start_point, end_point):
@@ -1087,9 +1208,9 @@ class _FLAKE:
     def increment_flake_weight(self):
         if self.weight < 18:
             self.weight += 1
-            
+
         self.update_ground_flake()
-        
+
         if self.weight == 18:
             self.full = True
 
@@ -1148,8 +1269,12 @@ class SnowEffect(BaseEffect):
         self.total_ground_flakes = 0
         self._show_info = show_info
         self._flakes = []
-        self._ground_flakes = [[None for _ in range(self.buffer.width())] for __ in range(self.buffer.height())]
+        self._ground_flakes = [
+            [None for _ in range(self.buffer.width())]
+            for __ in range(self.buffer.height())
+        ]
         self._image_collide_flakes = [None for _ in range(self.buffer.width())]
+        self.smart_transparent = False
 
     def update_collision(
         self,
@@ -1184,7 +1309,7 @@ class SnowEffect(BaseEffect):
             self.image_y_boundaries = (img_start_y, img_start_y + img_height)
         else:
             self.image_buffer = None
-        
+
     def show_info(self, show_info: bool):
         self._show_info = show_info
 
@@ -1198,14 +1323,18 @@ class SnowEffect(BaseEffect):
             if random.random() < 0.01:
                 flake = _FLAKE(index=random.choice([1, 3, 7]), x=x, y=0)
                 self._flakes.append(flake)
-        
+
         if self.smart_transparent and frame_number == 0 and self.image_present:
             self.smart_boundLine = {}
             for x in range(self.img_width):
                 tmp_flag = False
                 for y in range(self.img_height):
-                    if self.image_buffer.buffer[y + self.img_start_y][x + self.img_start_x] not in [" ", None]:
-                        self.smart_boundLine[x + self.img_start_x] = y + self.img_start_y - 1
+                    if self.image_buffer.buffer[y + self.img_start_y][
+                        x + self.img_start_x
+                    ] not in [" ", None]:
+                        self.smart_boundLine[x + self.img_start_x] = (
+                            y + self.img_start_y - 1
+                        )
                         tmp_flag = True
                         break
                 if not tmp_flag:
@@ -1220,21 +1349,27 @@ class SnowEffect(BaseEffect):
                 and flake.y >= self.buffer.height() - 1
             ):
                 # true_y = flake.y
-                
+
                 # need to set the y value to be the actual net available y val
-                # what isn't a valid y value? 
+                # what isn't a valid y value?
                 # a -> value that exceeds the buffer height
                 # b -> value that intercepts a full flake in the column
                 true_y = None
-                for y in range(self.buffer.height()-1, -1, -1):
-                    if self._ground_flakes[y][flake.x] is None or not self._ground_flakes[y][flake.x].full:
+                for y in range(self.buffer.height() - 1, -1, -1):
+                    if (
+                        self._ground_flakes[y][flake.x] is None
+                        or not self._ground_flakes[y][flake.x].full
+                    ):
                         true_y = y
                         break
-                
+
                 if true_y is None:
                     break
-                               
-                if isinstance(self._ground_flakes[true_y][flake.x], _FLAKE) and not self._ground_flakes[true_y][flake.x].full:
+
+                if (
+                    isinstance(self._ground_flakes[true_y][flake.x], _FLAKE)
+                    and not self._ground_flakes[true_y][flake.x].full
+                ):
                     ground_flake: _FLAKE = self._ground_flakes[true_y][flake.x]
                     ground_flake.increment_flake_weight()
                     self._ground_flakes[true_y][flake.x] = ground_flake.copy()
@@ -1251,26 +1386,24 @@ class SnowEffect(BaseEffect):
                     self._ground_flakes[true_y][flake.x] = tmp_flake
                 self._flakes[idx] = None
                 self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
-            elif (
-                flake.x < 0
-                or flake.x >= self.buffer.width()
-
-            ):
+            elif flake.x < 0 or flake.x >= self.buffer.width():
                 self._flakes[idx] = None
                 self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
             else:
                 # image collision flake
                 if not self.smart_transparent:
                     if (
-                        self.image_present and
-                        flake.x >= self.image_x_boundaries[0] and
-                        flake.x <= self.image_x_boundaries[1] and
-                        flake.y >= self.image_y_boundaries[0] and
-                        flake.y <= self.image_y_boundaries[1]
+                        self.image_present
+                        and flake.x >= self.image_x_boundaries[0]
+                        and flake.x <= self.image_x_boundaries[1]
+                        and flake.y >= self.image_y_boundaries[0]
+                        and flake.y <= self.image_y_boundaries[1]
                     ):
                         # colliding with image
                         if isinstance(self._image_collide_flakes[flake.x], _FLAKE):
-                            ground_flake: _FLAKE = self._image_collide_flakes[flake.x].copy()
+                            ground_flake: _FLAKE = self._image_collide_flakes[
+                                flake.x
+                            ].copy()
                             ground_flake.increment_flake_weight()
                             self._image_collide_flakes[flake.x] = ground_flake
                             del ground_flake
@@ -1284,16 +1417,17 @@ class SnowEffect(BaseEffect):
                 elif frame_number != 0:
                     if self.image_present and flake.x in self.smart_boundLine.keys():
                         if start_bound := self.smart_boundLine[flake.x]:
-                            if (
-                                flake.y >= start_bound and
-                                flake.y <= self.img_end_y
-                            ):
+                            if flake.y >= start_bound and flake.y <= self.img_end_y:
                                 # colliding with image
                                 self._flakes[idx] = None
                                 self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
 
-                                if isinstance(self.buffer.get_char(flake.x, start_bound), _FLAKE):
-                                    ground_flake: _FLAKE = self._image_collide_flakes[flake.x].copy()
+                                if isinstance(
+                                    self.buffer.get_char(flake.x, start_bound), _FLAKE
+                                ):
+                                    ground_flake: _FLAKE = self._image_collide_flakes[
+                                        flake.x
+                                    ].copy()
                                     ground_flake.increment_flake_weight()
                                     self._image_collide_flakes[flake.x] = ground_flake
                                     del ground_flake
@@ -1303,7 +1437,6 @@ class SnowEffect(BaseEffect):
                                     tmp_flake.y = start_bound
                                     self._image_collide_flakes[flake.x] = tmp_flake
 
-        
         self._flakes = [flake for flake in self._flakes if flake]
 
         # place the flakes into the buffer
@@ -1328,14 +1461,28 @@ class SnowEffect(BaseEffect):
             self.buffer.put_at(0, 3, f"Collision Enabled: {self.collision}")
             self.buffer.put_at(0, 4, f"Total  flakes: {len(self._flakes):3d}")
             self.buffer.put_at(
-                0, 5, f"Ground flakes: {sum([sum([1 for x in range(len(self._ground_flakes[0])) if self._ground_flakes[y][x]]) for y in range(len(self._ground_flakes))]):3d}"
+                0,
+                5,
+                f"Ground flakes: {sum([sum([1 for x in range(len(self._ground_flakes[0])) if self._ground_flakes[y][x]]) for y in range(len(self._ground_flakes))]):3d}",
             )
-            self.buffer.put_at(0, 6, f"Full flakes: {sum([1 for flake in [j for sub in self._ground_flakes for j in sub] if flake and flake.full]):3d}")
+            self.buffer.put_at(
+                0,
+                6,
+                f"Full flakes: {sum([1 for flake in [j for sub in self._ground_flakes for j in sub] if flake and flake.full]):3d}",
+            )
             self.buffer.put_at(0, 7, f"Image present: {self.image_present}")
             if self.image_present:
-                self.buffer.put_at(0, 8, f"Total flakes on image: {len([0 for _ in self._image_collide_flakes if _]):3d}")
-                self.buffer.put_at(0, 9, f"Image x boundaries: {self.image_x_boundaries}")
-                self.buffer.put_at(0, 10, f"Image y boundaries: {self.image_y_boundaries}")
+                self.buffer.put_at(
+                    0,
+                    8,
+                    f"Total flakes on image: {len([0 for _ in self._image_collide_flakes if _]):3d}",
+                )
+                self.buffer.put_at(
+                    0, 9, f"Image x boundaries: {self.image_x_boundaries}"
+                )
+                self.buffer.put_at(
+                    0, 10, f"Image y boundaries: {self.image_y_boundaries}"
+                )
                 self.buffer.put_at(0, 11, f"Image y bottom: {self.img_end_y}")
 
         # for flake in [j for sub in self._ground_flakes for j in sub]:
@@ -1355,21 +1502,21 @@ class _TWINKLE_SPEC:
 
     def __repr__(self):
         return self.fade.colored
-    
+
     def __len__(self):
         return 1
-    
+
     def next(self):
         if self.value >= 23:
             self.mode = -1
         elif self.value <= 0:
             self.mode = 1
-        
+
         self.value = self.value + self.mode
-        
+
         self.fade = bruhcolored(self.char, _TWINKLE_COLORS[self.value])
         return self
-    
+
     def copy(self):
         new_TWINKLE_SPEC = _TWINKLE_SPEC(self.char, self.value)
         new_TWINKLE_SPEC.mode = self.mode
@@ -1380,7 +1527,7 @@ class TwinkleEffect(BaseEffect):
     def __init__(self, buffer, background):
         super(TwinkleEffect, self).__init__(buffer, background)
         self.specs = []
-    
+
     def render_frame(self, frame_number):
         if frame_number == 0:
             for y in range(self.buffer.height()):
@@ -1388,48 +1535,77 @@ class TwinkleEffect(BaseEffect):
                     if random.random() < 0.05:
                         new_TWINKLE_SPEC = _TWINKLE_SPEC(".", random.randint(0, 23))
                         self.buffer.put_char(x, y, new_TWINKLE_SPEC)
-                        self.specs.append((x, y))   
+                        self.specs.append((x, y))
         else:
             for x, y in self.specs:
                 spec = self.buffer.get_char(x, y)
                 self.buffer.put_char(x, y, spec.next().copy())
                 del spec
-                
-                
+
+
 class AudioEffect(BaseEffect):
-    def __init__(self, buffer, background: str, num_bands: int = 24, audio_halt: int = 10):
+    def __init__(
+        self, buffer, background: str, num_bands: int = 24, audio_halt: int = 10
+    ):
         super(AudioEffect, self).__init__(buffer, background)
         self.FORMAT = pyaudio.paInt16
         self.CHANNELS = 1
         self.RATE = 44100
         self.CHUNK = 1024
-        self.BANDS = num_bands
+        self.BANDS = num_bands + 1
         self.audio_halt = audio_halt
         self.bands = []
         self.p = pyaudio.PyAudio()
         self.upper_band_bound = self.buffer.height()
         self.band_ranges = self.generate_even_ranges(self.BANDS, 0, self.buffer.width())
         self.colors = [random.randint(0, 255) for _ in range(self.BANDS)]
-        self.stream = self.p.open(format=self.FORMAT, channels=self.CHANNELS, rate=self.RATE, input=True, frames_per_buffer=self.CHUNK, stream_callback=self.process_audio)
+        self.stream = self.p.open(
+            format=self.FORMAT,
+            channels=self.CHANNELS,
+            rate=self.RATE,
+            input=True,
+            frames_per_buffer=self.CHUNK,
+            stream_callback=self.process_audio,
+        )
         self.gradient_mode = "extend"
-        self.base_gradient = [232, 233, 235, 237, 239, 241, 243, 245, 247, 249, 251, 253, 255]
-        self.gradient = [color for color in self.base_gradient for _ in range(self.BANDS)]
+        self.base_gradient = [
+            232,
+            233,
+            235,
+            237,
+            239,
+            241,
+            243,
+            245,
+            247,
+            249,
+            251,
+            253,
+            255,
+        ]
+        self.gradient = []
+        for _ in range(self.BANDS):
+            self.gradient += self.base_gradient
+        while len(self.gradient) < self.buffer.width():
+            self.gradient += self.base_gradient
         self.true_gradient = [self.gradient[idx] for idx in range(self.buffer.width())]
         self.use_gradient = True
         self.non_gradient_color = 27
         self.orientation = "top"
         self.subtract_y = self.buffer.height()
-    
-    def set_audio_properties(self, num_bands = 24, audio_halt = 10, use_gradient = True, non_gradient_color=27):
+
+    def set_audio_properties(
+        self, num_bands=24, audio_halt=10, use_gradient=True, non_gradient_color=27
+    ):
         self.BANDS = num_bands
         self.audio_halt = audio_halt
         self.band_ranges = self.generate_even_ranges(self.BANDS, 0, self.buffer.width())
         self.colors = [random.randint(0, 255) for _ in range(self.BANDS)]
         self.use_gradient = use_gradient
         self.non_gradient_color = non_gradient_color
-    
+
     def evenly_distribute_original_values(self, original_list, desired_width):
-        repeat_count = desired_width // len(original_list) 
+        repeat_count = desired_width // len(original_list)
         extra_elements = desired_width % len(original_list)
         expanded_list = []
         for value in original_list:
@@ -1438,7 +1614,7 @@ class AudioEffect(BaseEffect):
                 expanded_list.append(value)
                 extra_elements -= 1
         return expanded_list
-    
+
     def set_orientation(self, orientation):
         if orientation in ["top", "bottom"]:
             self.orientation = orientation
@@ -1446,25 +1622,40 @@ class AudioEffect(BaseEffect):
                 self.subtract_y = self.buffer.height()
             else:
                 self.subtract_y = 0
-    
-    def set_audio_gradient(self, gradient=[232, 233, 235, 237, 239, 241, 243, 245, 247, 249, 251, 253, 255], mode="extend"):
+
+    def set_audio_gradient(
+        self,
+        gradient=[232, 233, 235, 237, 239, 241, 243, 245, 247, 249, 251, 253, 255],
+        mode="extend",
+    ):
         self.base_gradient = gradient
         self.gradient_mode = mode
         if self.gradient_mode == "repeat":
             self.gradient = []
             for _ in range(self.BANDS):
                 self.gradient += self.base_gradient
-            self.true_gradient = [self.gradient[idx] for idx in range(self.buffer.width())]
+            while len(self.gradient) < self.buffer.width():
+                self.gradient += self.base_gradient
+            self.true_gradient = [
+                self.gradient[idx] for idx in range(self.buffer.width())
+            ]
         else:
-            self.gradient = self.evenly_distribute_original_values(gradient, self.buffer.width())
-            self.true_gradient = [self.gradient[idx] for idx in range(self.buffer.width())]
-    
+            self.gradient = self.evenly_distribute_original_values(
+                gradient, self.buffer.width()
+            )
+            self.true_gradient = [
+                self.gradient[idx] for idx in range(self.buffer.width())
+            ]
+
     def process_audio(self, data, frame_count, time_info, status):
         audio_array = np.frombuffer(data, dtype=np.int16)
         fft_result = np.fft.rfft(audio_array)
         magnitudes = np.abs(fft_result)
         band_width = len(magnitudes) // self.BANDS
-        self.bands = [np.mean(magnitudes[i*band_width:(i+1)*band_width]) for i in range(self.BANDS)]
+        self.bands = [
+            np.mean(magnitudes[i * band_width : (i + 1) * band_width])
+            for i in range(self.BANDS)
+        ]
         return (data, pyaudio.paContinue)
 
     def map_bands_to_range(self, N):
@@ -1483,23 +1674,776 @@ class AudioEffect(BaseEffect):
             group_end = group_start + approximate_group_size
             intervals.append((group_start, min(group_end, end)))
         return intervals
-    
-    def render_frame(self, frame_number):        
-        if frame_number == 0: self.stream.start_stream()
-        
+
+    def render_frame(self, frame_number):
+        if frame_number == 0:
+            self.stream.start_stream()
+
         if frame_number % self.audio_halt == 0:
             try:
                 self.buffer.clear_buffer()
-                mapped_bands = self.map_bands_to_range(self.upper_band_bound)
+                mapped_bands = self.map_bands_to_range(self.upper_band_bound)[1:]
                 for idx, band_group in enumerate(zip(mapped_bands, self.band_ranges)):
                     band, band_range = band_group
                     for y_change in range(band):
                         for x_change in range(*band_range):
                             if self.use_gradient:
-                                self.buffer.put_char(x_change, abs(self.subtract_y - y_change), bruhcolored(" ", on_color=self.true_gradient[x_change]).colored, False)
+                                self.buffer.put_char(
+                                    x_change,
+                                    abs(self.subtract_y - y_change),
+                                    bruhcolored(
+                                        " ", on_color=self.true_gradient[x_change]
+                                    ).colored,
+                                    False,
+                                )
                             else:
-                                self.buffer.put_char(x_change, abs(self.subtract_y - y_change), bruhcolored(" ", on_color=self.non_gradient_color).colored, False)
+                                self.buffer.put_char(
+                                    x_change,
+                                    abs(self.subtract_y - y_change),
+                                    bruhcolored(
+                                        " ", on_color=self.non_gradient_color
+                                    ).colored,
+                                    False,
+                                )
             except:
                 pass
-    
-        
+
+
+_VALID_INTERFACES = ["ollama", "openai"]
+
+
+class Key:
+    def __init__(self, character, representation, value, x, y):
+        self.x = x
+        self.y = y
+        self.character = character
+        self.representation = representation
+        self.value = value
+
+    def __str__(self):
+        return self.character
+
+    def __repr__(self):
+        return self.character
+
+
+class GradientNoise:
+    def __init__(self, x, y, length, char_halt=1, color_halt=1, gradient_length=1):
+        self.x = x
+        self.y = y
+        self.__gradient_length = gradient_length
+        # colors to use for gradient
+        self.__gradient = [
+            c
+            for c in [
+                232,
+                232,
+                232,
+                232,
+                233,
+                233,
+                233,
+                233,
+                234,
+                234,
+                234,
+                234,
+                235,
+                235,
+                235,
+                235,
+                236,
+                236,
+                236,
+                236,
+                237,
+                238,
+                239,
+                240,
+                241,
+                242,
+                243,
+                244,
+                245,
+                246,
+                247,
+                248,
+                249,
+                250,
+                251,
+                252,
+                253,
+                254,
+                255,
+            ]
+            for _ in range(self.__gradient_length)
+        ]
+        # delay to changing the chars in the noise
+        self.__char_halt = char_halt
+        self.__char_frame_number = 0
+        # delay to change the gradient shift
+        self.__color_halt = color_halt
+        self.__color_frame_number = 0
+        self.length = length
+        self.done_generating = False
+
+        self.string_chars = [" " for _ in range(self.length)]
+        self.string_colors = [
+            self.__gradient[i % len(self.__gradient)] for i in range(self.length)
+        ]
+        self.colored_chars = [
+            bruhcolored(c, color=color)
+            for c, color in zip(self.string_chars, self.string_colors)
+        ]
+
+    # change the gradient
+    def update_gradient(self, gradient):
+        self.__gradient = [c for c in gradient for _ in range(self.__gradient_length)]
+        return self
+
+    def generate(self, frame_number: int):
+        if self.done_generating:
+            return
+        # is it time to change the noise chars?
+        if frame_number % self.__char_halt == 0:
+            self.__char_frame_number += 1
+            for i, c in enumerate(self.string_chars):
+                # frame == 0 basically
+                if not c:
+                    self.string_chars[i] = random.choice(
+                        string.ascii_letters + "1234567890!@#$%^&*()_+-=<>,.:\";'{}[]?/"
+                    )
+                # randomly decide to update this char to a new one
+                elif random.random() < 0.6:
+                    self.string_chars[i] = random.choice(
+                        string.ascii_letters + "1234567890!@#$%^&*()_+-=<>,.:\";'{}[]?/"
+                    )
+        # is it time to change the gradient position?
+        if frame_number % self.__color_halt == 0:
+            self.__color_frame_number += 1
+            self.string_colors = [
+                self.__gradient[(i - self.__color_frame_number) % len(self.__gradient)]
+                for i in range(self.length)
+            ]
+
+        # update the color characters exposed to the main program
+        self.colored_chars = [
+            bruhcolored(c, color=color)
+            for c, color in zip(self.string_chars, self.string_colors)
+        ]
+
+    def mark_done(self):
+        self.done_generating = True
+
+
+class Loading:
+    def __init__(self, animate_part: GradientNoise):
+        self.animate_part = animate_part
+
+    def update(self, frame: int):
+        self.animate_part.generate(frame)
+
+    def mark_done(self):
+        self.animate_part.mark_done()
+
+
+class StringStreamer:
+    def __init__(self, x: int, y: int, text: str, start_frame: int, halt: int = 1):
+        self.x = x
+        self.y = y
+        self.text = text
+        self.__start_frame = start_frame
+        self.__halt = halt
+        self.__chars = list(self.text)
+        self.elapsed = []
+        self.complete = False
+
+    def generate(self, frame: int):
+        if self.complete or frame < self.__start_frame:
+            return
+        if frame % self.__halt == 0:
+            self.elapsed.append(self.__chars[len(self.elapsed)])
+            if len(self.elapsed) == len(self.__chars):
+                self.complete = True
+
+
+class OllamaApiCaller:
+    def __init__(self, model: str):
+        self.model = model
+        self.url = "http://127.0.0.1:11434/api/chat"
+        self.busy = False
+        self.response = None
+        self.state = "ready"
+
+    def chat(self, message: str, user: str | None) -> str:
+        self.busy = True
+        self.state = "running"
+        updated_message = f"Hey, it's me {user}. {message}" if user else message
+        payload = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": updated_message}],
+            "stream": False,
+        }
+        # time.sleep(2)
+        response = requests.post(url=self.url, data=json.dumps(payload))
+        # self.response = response.json()["message"]["content"].replace("\n", "\\n")
+        self.response = response.json()["message"]["content"]
+        self.busy = False
+        self.state = "finished"
+
+
+class OpenAiCaller:
+    def __init__(self, client: openai.OpenAI | openai.AzureOpenAI, model: str):
+        self.client = client
+        self.model = model
+        self.busy = False
+        self.response = None
+        self.state = "ready"
+
+    def chat(self, message: str, user: str | None) -> str:
+        self.busy = True
+        self.state = "running"
+        updated_message = f"Hey, it's me {user}. {message}" if user else message
+        # time.sleep(2)
+        # response = requests.post(url=self.url, data=json.dumps(payload))
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "user", "content": updated_message}],
+            max_tokens=500,
+            temperature=0.5,
+        )
+        # self.response = response.choices[0].message.content.replace("\n", "\\n")
+        self.response = response.choices[0].message.content
+        self.busy = False
+        self.state = "finished"
+
+
+class ChatbotEffect(BaseEffect):
+    def __init__(self, screen: Screen, buffer, back_buffer, background: str = " "):
+        super(ChatbotEffect, self).__init__(buffer, background)
+        self.back_buffer = back_buffer
+        self.screen = screen
+        self.turn = 0
+        self.interface = None
+        self.model = None
+        self.chatbot = None
+        self.show_stats = False
+        self.last_chatbot_response = ""
+        self.last_chatbot_response_words = []
+
+        # manages how the buffer is updated . . .
+        self.all_keys = {idx: [] for idx in range(screen.height)}
+        self.user_keys = {idx: [] for idx in range(screen.height)}
+        self.chatbot_keys = {idx: [] for idx in range(screen.height)}
+        self.last_key = None
+        self.user_message = ""
+
+        self.second_effect = None
+        self.chat_thread = None
+        self.chatbot_thinker = None
+        self.total_processed_chatbot_words = 0
+        self.current_chatbot_response_words_idx = 0
+        self.chatbot_print_halt = 25
+        self.global_current_y_idx = 0
+
+        self.avatar_size = 10
+
+        self.user_y_turn_start_idx = 0
+        self.chat_y_turn_start_idx = 0
+
+        self.user_cursor_x_idx = self.avatar_size
+        self.user_cursor_y_idx = 0
+
+        # colors
+        self.chatbot_text_color = 243
+        self.chatbot_background_color = None
+        self.user_text_color = 255
+        self.user_background_color = None
+        self.user_avatar_color = None
+        self.user_avatar_text_color = 255
+        self.chatbot_avatar_color = None
+        self.chatbot_avatar_text_color = 255
+
+        self.gradient_noise_char_halt = 1
+        self.gradient_noise_color_halt = 1
+        self.blink_halt = 20
+        self.blink_color_one = 255
+        self.blink_color_two = 232
+        self.cursor_char_color = 255
+
+        self.divider = False
+        self.divider_character = "-"
+
+        for ydx in range(screen.height):
+            for _ in range(self.avatar_size):
+                self.user_keys[ydx] = [
+                    Key(" ", [ord(" ")], ord(" "), x=_, y=ydx)
+                    for _ in range(self.avatar_size)
+                ]
+                self.chatbot_keys[ydx] = [
+                    Key(" ", [ord(" ")], ord(" "), x=_, y=ydx)
+                    for _ in range(self.avatar_size)
+                ]
+                self.all_keys[ydx] = [
+                    Key(" ", [ord(" ")], ord(" "), x=_, y=ydx)
+                    for _ in range(self.avatar_size)
+                ]
+
+    def set_chatbot_properties(
+        self,
+        interface: str | None,
+        model: str,
+        user: str | None = None,
+        client: openai.OpenAI | openai.AzureOpenAI | None = None,
+    ):
+        if interface:
+            self.interface = interface
+        if user:
+            self.user = user
+        self.model = model
+        if interface == "ollama":
+            self.chatbot = OllamaApiCaller(model=self.model)
+        elif interface == "openai":
+            if not client:
+                raise Exception(
+                    "An OpenAI client object must be provided for interface of type 'openai'."
+                )
+            self.chatbot = OpenAiCaller(client=client, model=model)
+
+    def set_second_effect(self, effect: str):
+        self.second_effect = effect
+
+    def set_chatbot_print_halt(self, halt: int):
+        self.chatbot_print_halt = halt
+
+    def set_gradient_noise_halts(
+        self, char_halt: int | None = None, color_halt: int | None = None
+    ):
+        if char_halt:
+            self.gradient_noise_char_halt = char_halt
+        if color_halt:
+            self.gradient_noise_color_halt = color_halt
+
+    def set_chatbot_user_colors(
+        self,
+        chatbot_text_color: int | str | None = None,
+        chatbot_background_color: int | str | None = None,
+        chatbot_avatar_color: int | str | None = None,
+        chatbot_avatar_text_color: int | str | None = None,
+        user_text_color: int | str | None = None,
+        user_background_color: int | str | None = None,
+        user_avatar_color: int | str | None = None,
+        user_avatar_text_color: int | str | None = None,
+    ):
+        if chatbot_text_color:
+            self.chatbot_text_color = chatbot_text_color
+        if chatbot_background_color:
+            self.chatbot_background_color = chatbot_background_color
+        if chatbot_avatar_color:
+            self.chatbot_avatar_color = chatbot_avatar_color
+        if chatbot_avatar_text_color:
+            self.chatbot_avatar_text_color = chatbot_avatar_text_color
+        if user_text_color:
+            self.user_text_color = user_text_color
+        if user_background_color:
+            self.user_background_color = user_background_color
+        if user_avatar_color:
+            self.user_avatar_color = user_avatar_color
+        if user_avatar_text_color:
+            self.user_avatar_text_color = user_avatar_text_color
+
+    def set_avatar_properties(self, size: int):
+        self.avatar_size = size
+        self.user_cursor_x_idx = self.avatar_size
+        for ydx in range(self.screen.height):
+            self.user_keys[ydx] = [
+                Key(" ", [ord(" ")], ord(" "), x=_, y=ydx)
+                for _ in range(self.avatar_size)
+            ]
+            self.chatbot_keys[ydx] = [
+                Key(" ", [ord(" ")], ord(" "), x=_, y=ydx)
+                for _ in range(self.avatar_size)
+            ]
+            self.all_keys[ydx] = [
+                Key(" ", [ord(" ")], ord(" "), x=_, y=ydx)
+                for _ in range(self.avatar_size)
+            ]
+
+    def set_chatbot_stats(self, show: bool = False):
+        self.show_stats = show
+
+    def set_chatbot_blink_halt(self, halt: int):
+        self.blink_halt = halt
+
+    def set_divider_flag(self, divider: bool, divider_character: str = "-"):
+        self.divider = divider
+        self.divider_character = divider_character
+
+    def set_chatbot_cursor_colors(self, color_one: int | str, color_two: int | str):
+        self.blink_color_one = color_one
+        self.blink_color_two = color_two
+
+    def __handle_keyboard_result(self, result):
+        if result:
+            if result == -300:  # backspace
+                history = self.user_keys[self.user_cursor_y_idx]
+                all_key_history = self.all_keys[self.user_cursor_y_idx]
+                if history == []:
+                    if self.user_cursor_y_idx - 1 >= self.global_current_y_idx:
+                        self.user_cursor_y_idx -= 1
+                        if self.user_cursor_y_idx in self.user_keys:
+                            keys = self.user_keys[self.user_cursor_y_idx]
+                            if keys:
+                                self.user_cursor_x_idx = self.user_keys[
+                                    self.user_cursor_y_idx
+                                ][-1].x
+                            else:
+                                self.user_cursor_x_idx = 0
+                        else:
+                            self.user_cursor_x_idx = 0
+                else:
+                    last_key = history[-1]
+                    self.user_cursor_x_idx -= len(last_key.representation)
+                    self.user_keys[self.user_cursor_y_idx] = history[:-1]
+                    self.all_keys[self.user_cursor_y_idx] = all_key_history[:-1]
+                if self.user_cursor_y_idx < 0:
+                    self.user_cursor_y_idx = 0
+                if len(self.user_message) > 0:
+                    self.user_message = self.user_message[:-1]
+                return False
+            elif result == 10:  # enter
+                self.user_cursor_y_idx += 1
+                self.user_cursor_x_idx = self.avatar_size
+                return self.last_key != "\\"
+            elif result == 11:  # tab
+                self.user_cursor_x_idx += 4
+                self.user_keys[self.user_cursor_y_idx].append(
+                    Key(
+                        character=" ",
+                        representation=[32, 32, 32, 32],
+                        value=result,
+                        x=self.user_cursor_x_idx,
+                        y=self.user_cursor_y_idx,
+                    )
+                )
+                self.all_keys[self.user_cursor_y_idx].append(
+                    Key(
+                        character=" ",
+                        representation=[32, 32, 32, 32],
+                        value=result,
+                        x=self.user_cursor_x_idx,
+                        y=self.user_cursor_y_idx,
+                    )
+                )
+                return False
+            elif result > 0:
+                self.user_cursor_x_idx += 1
+                self.user_keys[self.user_cursor_y_idx].append(
+                    Key(
+                        character=chr(result),
+                        representation=[result],
+                        value=result,
+                        x=self.user_cursor_x_idx,
+                        y=self.user_cursor_y_idx,
+                    )
+                )
+                self.all_keys[self.user_cursor_y_idx].append(
+                    Key(
+                        character=bruhcolored(
+                            text=chr(result),
+                            color=self.user_text_color,
+                            on_color=self.user_background_color,
+                        ).colored,
+                        representation=[result],
+                        value=result,
+                        x=self.user_cursor_x_idx,
+                        y=self.user_cursor_y_idx,
+                    )
+                )
+                self.last_key = chr(result)
+                self.user_message += chr(result)
+                return False
+
+    def render_frame(self, frame_number):
+        self.buffer.clear_buffer()
+        if self.turn == 0:
+            self.screen.wait_for_input(timeout=0)
+            result = self.screen.get_event()
+            flip_turn = self.__handle_keyboard_result(result=result)
+            if flip_turn:
+                for i, c in enumerate(self.user[: self.avatar_size - 1]):
+                    self.user_keys[self.user_y_turn_start_idx][i] = Key(
+                        c, [ord(c)], ord(c), None, None
+                    )
+                    self.all_keys[self.user_y_turn_start_idx][i] = Key(
+                        bruhcolored(
+                            c,
+                            color=self.user_avatar_text_color,
+                            on_color=self.user_avatar_color,
+                        ).colored,
+                        [ord(c)],
+                        ord(c),
+                        None,
+                        None,
+                    )
+                for i in range(len(self.user), self.avatar_size - 1):
+                    self.all_keys[self.user_y_turn_start_idx][i] = Key(
+                        bruhcolored(" ", on_color=self.user_avatar_color).colored,
+                        [ord(" ")],
+                        ord(" "),
+                        None,
+                        None,
+                    )
+                self.turn = 1
+                if self.divider:
+                    for _ in range(self.avatar_size):
+                        self.all_keys[self.user_cursor_y_idx].append(
+                            Key(
+                                self.divider_character,
+                                [ord(self.divider_character)],
+                                ord(self.divider_character),
+                                None,
+                                None,
+                            )
+                        )
+                    for _ in range(self.avatar_size, self.buffer.width()):
+                        self.all_keys[self.user_cursor_y_idx].append(
+                            Key(
+                                self.divider_character,
+                                [ord(self.divider_character)],
+                                ord(self.divider_character),
+                                None,
+                                None,
+                            )
+                        )
+                    self.user_cursor_y_idx += 1
+                self.chat_y_turn_start_idx = self.user_cursor_y_idx
+        else:
+            # call llm with self.user_message
+            if self.chatbot.state == "ready":
+                message = self.user_message[:]
+                self.thread = Thread(
+                    target=self.chatbot.chat,
+                    args=(
+                        message,
+                        self.user,
+                    ),
+                )
+                self.thread.start()
+                self.chatbot_thinker = GradientNoise(
+                    x=0,
+                    y=self.user_cursor_y_idx,
+                    length=self.avatar_size - 1,
+                    char_halt=self.gradient_noise_char_halt,
+                    color_halt=self.gradient_noise_color_halt,
+                    gradient_length=2,
+                )#.update_gradient([21, 57, 93, 129, 165, 201, 165, 129, 93, 57])
+            elif (
+                self.thread
+                and not self.thread.is_alive()
+                and self.chatbot.state == "finished"
+            ):
+                self.thread.join()
+                self.thread = None
+                if len(self.chatbot.response) > self.buffer.width():
+                    self.last_chatbot_response = self.chatbot.response
+                else:
+                    self.last_chatbot_response = self.chatbot.response
+                self.last_chatbot_response_words = self.last_chatbot_response.split(" ")
+                self.chatbot.response = ""
+                self.user_message = ""
+                self.chatbot.state = "printing"
+            elif self.chatbot.state == "printing":
+                # print out the characters!
+                if frame_number & self.chatbot_print_halt == 0:
+                    if self.total_processed_chatbot_words == len(
+                        self.last_chatbot_response_words
+                    ):
+                        self.chatbot.state = "done"
+                        self.current_chatbot_response_words_idx = 0
+                        self.total_processed_chatbot_words = 0
+                        for i, c in enumerate(self.chatbot_thinker.colored_chars):
+                            if i < len(self.model):
+                                self.all_keys[self.chatbot_thinker.y][i] = Key(
+                                    character=bruhcolored(
+                                        self.model[i],
+                                        color=self.chatbot_avatar_text_color,
+                                        on_color=self.chatbot_avatar_color,
+                                    ).colored,
+                                    representation=[ord(self.model[i])],
+                                    value=ord(self.model[i]),
+                                    x=None,
+                                    y=None,
+                                )
+                            else:
+                                self.all_keys[self.chatbot_thinker.y][i] = Key(
+                                    character=bruhcolored(
+                                        " ", on_color=self.chatbot_avatar_color
+                                    ).colored,
+                                    representation=[ord(" ")],
+                                    value=ord(" "),
+                                    x=None,
+                                    y=None,
+                                )
+                            self.chatbot_keys[self.chatbot_thinker.y][i] = Key(
+                                character=c.colored,
+                                representation=[ord(c.text)],
+                                value=ord(c.text),
+                                x=None,
+                                y=None,
+                            )
+                    else:
+                        next_word = (
+                            self.last_chatbot_response_words[
+                                self.current_chatbot_response_words_idx
+                            ]
+                            + " "
+                        )
+                        for character in next_word:
+                            if character == "\n":
+                                self.user_cursor_y_idx += 1
+                                self.all_keys[self.user_cursor_y_idx][
+                                    self.avatar_size - 2
+                                ] = Key(
+                                    character=">",
+                                    representation=[ord(">")],
+                                    value=ord(">"),
+                                    x=None,
+                                    y=None,
+                                )
+                                continue
+                            self.chatbot_keys[self.user_cursor_y_idx].append(
+                                Key(
+                                    character=character,
+                                    representation=[ord(character)],
+                                    value=ord(character),
+                                    x=self.user_cursor_x_idx,
+                                    y=self.user_cursor_y_idx,
+                                )
+                            )
+                            self.all_keys[self.user_cursor_y_idx].append(
+                                Key(
+                                    character=bruhcolored(
+                                        text=character,
+                                        color=self.chatbot_text_color,
+                                        on_color=self.chatbot_background_color,
+                                    ).colored,
+                                    representation=[ord(character)],
+                                    value=ord(character),
+                                    x=self.user_cursor_x_idx,
+                                    y=self.user_cursor_y_idx,
+                                )
+                            )
+                            if (
+                                len(self.all_keys[self.user_cursor_y_idx])
+                                == self.buffer.width()
+                            ):
+                                self.user_cursor_y_idx += 1
+                                self.all_keys[self.user_cursor_y_idx][
+                                    self.avatar_size - 2
+                                ] = Key(
+                                    character=">",
+                                    representation=[ord(">")],
+                                    value=ord(">"),
+                                    x=None,
+                                    y=None,
+                                )
+                        self.current_chatbot_response_words_idx += 1
+                        self.total_processed_chatbot_words += 1
+            elif self.chatbot.state == "done":
+                self.turn = 0
+                self.chatbot_thinker = None
+                self.chatbot.state = "ready"
+                self.global_current_y_idx += 1
+                if self.divider:
+                    self.user_cursor_y_idx += 1
+                    for _ in range(self.avatar_size):
+                        self.all_keys[self.user_cursor_y_idx].append(
+                            Key(
+                                self.divider_character,
+                                [ord(self.divider_character)],
+                                ord(self.divider_character),
+                                None,
+                                None,
+                            )
+                        )
+                    for _ in range(self.avatar_size, self.buffer.width()):
+                        self.all_keys[self.user_cursor_y_idx].append(
+                            Key(
+                                self.divider_character,
+                                [ord(self.divider_character)],
+                                ord(self.divider_character),
+                                None,
+                                None,
+                            )
+                        )
+                self.user_cursor_y_idx += 1
+                self.user_y_turn_start_idx = self.user_cursor_y_idx
+            else:
+                self.chatbot_thinker.generate(frame_number=frame_number)
+
+        if self.second_effect:
+            self.second_effect.render_frame(frame_number=frame_number)
+            self.buffer.sync_with(self.second_effect.buffer)
+
+        for bruh, vals in self.all_keys.items():
+            displacement = 0
+            for idx, key in enumerate(vals):
+                if len(key.representation) > 1:
+                    for val in key.representation:
+                        self.buffer.put_char(idx + displacement, bruh, chr(val))
+                        displacement += 1
+                    displacement -= 1
+                else:
+                    self.buffer.put_char(idx + displacement, bruh, key.character)
+
+        if self.chatbot_thinker:
+            for i, c in enumerate(self.chatbot_thinker.colored_chars):
+                self.buffer.put_char(
+                    self.chatbot_thinker.x + i, self.chatbot_thinker.y, c.colored
+                )
+
+        if self.show_stats:
+            self.buffer.put_at(
+                0,
+                self.buffer.height() - 5,
+                f"CURSOR X: {self.user_cursor_x_idx}",
+                transparent=True,
+            )
+            self.buffer.put_at(
+                0,
+                self.buffer.height() - 4,
+                f"CURSOR Y: {self.user_cursor_y_idx}",
+                transparent=True,
+            )
+            self.buffer.put_at(
+                0,
+                self.buffer.height() - 3,
+                f"CHATBOT STATE: {self.chatbot.state}",
+                transparent=True,
+            )
+            self.buffer.put_at(
+                0,
+                self.buffer.height() - 2,
+                f"CHATBOT RESPONSE WORD COUNT: {0 if not self.last_chatbot_response_words else len(self.last_chatbot_response_words)}",
+                transparent=True,
+            )
+            self.buffer.put_at(
+                0,
+                self.buffer.height() - 1,
+                f"PROCESSED RESPONSE WORDS: {self.total_processed_chatbot_words}",
+                transparent=True,
+            )
+        if self.turn == 0:
+            if frame_number % self.blink_halt == 0:
+                self.cursor_char_color = (
+                    self.blink_color_one
+                    if self.cursor_char_color == self.blink_color_two
+                    else self.blink_color_two
+                )
+            self.buffer.put_char(
+                self.user_cursor_x_idx,
+                self.user_cursor_y_idx,
+                bruhcolored(" ", on_color=self.cursor_char_color).colored,
+                transparent=False,
+            )

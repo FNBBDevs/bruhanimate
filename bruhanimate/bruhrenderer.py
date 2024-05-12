@@ -37,7 +37,8 @@ _VALID_EFFECTS = [
     "drawlines",
     "snow",
     "twinkle",
-    "audio"
+    "audio",
+    "chat"
 ]
 
 HORIZONTAL = "h"
@@ -106,6 +107,8 @@ class BaseRenderer:
             self.effect = TwinkleEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "audio":
             self.effect = AudioEffect(Buffer(self.height, self.width), self.background)
+        elif self.effect_type == "chat":
+            self.effect = ChatbotEffect(screen, Buffer(self.height, self.width), Buffer(self.height, self.width), self.background)
 
         self.effect.smart_transparent = False
 
@@ -163,14 +166,6 @@ class BaseRenderer:
         """
         self.smart_transparent = smart_transparent
         self.effect.smart_transparent = smart_transparent
-
-    def update_points(self, p1, p2):
-        """
-        Given two points, update start and end points for this line
-        :param p1: start point (x, y)
-        :param p2: end   point (x, y)
-        """
-        self.effect.line.uppdate_points(p1, p2)
 
     def push_front_to_screen(self):
         """
@@ -298,25 +293,34 @@ class EffectRenderer(BaseRenderer):
         """
         Generate the next effect frame and sync it with the back / front buffer
         """
-
-        if self.frames == INF:
-            frame = 0
-            while True:
-                if self.screen.has_resized(): raise Exception("An error was encounter. The Screen was resized.")
-                sleep(self.time)
-                self.render_effect_frame(frame)
-                self.back_buffer.sync_with(self.effect.buffer)
+        try:
+            if self.frames == INF:
+                frame = 0
+                while True:
+                    if self.screen.has_resized(): raise Exception("An error was encounter. The Screen was resized.")
+                    sleep(self.time)
+                    self.render_effect_frame(frame)
+                    self.back_buffer.sync_with(self.effect.buffer)
+                    self.push_front_to_screen()
+                    self.front_buffer.sync_with(self.back_buffer)
+                    frame += 1
+            else:
+                for frame in range(self.frames):
+                    if self.screen.has_resized(): raise Exception("An error was encounter. The Screen was resized.")
+                    sleep(self.time)
+                    self.render_effect_frame(frame)
+                    self.back_buffer.sync_with(self.effect.buffer)
+                    self.push_front_to_screen()
+                    self.front_buffer.sync_with(self.back_buffer)
+            if end_message:
+                self.render_exit()
                 self.push_front_to_screen()
-                self.front_buffer.sync_with(self.back_buffer)
-                frame += 1
-        else:
-            for frame in range(self.frames):
-                if self.screen.has_resized(): raise Exception("An error was encounter. The Screen was resized.")
-                sleep(self.time)
-                self.render_effect_frame(frame)
-                self.back_buffer.sync_with(self.effect.buffer)
+            if sys.platform == 'win32': input()
+        except KeyboardInterrupt:
+            if end_message:
+                self.render_exit()
                 self.push_front_to_screen()
-                self.front_buffer.sync_with(self.back_buffer)
+            if sys.platform == 'win32': input()
 
         if end_message:
             self.render_exit()

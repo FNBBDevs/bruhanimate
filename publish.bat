@@ -1,11 +1,4 @@
 @echo off
-echo Starting publish.
-echo Pushing version number
-python push_version.py
-echo Running setup.py
-python setup.py sdist bdist >nul
-echo Uploading to pypi
-twine upload dist/* -u %pypi-username% -p %pypi-password%
 
 echo Waiting for 5 seconds before folder delete.
 timeout /t 5 /nobreak >nul
@@ -28,6 +21,14 @@ for %%i in (%folders%) do (
         echo Folder %%i not found.
     )
 )
+
+echo Starting publish.
+echo Pushing version number
+python push_version.py
+echo Running setup.py
+python setup.py sdist bdist >nul
+echo Uploading to pypi
+twine upload dist/* -u %pypi-username% -p %pypi-password%
 
 echo Pushing to Github.
 git add .
