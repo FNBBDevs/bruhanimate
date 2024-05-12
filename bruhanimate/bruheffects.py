@@ -1960,6 +1960,7 @@ class ChatbotEffect(BaseEffect):
         self.user_text_color = 255
         self.user_background_color = None
         self.user_avatar_color = None
+        self.chatbot_avatar_color = None
 
         self.gradient_noise_char_halt = 1
         self.gradient_noise_color_halt = 1
@@ -2025,6 +2026,7 @@ class ChatbotEffect(BaseEffect):
         self,
         chatbot_text_color: int | str | None = None,
         chatbot_background_color: int | str | None = None,
+        chatbot_avatar_color: int | str | None = None,
         user_text_color: int | str | None = None,
         user_background_color: int | str | None = None,
         user_avatar_color: int | str | None = None,
@@ -2033,6 +2035,8 @@ class ChatbotEffect(BaseEffect):
             self.chatbot_text_color = chatbot_text_color
         if chatbot_background_color:
             self.chatbot_background_color = chatbot_background_color
+        if chatbot_avatar_color:
+            self.chatbot_avatar_color = chatbot_avatar_color
         if user_text_color:
             self.user_text_color = user_text_color
         if user_background_color:
@@ -2182,9 +2186,25 @@ class ChatbotEffect(BaseEffect):
                 self.turn = 1
                 if self.divider:
                     for _ in range(self.avatar_size):
-                        self.all_keys[self.user_cursor_y_idx].append(Key(self.divider_character, [ord(self.divider_character)], ord(self.divider_character),None,None))
+                        self.all_keys[self.user_cursor_y_idx].append(
+                            Key(
+                                self.divider_character,
+                                [ord(self.divider_character)],
+                                ord(self.divider_character),
+                                None,
+                                None,
+                            )
+                        )
                     for _ in range(self.avatar_size, self.buffer.width()):
-                        self.all_keys[self.user_cursor_y_idx].append(Key(self.divider_character, [ord(self.divider_character)], ord(self.divider_character),None,None))
+                        self.all_keys[self.user_cursor_y_idx].append(
+                            Key(
+                                self.divider_character,
+                                [ord(self.divider_character)],
+                                ord(self.divider_character),
+                                None,
+                                None,
+                            )
+                        )
                 self.user_cursor_y_idx += 1
                 self.chat_y_turn_start_idx = self.user_cursor_y_idx
         else:
@@ -2232,14 +2252,23 @@ class ChatbotEffect(BaseEffect):
                         self.current_chatbot_response_words_idx = 0
                         self.total_processed_chatbot_words = 0
                         for i, c in enumerate(self.chatbot_thinker.colored_chars):
+                            if i < len(self.model):
+                                self.all_keys[self.chatbot_thinker.y][i] = Key(
+                                    character=bruhcolored(self.model[i], on_color=self.chatbot_avatar_color).colored,
+                                    representation=[ord(self.model[i])],
+                                    value=ord(self.model[i]),
+                                    x=None,
+                                    y=None,
+                                )
+                            else:
+                                self.all_keys[self.chatbot_thinker.y][i] = Key(
+                                    character=bruhcolored(" ", on_color=self.chatbot_avatar_color).colored,
+                                    representation=[ord(" ")],
+                                    value=ord(" "),
+                                    x=None,
+                                    y=None,
+                                )
                             self.chatbot_keys[self.chatbot_thinker.y][i] = Key(
-                                character=c.colored,
-                                representation=[ord(c.text)],
-                                value=ord(c.text),
-                                x=None,
-                                y=None,
-                            )
-                            self.all_keys[self.chatbot_thinker.y][i] = Key(
                                 character=c.colored,
                                 representation=[ord(c.text)],
                                 value=ord(c.text),
@@ -2312,9 +2341,25 @@ class ChatbotEffect(BaseEffect):
                 if self.divider:
                     self.user_cursor_y_idx += 1
                     for _ in range(self.avatar_size):
-                        self.all_keys[self.user_cursor_y_idx].append(Key(self.divider_character, [ord(self.divider_character)], ord(self.divider_character),None,None))
+                        self.all_keys[self.user_cursor_y_idx].append(
+                            Key(
+                                self.divider_character,
+                                [ord(self.divider_character)],
+                                ord(self.divider_character),
+                                None,
+                                None,
+                            )
+                        )
                     for _ in range(self.avatar_size, self.buffer.width()):
-                        self.all_keys[self.user_cursor_y_idx].append(Key(self.divider_character, [ord(self.divider_character)], ord(self.divider_character),None,None))
+                        self.all_keys[self.user_cursor_y_idx].append(
+                            Key(
+                                self.divider_character,
+                                [ord(self.divider_character)],
+                                ord(self.divider_character),
+                                None,
+                                None,
+                            )
+                        )
                 self.user_cursor_y_idx += 1
                 self.user_y_turn_start_idx = self.user_cursor_y_idx
             else:

@@ -13,6 +13,11 @@ from bruhanimate.bruheffects import (
     GameOfLifeEffect,
     RainEffect,
     MatrixEffect,
+    ChatbotEffect,
+    GradientNoise,
+    Loading,
+    StringStreamer,
+    Key,
     Line,
     DrawLines,
     _FLAKE,
@@ -45,9 +50,9 @@ from bruhanimate.bruhrenderer import (
     BackgroundColorRenderer,
 )
 from bruhanimate import images
-from bruhanimate.demos import line_demo, plasma_demo, snow_demo, holiday, stars_demo, twinkle_demo, noise_demo, matrix_demo, gol_demo, rain_demo, offset_demo, static_demo, audio_demo
+from bruhanimate.demos import line_demo, plasma_demo, snow_demo, holiday, stars_demo, twinkle_demo, noise_demo, matrix_demo, gol_demo, rain_demo, offset_demo, static_demo, audio_demo, chatbot_demo
 
-__version__ = "0.2.35"
+__version__ = "0.2.36"
 __valid_demos__ = [demo.split(".")[0] for demo in os.listdir(os.path.join(here, "demos")) if "init" not in demo and "pycache" not in demo]
 
 __all__ = [
@@ -65,6 +70,7 @@ __all__ = [
     "offset_demo",
     "static_demo",
     "audio_demo",
+    "chatbot_demo",
     "BaseEffect",
     "StaticEffect",
     "OffsetEffect",
@@ -74,6 +80,11 @@ __all__ = [
     "GameOfLifeEffect",
     "RainEffect",
     "MatrixEffect",
+    "ChatbotEffect",
+    "StringStreamer",
+    "GradientNoise",
+    "Loading",
+    "Key",
     "DrawLines",
     "Line",
     "_FLAKE",
