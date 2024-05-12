@@ -37,7 +37,6 @@ def chatbot(screen: Screen, openai_api_key: str):
     chat_effect = SnowEffect(
         buffer=Buffer(screen.height, screen.width), background=" "
     )
-    chat_effect.set_matrix_properties((1, 25), (1, 10), 0.5, 0.5, 0.5, 10)
     renderer.effect.set_second_effect(chat_effect)
     renderer.run()
 
