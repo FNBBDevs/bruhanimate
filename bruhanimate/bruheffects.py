@@ -1943,7 +1943,7 @@ class ChatbotEffect(BaseEffect):
         self.chatbot_thinker = None
         self.total_processed_chatbot_words = 0
         self.current_chatbot_response_words_idx = 0
-        self.chatbot_print_halt = 1000
+        self.chatbot_print_halt = 25
         self.global_current_y_idx = 0
 
         self.avatar_size = 10
