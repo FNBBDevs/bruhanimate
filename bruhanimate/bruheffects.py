@@ -1960,7 +1960,9 @@ class ChatbotEffect(BaseEffect):
         self.user_text_color = 255
         self.user_background_color = None
         self.user_avatar_color = None
+        self.user_avatar_text_color = 255
         self.chatbot_avatar_color = None
+        self.chatbot_avatar_text_color = 255
 
         self.gradient_noise_char_halt = 1
         self.gradient_noise_color_halt = 1
@@ -2027,9 +2029,11 @@ class ChatbotEffect(BaseEffect):
         chatbot_text_color: int | str | None = None,
         chatbot_background_color: int | str | None = None,
         chatbot_avatar_color: int | str | None = None,
+        chatbot_avatar_text_color: int | str | None = None,
         user_text_color: int | str | None = None,
         user_background_color: int | str | None = None,
         user_avatar_color: int | str | None = None,
+        user_avatar_text_color: int | str | None = None,
     ):
         if chatbot_text_color:
             self.chatbot_text_color = chatbot_text_color
@@ -2037,12 +2041,16 @@ class ChatbotEffect(BaseEffect):
             self.chatbot_background_color = chatbot_background_color
         if chatbot_avatar_color:
             self.chatbot_avatar_color = chatbot_avatar_color
+        if chatbot_avatar_text_color:
+            self.chatbot_avatar_text_color = chatbot_avatar_text_color
         if user_text_color:
             self.user_text_color = user_text_color
         if user_background_color:
             self.user_background_color = user_background_color
         if user_avatar_color:
             self.user_avatar_color = user_avatar_color
+        if user_avatar_text_color:
+            self.user_avatar_text_color = user_avatar_text_color
 
     def set_avatar_properties(self, size: int):
         self.avatar_size = size
@@ -2169,7 +2177,11 @@ class ChatbotEffect(BaseEffect):
                         c, [ord(c)], ord(c), None, None
                     )
                     self.all_keys[self.user_y_turn_start_idx][i] = Key(
-                        bruhcolored(c, on_color=self.user_avatar_color).colored,
+                        bruhcolored(
+                            c,
+                            color=self.user_avatar_text_color,
+                            on_color=self.user_avatar_color,
+                        ).colored,
                         [ord(c)],
                         ord(c),
                         None,
@@ -2254,7 +2266,11 @@ class ChatbotEffect(BaseEffect):
                         for i, c in enumerate(self.chatbot_thinker.colored_chars):
                             if i < len(self.model):
                                 self.all_keys[self.chatbot_thinker.y][i] = Key(
-                                    character=bruhcolored(self.model[i], on_color=self.chatbot_avatar_color).colored,
+                                    character=bruhcolored(
+                                        self.model[i],
+                                        color=self.chatbot_avatar_text_color,
+                                        on_color=self.chatbot_avatar_color,
+                                    ).colored,
                                     representation=[ord(self.model[i])],
                                     value=ord(self.model[i]),
                                     x=None,
@@ -2262,7 +2278,9 @@ class ChatbotEffect(BaseEffect):
                                 )
                             else:
                                 self.all_keys[self.chatbot_thinker.y][i] = Key(
-                                    character=bruhcolored(" ", on_color=self.chatbot_avatar_color).colored,
+                                    character=bruhcolored(
+                                        " ", on_color=self.chatbot_avatar_color
+                                    ).colored,
                                     representation=[ord(" ")],
                                     value=ord(" "),
                                     x=None,
