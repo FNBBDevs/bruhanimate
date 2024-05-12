@@ -23,11 +23,11 @@ def chatbot(screen: Screen, openai_api_key: str, name: str):
     )
     renderer.effect.set_avatar_properties(size=10)
     renderer.effect.set_chatbot_user_colors(
-        chatbot_text_color=255,
+        chatbot_text_color=245,
         chatbot_background_color=None,
         chatbot_avatar_color=245,
         chatbot_avatar_text_color=255,
-        user_text_color=27,
+        user_text_color=255,
         user_background_color=None,
         user_avatar_color=255,
         user_avatar_text_color=232
