@@ -2238,7 +2238,7 @@ class ChatbotEffect(BaseEffect):
                     char_halt=self.gradient_noise_char_halt,
                     color_halt=self.gradient_noise_color_halt,
                     gradient_length=2,
-                ).update_gradient([21, 57, 93, 129, 165, 201, 165, 129, 93, 57])
+                )#.update_gradient([21, 57, 93, 129, 165, 201, 165, 129, 93, 57])
             elif (
                 self.thread
                 and not self.thread.is_alive()
