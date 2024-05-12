@@ -42,7 +42,7 @@ def chatbot(screen: Screen, openai_api_key: str):
     renderer.run()
 
 def run(openai_api_key: str):
-    Screen.show(chatbot, args=(openai_api_key))
+    Screen.show(chatbot, args=(openai_api_key,))
 
 if __name__ == "__main__":
     run()
