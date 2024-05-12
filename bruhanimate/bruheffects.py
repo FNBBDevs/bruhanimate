@@ -2171,7 +2171,6 @@ class ChatbotEffect(BaseEffect):
             result = self.screen.get_event()
             flip_turn = self.__handle_keyboard_result(result=result)
             if flip_turn:
-                # self.user_cursor_y_idx += 1
                 for i, c in enumerate(self.user[: self.avatar_size - 1]):
                     self.user_keys[self.user_y_turn_start_idx][i] = Key(
                         c, [ord(c)], ord(c), None, None
@@ -2217,7 +2216,7 @@ class ChatbotEffect(BaseEffect):
                                 None,
                             )
                         )
-                self.user_cursor_y_idx += 1
+                    self.user_cursor_y_idx += 1
                 self.chat_y_turn_start_idx = self.user_cursor_y_idx
         else:
             # call llm with self.user_message
