@@ -1868,54 +1868,97 @@ class StringStreamer:
 
 
 class OllamaApiCaller:
-    def __init__(self, model: str):
+    def __init__(
+        self,
+        model: str,
+        use_message_history: bool = False,
+        message_history_cap: int = 5,
+    ):
         self.model = model
         self.url = "http://127.0.0.1:11434/api/chat"
         self.busy = False
         self.response = None
         self.state = "ready"
+        self.use_message_history = use_message_history
+        self.message_history = []
+        self.message_history_cap = message_history_cap
 
-    def chat(self, message: str, user: str | None) -> str:
+    def chat(
+        self, message: str, user: str | None, previous_messages: list[str] | None = None
+    ) -> str:
         self.busy = True
         self.state = "running"
-        updated_message = f"Hey, it's me {user}. {message}" if user else message
         payload = {
             "model": self.model,
-            "messages": [{"role": "user", "content": updated_message}],
+            "messages": (
+                [{"role": "user", "content": message}]
+                if not self.message_history
+                else self.message_history
+                + [{"role": "user", "content": message}]
+            ),
             "stream": False,
         }
-        # time.sleep(2)
+
         response = requests.post(url=self.url, data=json.dumps(payload))
-        # self.response = response.json()["message"]["content"].replace("\n", "\\n")
+
         self.response = response.json()["message"]["content"]
         self.busy = False
         self.state = "finished"
 
+        if self.use_message_history:
+            self.message_history += [
+                {"role": "user", "content": message},
+                {"role": "assistant", "content": self.response},
+            ]
+            if len(self.message_history) > self.message_history_cap:
+                self.message_history_cap = self.message_history_cap[1:]
+
 
 class OpenAiCaller:
-    def __init__(self, client: openai.OpenAI | openai.AzureOpenAI, model: str):
+    def __init__(
+        self,
+        client: openai.OpenAI | openai.AzureOpenAI,
+        model: str,
+        use_message_history: bool = False,
+        message_history_cap: int = 5,
+    ):
         self.client = client
         self.model = model
         self.busy = False
         self.response = None
         self.state = "ready"
+        self.use_message_history = use_message_history
+        self.message_history = []
+        self.message_history_cap = message_history_cap
 
     def chat(self, message: str, user: str | None) -> str:
         self.busy = True
         self.state = "running"
-        updated_message = f"Hey, it's me {user}. {message}" if user else message
-        # time.sleep(2)
-        # response = requests.post(url=self.url, data=json.dumps(payload))
         response = self.client.chat.completions.create(
             model=self.model,
-            messages=[{"role": "user", "content": updated_message}],
+            messages=(
+                [{"role": "user", "content": message}]
+                if not self.message_history
+                else self.message_history
+                + [{"role": "user", "content": message}]
+            ),
             max_tokens=500,
             temperature=0.5,
         )
-        # self.response = response.choices[0].message.content.replace("\n", "\\n")
+
         self.response = response.choices[0].message.content
         self.busy = False
         self.state = "finished"
+
+        if self.use_message_history:
+            self.message_history += [
+                {"role": "user", "content": message},
+                {"role": "system", "content": self.response},
+            ]
+            if len(self.message_history) > self.message_history_cap:
+                self.message_history_cap = self.message_history_cap[
+                    len(self.message_history) - self.message_history_cap :
+                ]
 
 
 class ChatbotEffect(BaseEffect):
@@ -1974,6 +2017,10 @@ class ChatbotEffect(BaseEffect):
         self.divider = False
         self.divider_character = "-"
 
+        self.gradient_text_color = [21, 57, 93, 129, 165, 201, 165, 129, 93, 57]
+        self.gradient_idx = 1
+        self.gradient_mul = 1
+
         for ydx in range(screen.height):
             for _ in range(self.avatar_size):
                 self.user_keys[ydx] = [
@@ -1989,12 +2036,25 @@ class ChatbotEffect(BaseEffect):
                     for _ in range(self.avatar_size)
                 ]
 
+        self.message_history = []
+
+    def __expand_list(self, original_list: list[int|str], n: int, mul: int = 1):
+        l = []
+        for val in original_list:
+            for _ in range(mul):
+                l.append(val)
+        v = math.ceil(n / len(l))
+        new_list = l * v
+        return new_list[:n]
+
     def set_chatbot_properties(
         self,
         interface: str | None,
         model: str,
         user: str | None = None,
         client: openai.OpenAI | openai.AzureOpenAI | None = None,
+        use_message_history: bool = False,
+        message_history_cap: int = 5,
     ):
         if interface:
             self.interface = interface
@@ -2002,13 +2062,22 @@ class ChatbotEffect(BaseEffect):
             self.user = user
         self.model = model
         if interface == "ollama":
-            self.chatbot = OllamaApiCaller(model=self.model)
+            self.chatbot = OllamaApiCaller(
+                model=self.model,
+                use_message_history=use_message_history,
+                message_history_cap=message_history_cap,
+            )
         elif interface == "openai":
             if not client:
                 raise Exception(
                     "An OpenAI client object must be provided for interface of type 'openai'."
                 )
-            self.chatbot = OpenAiCaller(client=client, model=model)
+            self.chatbot = OpenAiCaller(
+                client=client,
+                model=model,
+                use_message_history=use_message_history,
+                message_history_cap=message_history_cap,
+            )
 
     def set_second_effect(self, effect: str):
         self.second_effect = effect
@@ -2082,6 +2151,10 @@ class ChatbotEffect(BaseEffect):
     def set_chatbot_cursor_colors(self, color_one: int | str, color_two: int | str):
         self.blink_color_one = color_one
         self.blink_color_two = color_two
+
+    def set_chatbot_text_gradient(self, gradient: list[int|str], mul: int):
+        self.gradient_text_color = gradient
+        self.gradient_mul = mul
 
     def __handle_keyboard_result(self, result):
         if result:
@@ -2237,7 +2310,7 @@ class ChatbotEffect(BaseEffect):
                     char_halt=self.gradient_noise_char_halt,
                     color_halt=self.gradient_noise_color_halt,
                     gradient_length=2,
-                )#.update_gradient([21, 57, 93, 129, 165, 201, 165, 129, 93, 57])
+                )  # .update_gradient([21, 57, 93, 129, 165, 201, 165, 129, 93, 57])
             elif (
                 self.thread
                 and not self.thread.is_alive()
@@ -2253,6 +2326,9 @@ class ChatbotEffect(BaseEffect):
                 self.chatbot.response = ""
                 self.user_message = ""
                 self.chatbot.state = "printing"
+                if self.chatbot_text_color == "gradient":
+                    self.gradient_idx = 1
+                    self.gradient_text_color_for_message = self.__expand_list(self.gradient_text_color, len(self.last_chatbot_response), 3)
             elif self.chatbot.state == "printing":
                 # print out the characters!
                 if frame_number & self.chatbot_print_halt == 0:
@@ -2299,7 +2375,7 @@ class ChatbotEffect(BaseEffect):
                             ]
                             + " "
                         )
-                        for character in next_word:
+                        for idx, character in enumerate(next_word):
                             if character == "\n":
                                 self.user_cursor_y_idx += 1
                                 self.all_keys[self.user_cursor_y_idx][
@@ -2325,7 +2401,7 @@ class ChatbotEffect(BaseEffect):
                                 Key(
                                     character=bruhcolored(
                                         text=character,
-                                        color=self.chatbot_text_color,
+                                        color=self.chatbot_text_color if self.chatbot_text_color != "gradient" else self.gradient_text_color_for_message[self.gradient_idx - 1],
                                         on_color=self.chatbot_background_color,
                                     ).colored,
                                     representation=[ord(character)],
@@ -2334,6 +2410,8 @@ class ChatbotEffect(BaseEffect):
                                     y=self.user_cursor_y_idx,
                                 )
                             )
+                            if character != " ":
+                                self.gradient_idx += 1
                             if (
                                 len(self.all_keys[self.user_cursor_y_idx])
                                 == self.buffer.width()
@@ -2434,6 +2512,7 @@ class ChatbotEffect(BaseEffect):
                 f"PROCESSED RESPONSE WORDS: {self.total_processed_chatbot_words}",
                 transparent=True,
             )
+
         if self.turn == 0:
             if frame_number % self.blink_halt == 0:
                 self.cursor_char_color = (
