@@ -203,10 +203,10 @@ if sys.platform == 'win32':
                 re_sized = True
             return re_sized
 
-        def set_title(self, title):
+        def set_title(self, title: str) -> None:
             win32console.SetConsoleTitle(title)
         
-        def wait_for_input(self, timeout):
+        def wait_for_input(self, timeout: int) -> None:
             rc = win32event.WaitForSingleObject(self._stdin, int(timeout * 1000))
             if rc not in [0, 258]:
                 raise RuntimeError(rc)
