@@ -52,7 +52,7 @@ from bruhanimate.bruhrenderer import (
 from bruhanimate import images
 from bruhanimate.demos import line_demo, plasma_demo, snow_demo, holiday, stars_demo, twinkle_demo, noise_demo, matrix_demo, gol_demo, rain_demo, offset_demo, static_demo, audio_demo, chatbot_demo
 
-__version__ = "0.2.50"
+__version__ = "0.2.51"
 __valid_demos__ = [demo.split(".")[0] for demo in os.listdir(os.path.join(here, "demos")) if "init" not in demo and "pycache" not in demo]
 
 __all__ = [

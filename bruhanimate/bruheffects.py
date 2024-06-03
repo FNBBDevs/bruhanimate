@@ -2030,6 +2030,9 @@ class ChatbotEffect(BaseEffect):
 
         self.message_history = []
 
+        self.view_y_top = 0
+        self.view_y_bottom = self.screen.height - 1
+
     def __expand_list(self, original_list: list[int|str], n: int, mul: int = 1):
         l = []
         for val in original_list:
@@ -2184,6 +2187,14 @@ class ChatbotEffect(BaseEffect):
                     )
                 )
                 return False
+            elif result == -204: # arrow up
+                if self.current_top_y != 0:
+                    self.current_top_y -= 1
+                    self.current_bottom_y -= 1
+            elif result == -206: # arrow down
+                if self.current_bottom_y < (len(self.all_keys) - 1):
+                    self.current_top_y += 1
+                    self.current_bottom_y += 1
             elif result > 0:
                 self.user_cursor_x_idx += 1
                 self.all_keys[self.user_cursor_y_idx].append(
@@ -2225,12 +2236,13 @@ class ChatbotEffect(BaseEffect):
                     Key(" ", [ord(" ")], ord(" "), x=_, y=last_key + 1)
                     for _ in range(self.avatar_size)
                 ]
-        if len(self.all_keys) > 100:
-            first_key = min(self.all_keys.keys())
-            del self.all_keys[first_key]
-        else:
-            self.current_top_y = self.current_top_y + 1
-            self.current_bottom_y = self.current_bottom_y + 1
+        # if len(self.all_keys) >= 100:
+        #     first_key = min(self.all_keys.keys())
+        #     del self.all_keys[first_key]
+        #     self.all_keys = {k-1:v for k,v in self.all_keys.items()}
+        # else:
+        self.current_top_y = self.current_top_y + 1
+        self.current_bottom_y = self.current_bottom_y + 1
         self.all_keys = {i: self.all_keys[key] for i, key in enumerate(sorted(self.all_keys.keys()))}
 
     def scroll_keys(self, shift: int = 1):
