@@ -2032,6 +2032,7 @@ class ChatbotEffect(BaseEffect):
 
         self.view_y_top = 0
         self.view_y_bottom = self.screen.height - 1
+        self.avatar_placed = False
 
     def __expand_list(self, original_list: list[int|str], n: int, mul: int = 1):
         l = []
@@ -2146,6 +2147,8 @@ class ChatbotEffect(BaseEffect):
     def __handle_keyboard_result(self, result):
         if result:
             if result == -300:  # backspace
+                if self.user_cursor_x_idx == self.avatar_size:
+                    return
                 all_key_history = self.all_keys[self.user_cursor_y_idx]
                 if all_key_history == []:
                     if self.user_cursor_y_idx - 1 >= self.global_current_y_idx:
@@ -2265,10 +2268,7 @@ class ChatbotEffect(BaseEffect):
     def render_frame(self, frame_number):
         self.buffer.clear_buffer()
         if self.turn == 0:
-            self.screen.wait_for_input(timeout=0)
-            result = self.screen.get_event()
-            flip_turn = self.__handle_keyboard_result(result=result)
-            if flip_turn:
+            if not self.avatar_placed:
                 for i, c in enumerate(self.user[: self.avatar_size - 1]):
                     self.all_keys[self.user_y_turn_start_idx][i] = Key(
                         bruhcolored(
@@ -2289,6 +2289,12 @@ class ChatbotEffect(BaseEffect):
                         None,
                         None,
                     )
+                self.avatar_placed = True
+            self.screen.wait_for_input(timeout=0)
+            result = self.screen.get_event()
+            flip_turn = self.__handle_keyboard_result(result=result)
+            if flip_turn:
+                self.avatar_placed = False
                 self.turn = 1
                 if self.divider:
                     for _ in range(self.avatar_size):
@@ -2355,36 +2361,33 @@ class ChatbotEffect(BaseEffect):
                     self.gradient_text_color_for_message = self.__expand_list(self.gradient_text_color, len(self.last_chatbot_response), 3)
             elif self.chatbot.state == "printing":
                 # print out the characters!
+                if not self.avatar_placed:
+                    for i, c in enumerate(self.model[: self.avatar_size - 1]):
+                        self.all_keys[self.chat_y_turn_start_idx][i] = Key(
+                            bruhcolored(
+                                c,
+                                color=self.chatbot_avatar_text_color,
+                                on_color=self.chatbot_avatar_color,
+                            ).colored,
+                            [ord(c)],
+                            ord(c),
+                            None,
+                            None,
+                        )
+                    for i in range(len(self.model), self.avatar_size - 1):
+                        self.all_keys[self.chat_y_turn_start_idx][i] = Key(
+                            bruhcolored(" ", on_color=self.chatbot_avatar_color).colored,
+                            [ord(" ")],
+                            ord(" "),
+                            None,
+                            None,
+                        )
+                    self.avatar_placed = True
                 if frame_number & self.chatbot_print_halt == 0:
-                    if self.total_processed_chatbot_words == len(
-                        self.last_chatbot_response_words
-                    ):
+                    if self.total_processed_chatbot_words == len(self.last_chatbot_response_words):
                         self.chatbot.state = "done"
                         self.current_chatbot_response_words_idx = 0
                         self.total_processed_chatbot_words = 0
-                        for i, c in enumerate(self.chatbot_thinker.colored_chars):
-                            if i < len(self.model):
-                                self.all_keys[self.chatbot_thinker.y][i] = Key(
-                                    character=bruhcolored(
-                                        self.model[i],
-                                        color=self.chatbot_avatar_text_color,
-                                        on_color=self.chatbot_avatar_color,
-                                    ).colored,
-                                    representation=[ord(self.model[i])],
-                                    value=ord(self.model[i]),
-                                    x=None,
-                                    y=None,
-                                )
-                            else:
-                                self.all_keys[self.chatbot_thinker.y][i] = Key(
-                                    character=bruhcolored(
-                                        " ", on_color=self.chatbot_avatar_color
-                                    ).colored,
-                                    representation=[ord(" ")],
-                                    value=ord(" "),
-                                    x=None,
-                                    y=None,
-                                )
                     else:
                         next_word = (
                             self.last_chatbot_response_words[
@@ -2444,6 +2447,7 @@ class ChatbotEffect(BaseEffect):
                         self.total_processed_chatbot_words += 1
             elif self.chatbot.state == "done":
                 self.turn = 0
+                self.avatar_placed = False
                 self.chatbot_thinker = None
                 self.chatbot.state = "ready"
                 self.global_current_y_idx += 1
@@ -2484,7 +2488,7 @@ class ChatbotEffect(BaseEffect):
 
         self.place_all_keys()
 
-        if self.chatbot_thinker:
+        if self.chatbot_thinker and self.chatbot.state == "running":
             for i, c in enumerate(self.chatbot_thinker.colored_chars):
                 self.buffer.put_char(
                     self.chatbot_thinker.x + i, self.chatbot_thinker.y, c.colored
