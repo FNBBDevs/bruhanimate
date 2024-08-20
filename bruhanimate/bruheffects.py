@@ -1868,54 +1868,97 @@ class StringStreamer:
 
 
 class OllamaApiCaller:
-    def __init__(self, model: str):
+    def __init__(
+        self,
+        model: str,
+        use_message_history: bool = False,
+        message_history_cap: int = 5,
+    ):
         self.model = model
         self.url = "http://127.0.0.1:11434/api/chat"
         self.busy = False
         self.response = None
         self.state = "ready"
+        self.use_message_history = use_message_history
+        self.message_history = []
+        self.message_history_cap = message_history_cap
 
-    def chat(self, message: str, user: str | None) -> str:
+    def chat(
+        self, message: str, user: str | None, previous_messages: list[str] | None = None
+    ) -> str:
         self.busy = True
         self.state = "running"
-        updated_message = f"Hey, it's me {user}. {message}" if user else message
         payload = {
             "model": self.model,
-            "messages": [{"role": "user", "content": updated_message}],
+            "messages": (
+                [{"role": "user", "content": message}]
+                if not self.message_history
+                else self.message_history
+                + [{"role": "user", "content": message}]
+            ),
             "stream": False,
         }
-        # time.sleep(2)
+
         response = requests.post(url=self.url, data=json.dumps(payload))
-        # self.response = response.json()["message"]["content"].replace("\n", "\\n")
+
         self.response = response.json()["message"]["content"]
         self.busy = False
         self.state = "finished"
 
+        if self.use_message_history:
+            self.message_history += [
+                {"role": "user", "content": message},
+                {"role": "assistant", "content": self.response},
+            ]
+            if len(self.message_history) > self.message_history_cap:
+                self.message_history_cap = self.message_history_cap[1:]
+
 
 class OpenAiCaller:
-    def __init__(self, client: openai.OpenAI | openai.AzureOpenAI, model: str):
+    def __init__(
+        self,
+        client: openai.OpenAI | openai.AzureOpenAI,
+        model: str,
+        use_message_history: bool = False,
+        message_history_cap: int = 5,
+    ):
         self.client = client
         self.model = model
         self.busy = False
         self.response = None
         self.state = "ready"
+        self.use_message_history = use_message_history
+        self.message_history = []
+        self.message_history_cap = message_history_cap
 
     def chat(self, message: str, user: str | None) -> str:
         self.busy = True
         self.state = "running"
-        updated_message = f"Hey, it's me {user}. {message}" if user else message
-        # time.sleep(2)
-        # response = requests.post(url=self.url, data=json.dumps(payload))
         response = self.client.chat.completions.create(
             model=self.model,
-            messages=[{"role": "user", "content": updated_message}],
+            messages=(
+                [{"role": "user", "content": message}]
+                if not self.message_history
+                else self.message_history
+                + [{"role": "user", "content": message}]
+            ),
             max_tokens=500,
             temperature=0.5,
         )
-        # self.response = response.choices[0].message.content.replace("\n", "\\n")
+
         self.response = response.choices[0].message.content
         self.busy = False
         self.state = "finished"
+
+        if self.use_message_history:
+            self.message_history += [
+                {"role": "user", "content": message},
+                {"role": "system", "content": self.response},
+            ]
+            if len(self.message_history) > self.message_history_cap:
+                self.message_history_cap = self.message_history_cap[
+                    len(self.message_history) - self.message_history_cap :
+                ]
 
 
 class ChatbotEffect(BaseEffect):
@@ -1933,8 +1976,6 @@ class ChatbotEffect(BaseEffect):
 
         # manages how the buffer is updated . . .
         self.all_keys = {idx: [] for idx in range(screen.height)}
-        self.user_keys = {idx: [] for idx in range(screen.height)}
-        self.chatbot_keys = {idx: [] for idx in range(screen.height)}
         self.last_key = None
         self.user_message = ""
 
@@ -1950,6 +1991,8 @@ class ChatbotEffect(BaseEffect):
 
         self.user_y_turn_start_idx = 0
         self.chat_y_turn_start_idx = 0
+        self.current_top_y = 0
+        self.current_bottom_y = self.screen.height - 1
 
         self.user_cursor_x_idx = self.avatar_size
         self.user_cursor_y_idx = 0
@@ -1974,20 +2017,31 @@ class ChatbotEffect(BaseEffect):
         self.divider = False
         self.divider_character = "-"
 
+        self.gradient_text_color = [21, 57, 93, 129, 165, 201, 165, 129, 93, 57]
+        self.gradient_idx = 1
+        self.gradient_mul = 1
+
         for ydx in range(screen.height):
             for _ in range(self.avatar_size):
-                self.user_keys[ydx] = [
-                    Key(" ", [ord(" ")], ord(" "), x=_, y=ydx)
-                    for _ in range(self.avatar_size)
-                ]
-                self.chatbot_keys[ydx] = [
-                    Key(" ", [ord(" ")], ord(" "), x=_, y=ydx)
-                    for _ in range(self.avatar_size)
-                ]
                 self.all_keys[ydx] = [
                     Key(" ", [ord(" ")], ord(" "), x=_, y=ydx)
                     for _ in range(self.avatar_size)
                 ]
+
+        self.message_history = []
+
+        self.view_y_top = 0
+        self.view_y_bottom = self.screen.height - 1
+        self.avatar_placed = False
+
+    def __expand_list(self, original_list: list[int|str], n: int, mul: int = 1):
+        l = []
+        for val in original_list:
+            for _ in range(mul):
+                l.append(val)
+        v = math.ceil(n / len(l))
+        new_list = l * v
+        return new_list[:n]
 
     def set_chatbot_properties(
         self,
@@ -1995,6 +2049,8 @@ class ChatbotEffect(BaseEffect):
         model: str,
         user: str | None = None,
         client: openai.OpenAI | openai.AzureOpenAI | None = None,
+        use_message_history: bool = False,
+        message_history_cap: int = 5,
     ):
         if interface:
             self.interface = interface
@@ -2002,13 +2058,22 @@ class ChatbotEffect(BaseEffect):
             self.user = user
         self.model = model
         if interface == "ollama":
-            self.chatbot = OllamaApiCaller(model=self.model)
+            self.chatbot = OllamaApiCaller(
+                model=self.model,
+                use_message_history=use_message_history,
+                message_history_cap=message_history_cap,
+            )
         elif interface == "openai":
             if not client:
                 raise Exception(
                     "An OpenAI client object must be provided for interface of type 'openai'."
                 )
-            self.chatbot = OpenAiCaller(client=client, model=model)
+            self.chatbot = OpenAiCaller(
+                client=client,
+                model=model,
+                use_message_history=use_message_history,
+                message_history_cap=message_history_cap,
+            )
 
     def set_second_effect(self, effect: str):
         self.second_effect = effect
@@ -2056,14 +2121,6 @@ class ChatbotEffect(BaseEffect):
         self.avatar_size = size
         self.user_cursor_x_idx = self.avatar_size
         for ydx in range(self.screen.height):
-            self.user_keys[ydx] = [
-                Key(" ", [ord(" ")], ord(" "), x=_, y=ydx)
-                for _ in range(self.avatar_size)
-            ]
-            self.chatbot_keys[ydx] = [
-                Key(" ", [ord(" ")], ord(" "), x=_, y=ydx)
-                for _ in range(self.avatar_size)
-            ]
             self.all_keys[ydx] = [
                 Key(" ", [ord(" ")], ord(" "), x=_, y=ydx)
                 for _ in range(self.avatar_size)
@@ -2083,18 +2140,23 @@ class ChatbotEffect(BaseEffect):
         self.blink_color_one = color_one
         self.blink_color_two = color_two
 
+    def set_chatbot_text_gradient(self, gradient: list[int|str], mul: int):
+        self.gradient_text_color = gradient
+        self.gradient_mul = mul
+
     def __handle_keyboard_result(self, result):
         if result:
             if result == -300:  # backspace
-                history = self.user_keys[self.user_cursor_y_idx]
+                if self.user_cursor_x_idx == self.avatar_size:
+                    return
                 all_key_history = self.all_keys[self.user_cursor_y_idx]
-                if history == []:
+                if all_key_history == []:
                     if self.user_cursor_y_idx - 1 >= self.global_current_y_idx:
                         self.user_cursor_y_idx -= 1
-                        if self.user_cursor_y_idx in self.user_keys:
-                            keys = self.user_keys[self.user_cursor_y_idx]
+                        if self.user_cursor_y_idx in self.all_keys:
+                            keys = self.all_keys[self.user_cursor_y_idx]
                             if keys:
-                                self.user_cursor_x_idx = self.user_keys[
+                                self.user_cursor_x_idx = self.all_keys[
                                     self.user_cursor_y_idx
                                 ][-1].x
                             else:
@@ -2102,9 +2164,8 @@ class ChatbotEffect(BaseEffect):
                         else:
                             self.user_cursor_x_idx = 0
                 else:
-                    last_key = history[-1]
+                    last_key = all_key_history[-1]
                     self.user_cursor_x_idx -= len(last_key.representation)
-                    self.user_keys[self.user_cursor_y_idx] = history[:-1]
                     self.all_keys[self.user_cursor_y_idx] = all_key_history[:-1]
                 if self.user_cursor_y_idx < 0:
                     self.user_cursor_y_idx = 0
@@ -2113,19 +2174,12 @@ class ChatbotEffect(BaseEffect):
                 return False
             elif result == 10:  # enter
                 self.user_cursor_y_idx += 1
+                if self.user_cursor_y_idx >= max(self.all_keys):
+                    self.scroll_keys(shift=1)
                 self.user_cursor_x_idx = self.avatar_size
                 return self.last_key != "\\"
             elif result == 11:  # tab
                 self.user_cursor_x_idx += 4
-                self.user_keys[self.user_cursor_y_idx].append(
-                    Key(
-                        character=" ",
-                        representation=[32, 32, 32, 32],
-                        value=result,
-                        x=self.user_cursor_x_idx,
-                        y=self.user_cursor_y_idx,
-                    )
-                )
                 self.all_keys[self.user_cursor_y_idx].append(
                     Key(
                         character=" ",
@@ -2136,17 +2190,16 @@ class ChatbotEffect(BaseEffect):
                     )
                 )
                 return False
+            elif result == -204: # arrow up
+                if self.current_top_y != 0:
+                    self.current_top_y -= 1
+                    self.current_bottom_y -= 1
+            elif result == -206: # arrow down
+                if self.current_bottom_y < (len(self.all_keys) - 1):
+                    self.current_top_y += 1
+                    self.current_bottom_y += 1
             elif result > 0:
                 self.user_cursor_x_idx += 1
-                self.user_keys[self.user_cursor_y_idx].append(
-                    Key(
-                        character=chr(result),
-                        representation=[result],
-                        value=result,
-                        x=self.user_cursor_x_idx,
-                        y=self.user_cursor_y_idx,
-                    )
-                )
                 self.all_keys[self.user_cursor_y_idx].append(
                     Key(
                         character=bruhcolored(
@@ -2164,17 +2217,59 @@ class ChatbotEffect(BaseEffect):
                 self.user_message += chr(result)
                 return False
 
+    def __scroll_up(self):
+        first_key = min(self.all_keys.keys())
+        last_key = max(self.all_keys.keys())
+        if len(self.all_keys) == 0 or first_key == 0:
+            return
+        for key in range(first_key, last_key):
+            self.all_keys[key] = self.all_keys[key + 1]
+        self.all_keys[last_key] = [
+                    Key(" ", [ord(" ")], ord(" "), x=_, y=last_key)
+                    for _ in range(self.avatar_size)
+                ]
+
+        if self.current_top_y > 0:
+            self.current_top_y = self.current_top_y - 1
+            self.current_bottom_y = self.current_bottom_y - 1
+
+    def __scroll_down(self):
+        last_key = max(self.all_keys.keys())
+        self.all_keys[last_key + 1] = [
+                    Key(" ", [ord(" ")], ord(" "), x=_, y=last_key + 1)
+                    for _ in range(self.avatar_size)
+                ]
+        # if len(self.all_keys) >= 100:
+        #     first_key = min(self.all_keys.keys())
+        #     del self.all_keys[first_key]
+        #     self.all_keys = {k-1:v for k,v in self.all_keys.items()}
+        # else:
+        self.current_top_y = self.current_top_y + 1
+        self.current_bottom_y = self.current_bottom_y + 1
+        self.all_keys = {i: self.all_keys[key] for i, key in enumerate(sorted(self.all_keys.keys()))}
+
+    def scroll_keys(self, shift: int = 1):
+        self.__scroll_down() if shift == 1 else self.__scroll_up()
+
+    def place_all_keys(self):
+        for idx, vals in self.all_keys.items():
+            if idx > self.current_bottom_y or idx < self.current_top_y:
+                continue
+            displacement = 0
+            for jdx, key in enumerate(vals):
+                if len(key.representation) > 1:
+                    for val in key.representation:
+                        self.buffer.put_char(jdx + displacement, idx - self.current_top_y, chr(val))
+                        displacement += 1
+                    displacement -= 1
+                else:
+                    self.buffer.put_char(jdx + displacement, idx - self.current_top_y, key.character)
+
     def render_frame(self, frame_number):
         self.buffer.clear_buffer()
         if self.turn == 0:
-            self.screen.wait_for_input(timeout=0)
-            result = self.screen.get_event()
-            flip_turn = self.__handle_keyboard_result(result=result)
-            if flip_turn:
+            if not self.avatar_placed:
                 for i, c in enumerate(self.user[: self.avatar_size - 1]):
-                    self.user_keys[self.user_y_turn_start_idx][i] = Key(
-                        c, [ord(c)], ord(c), None, None
-                    )
                     self.all_keys[self.user_y_turn_start_idx][i] = Key(
                         bruhcolored(
                             c,
@@ -2194,6 +2289,12 @@ class ChatbotEffect(BaseEffect):
                         None,
                         None,
                     )
+                self.avatar_placed = True
+            self.screen.wait_for_input(timeout=0)
+            result = self.screen.get_event()
+            flip_turn = self.__handle_keyboard_result(result=result)
+            if flip_turn:
+                self.avatar_placed = False
                 self.turn = 1
                 if self.divider:
                     for _ in range(self.avatar_size):
@@ -2217,6 +2318,8 @@ class ChatbotEffect(BaseEffect):
                             )
                         )
                     self.user_cursor_y_idx += 1
+                    if self.user_cursor_y_idx >= max(self.all_keys):
+                        self.scroll_keys(shift=1)
                 self.chat_y_turn_start_idx = self.user_cursor_y_idx
         else:
             # call llm with self.user_message
@@ -2237,7 +2340,7 @@ class ChatbotEffect(BaseEffect):
                     char_halt=self.gradient_noise_char_halt,
                     color_halt=self.gradient_noise_color_halt,
                     gradient_length=2,
-                )#.update_gradient([21, 57, 93, 129, 165, 201, 165, 129, 93, 57])
+                )  # .update_gradient([21, 57, 93, 129, 165, 201, 165, 129, 93, 57])
             elif (
                 self.thread
                 and not self.thread.is_alive()
@@ -2253,45 +2356,38 @@ class ChatbotEffect(BaseEffect):
                 self.chatbot.response = ""
                 self.user_message = ""
                 self.chatbot.state = "printing"
+                if self.chatbot_text_color == "gradient":
+                    self.gradient_idx = 1
+                    self.gradient_text_color_for_message = self.__expand_list(self.gradient_text_color, len(self.last_chatbot_response), 3)
             elif self.chatbot.state == "printing":
                 # print out the characters!
+                if not self.avatar_placed:
+                    for i, c in enumerate(self.model[: self.avatar_size - 1]):
+                        self.all_keys[self.chat_y_turn_start_idx][i] = Key(
+                            bruhcolored(
+                                c,
+                                color=self.chatbot_avatar_text_color,
+                                on_color=self.chatbot_avatar_color,
+                            ).colored,
+                            [ord(c)],
+                            ord(c),
+                            None,
+                            None,
+                        )
+                    for i in range(len(self.model), self.avatar_size - 1):
+                        self.all_keys[self.chat_y_turn_start_idx][i] = Key(
+                            bruhcolored(" ", on_color=self.chatbot_avatar_color).colored,
+                            [ord(" ")],
+                            ord(" "),
+                            None,
+                            None,
+                        )
+                    self.avatar_placed = True
                 if frame_number & self.chatbot_print_halt == 0:
-                    if self.total_processed_chatbot_words == len(
-                        self.last_chatbot_response_words
-                    ):
+                    if self.total_processed_chatbot_words == len(self.last_chatbot_response_words):
                         self.chatbot.state = "done"
                         self.current_chatbot_response_words_idx = 0
                         self.total_processed_chatbot_words = 0
-                        for i, c in enumerate(self.chatbot_thinker.colored_chars):
-                            if i < len(self.model):
-                                self.all_keys[self.chatbot_thinker.y][i] = Key(
-                                    character=bruhcolored(
-                                        self.model[i],
-                                        color=self.chatbot_avatar_text_color,
-                                        on_color=self.chatbot_avatar_color,
-                                    ).colored,
-                                    representation=[ord(self.model[i])],
-                                    value=ord(self.model[i]),
-                                    x=None,
-                                    y=None,
-                                )
-                            else:
-                                self.all_keys[self.chatbot_thinker.y][i] = Key(
-                                    character=bruhcolored(
-                                        " ", on_color=self.chatbot_avatar_color
-                                    ).colored,
-                                    representation=[ord(" ")],
-                                    value=ord(" "),
-                                    x=None,
-                                    y=None,
-                                )
-                            self.chatbot_keys[self.chatbot_thinker.y][i] = Key(
-                                character=c.colored,
-                                representation=[ord(c.text)],
-                                value=ord(c.text),
-                                x=None,
-                                y=None,
-                            )
                     else:
                         next_word = (
                             self.last_chatbot_response_words[
@@ -2299,9 +2395,13 @@ class ChatbotEffect(BaseEffect):
                             ]
                             + " "
                         )
-                        for character in next_word:
+                        for idx, character in enumerate(next_word):
+                            if self.user_cursor_y_idx >= max(self.all_keys):
+                                self.scroll_keys(shift=1)
                             if character == "\n":
                                 self.user_cursor_y_idx += 1
+                                if self.user_cursor_y_idx >= max(self.all_keys):
+                                    self.scroll_keys(shift=1)
                                 self.all_keys[self.user_cursor_y_idx][
                                     self.avatar_size - 2
                                 ] = Key(
@@ -2312,20 +2412,11 @@ class ChatbotEffect(BaseEffect):
                                     y=None,
                                 )
                                 continue
-                            self.chatbot_keys[self.user_cursor_y_idx].append(
-                                Key(
-                                    character=character,
-                                    representation=[ord(character)],
-                                    value=ord(character),
-                                    x=self.user_cursor_x_idx,
-                                    y=self.user_cursor_y_idx,
-                                )
-                            )
                             self.all_keys[self.user_cursor_y_idx].append(
                                 Key(
                                     character=bruhcolored(
                                         text=character,
-                                        color=self.chatbot_text_color,
+                                        color=self.chatbot_text_color if self.chatbot_text_color != "gradient" else self.gradient_text_color_for_message[self.gradient_idx - 1],
                                         on_color=self.chatbot_background_color,
                                     ).colored,
                                     representation=[ord(character)],
@@ -2334,11 +2425,15 @@ class ChatbotEffect(BaseEffect):
                                     y=self.user_cursor_y_idx,
                                 )
                             )
+                            if character != " ":
+                                self.gradient_idx += 1
                             if (
                                 len(self.all_keys[self.user_cursor_y_idx])
                                 == self.buffer.width()
                             ):
                                 self.user_cursor_y_idx += 1
+                                if self.user_cursor_y_idx >= max(self.all_keys):
+                                    self.scroll_keys(shift=1)
                                 self.all_keys[self.user_cursor_y_idx][
                                     self.avatar_size - 2
                                 ] = Key(
@@ -2352,11 +2447,14 @@ class ChatbotEffect(BaseEffect):
                         self.total_processed_chatbot_words += 1
             elif self.chatbot.state == "done":
                 self.turn = 0
+                self.avatar_placed = False
                 self.chatbot_thinker = None
                 self.chatbot.state = "ready"
                 self.global_current_y_idx += 1
                 if self.divider:
                     self.user_cursor_y_idx += 1
+                    if self.user_cursor_y_idx >= max(self.all_keys):
+                        self.scroll_keys(shift=1)
                     for _ in range(self.avatar_size):
                         self.all_keys[self.user_cursor_y_idx].append(
                             Key(
@@ -2378,6 +2476,8 @@ class ChatbotEffect(BaseEffect):
                             )
                         )
                 self.user_cursor_y_idx += 1
+                if self.user_cursor_y_idx >= max(self.all_keys):
+                    self.scroll_keys(shift=1)
                 self.user_y_turn_start_idx = self.user_cursor_y_idx
             else:
                 self.chatbot_thinker.generate(frame_number=frame_number)
@@ -2386,18 +2486,9 @@ class ChatbotEffect(BaseEffect):
             self.second_effect.render_frame(frame_number=frame_number)
             self.buffer.sync_with(self.second_effect.buffer)
 
-        for bruh, vals in self.all_keys.items():
-            displacement = 0
-            for idx, key in enumerate(vals):
-                if len(key.representation) > 1:
-                    for val in key.representation:
-                        self.buffer.put_char(idx + displacement, bruh, chr(val))
-                        displacement += 1
-                    displacement -= 1
-                else:
-                    self.buffer.put_char(idx + displacement, bruh, key.character)
+        self.place_all_keys()
 
-        if self.chatbot_thinker:
+        if self.chatbot_thinker and self.chatbot.state == "running":
             for i, c in enumerate(self.chatbot_thinker.colored_chars):
                 self.buffer.put_char(
                     self.chatbot_thinker.x + i, self.chatbot_thinker.y, c.colored
@@ -2434,6 +2525,7 @@ class ChatbotEffect(BaseEffect):
                 f"PROCESSED RESPONSE WORDS: {self.total_processed_chatbot_words}",
                 transparent=True,
             )
+
         if self.turn == 0:
             if frame_number % self.blink_halt == 0:
                 self.cursor_char_color = (
