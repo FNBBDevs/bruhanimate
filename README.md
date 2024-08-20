@@ -52,74 +52,54 @@ plasma_demo.run()
 
 # Usage
 Here are some examples on how bruhanimate might be used. <br/><br/>
+
+Pass in arguments through the `show()` command. <br/>
 ```py
 
 """
-Here is a simple program that uses the EffectRenderer to render out one
-of the prebuilt effects to the terminal.
+Here is a simple program that uses the EffectRenderer passing in
+the arguments to the main function
 """
-from bruhanimate.bruhrenderer import *
-from bruhanimate.bruhscreen import Screen
-import bruhanimate.images as images
-import sys
+from bruhanimate import Screen, CenterRenderer, images
+
 
 def demo(screen, img, frames, time, effect_type, background, transparent):
-    
-    # CREATE THE RENDERER
     renderer = CenterRenderer(screen, frames, time, img, effect_type, background, transparent)
-
-    # SET EFFECT ATTRIBUTES
     renderer.update_smart_transparent(True)
     renderer.effect.update_color(True)
     renderer.effect.update_intensity(100)
-
-    # RUN THE ANIMATION
     renderer.run()
-
-    # CATCH THE END WITH INPUT() --> for Win-Systems --> Ctl-C for Unix-Systems
-    input()
 
 
 def main():
     Screen.show(demo, args=(images.get_image("TWOPOINT"), 300, 0, "noise", " ", False))
 
 
-
 if __name__ == "__main__":
     main()
-
 ```
 
+Set the arguments directly in the function invoked by `show()`. <br/>
 ```py
-
 """
-Here is another example that makes use of line drawing to draw a 3-D triangle
+Here is a simple program that uses the EffectRenderer setting the arguments
+directly in the main function.
 """
-from bruhanimate.bruhrenderer import *
-from bruhanimate.bruhscreen import Screen
-import bruhanimate.images as images
-
-def demo(screen, img, frames, time, effect, background, transparent):
-    # CREATE THE RENDERER
-    renderer = PanRenderer(screen, frames, time, img, effect, background, transparent, loop=True)
-    
-    # REGISTER THE LINES - LET'S MAKE A DECENT 3D TRIANGLE
-    renderer.effect.add_line((15, 15), (30, 30))
-    renderer.effect.add_line((30, 30), (50, 20))
-    renderer.effect.add_line((50, 20), (15, 15))
-
-    renderer.effect.add_line((30,30), (32, 22))
-    renderer.effect.add_line((32, 22), (15, 15))
-    renderer.effect.add_line((32, 22), (50, 20))
+from bruhanimate import Screen, EffectRenderer
 
 
-    # RUN THE ANIMATION
-    renderer.run(end_message=False)
+def demo(screen: Screen):
+    renderer = EffectRenderer(
+        screen=screen,
+        frames=float("inf"),
+        time=0.1,
+        effect_type="snow",
+        background=" ",
+        transparent=False
+    )
+    renderer.run()
 
-    # CATCH THE END WITH INPUT() ON WINDOWS
-    input()
 
-image = images.text_to_image("HELLO WORLD!", padding_top_bottom=1, padding_left_right=3)
-Screen.show(demo, args=(image, 500, 0.05, "drawlines", " ", True))
-
+if __name__ == "__main__":
+    Screen.show(main)
 ```
