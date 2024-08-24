@@ -1,9 +1,4 @@
-import os
-
-here = os.path.abspath(os.path.dirname(__file__))
-
-from bruhanimate.bruhscreen import Screen
-from bruhanimate.bruheffects import (
+from bruheffect import (
     BaseEffect,
     StaticEffect,
     OffsetEffect,
@@ -19,29 +14,39 @@ from bruhanimate.bruheffects import (
     StringStreamer,
     Key,
     Line,
-    DrawLines,
-    _FLAKE,
+    DrawLinesEffect,
     SnowEffect,
-    _LIFE_COLORS,
-    _LIFE_SCALES,
-    _PLASMA_COLORS,
-    _PLASMA_VALUES,
-    _GRADIENTS,
-    _VALID_DIRECTIONS,
-    _OLD_GREY_SCALES,
-    _GREY_SCALES,
-    _WIND_DIRECTIONS,
-    _NOISE,
-    _FLAKES,
-    _FLAKE_COLORS,
-    _FLAKE_JUMPS,
-    _NEXT_FLAKE_MOVE,
-    _FLAKE_WEIGHT_CHARS,
-    _FLAKE_FLIPS,
-    _TWINKLE_COLORS
 )
-from bruhanimate.bruhffer import Buffer
-from bruhanimate.bruhrenderer import (
+
+
+from bruhutil import (
+    Screen,
+    Buffer,
+    images,
+    get_image,
+    text_to_image,
+    LIFE_COLORS,
+    LIFE_SCALES,
+    PLASMA_COLORS,
+    PLASMA_VALUES,
+    GRADIENTS,
+    VALID_DIRECTIONS,
+    OLD_GREY_SCALES,
+    GREY_SCALES,
+    WIND_DIRECTIONS,
+    NOISE,
+    FLAKES,
+    FLAKE_COLORS,
+    FLAKE_JUMPS,
+    NEXT_FLAKE_MOVE,
+    FLAKE_WEIGHT_CHARS,
+    FLAKE_FLIPS,
+    TWINKLE_COLORS,
+    FLAKES,
+    VALID_INTERFACES
+)
+
+from bruhrenderer import (
     BaseRenderer,
     EffectRenderer,
     CenterRenderer,
@@ -49,11 +54,39 @@ from bruhanimate.bruhrenderer import (
     FocusRenderer,
     BackgroundColorRenderer,
 )
-from bruhanimate import images
-from bruhanimate.demos import line_demo, plasma_demo, snow_demo, holiday, stars_demo, twinkle_demo, noise_demo, matrix_demo, gol_demo, rain_demo, offset_demo, static_demo, audio_demo, chatbot_demo
 
-__version__ = "0.2.52"
-__valid_demos__ = [demo.split(".")[0] for demo in os.listdir(os.path.join(here, "demos")) if "init" not in demo and "pycache" not in demo]
+from demos import (
+    line_demo,
+    plasma_demo,
+    snow_demo,
+    holiday,
+    stars_demo,
+    twinkle_demo,
+    noise_demo,
+    matrix_demo,
+    gol_demo,
+    rain_demo,
+    offset_demo,
+    static_demo,
+    audio_demo,
+    chatbot_demo,
+)
+
+__version__ = "0.2.53"
+__valid_demos__ = [
+    "audio_demo",
+    "static_demo",
+    "offset_demo",
+    "matrix_demo",
+    "gol_demo",
+    "rain_demo",
+    "chatbot_demo" "line_demo",
+    "plasma_demo",
+    "snow_demo",
+    "stars_demo",
+    "twinkle_demo",
+    "noise_demo" "holiday",
+]
 
 __all__ = [
     "Screen",
@@ -85,9 +118,9 @@ __all__ = [
     "GradientNoise",
     "Loading",
     "Key",
-    "DrawLines",
+    "DrawLinesEffect",
     "Line",
-    "_FLAKE",
+    "FLAKE",
     "SnowEffect",
     "Buffer",
     "BaseRenderer",
@@ -99,21 +132,24 @@ __all__ = [
     "images",
     "__version__",
     "__valid_demos__",
-    "_LIFE_COLORS",
-    "_LIFE_SCALES",
-    "_PLASMA_COLORS",
-    "_PLASMA_VALUES",
-    "_GRADIENTS",
-    "_VALID_DIRECTIONS",
-    "_OLD_GREY_SCALES",
-    "_GREY_SCALES",
-    "_WIND_DIRECTIONS",
-    "_NOISE",
-    "_FLAKES",
-    "_FLAKE_COLORS",
-    "_FLAKE_JUMPS",
-    "_NEXT_FLAKE_MOVE",
-    "_FLAKE_WEIGHT_CHARS",
-    "_FLAKE_FLIPS",
-    "_TWINKLE_COLOR",
+    "LIFE_COLORS",
+    "LIFE_SCALES",
+    "PLASMA_COLORS",
+    "PLASMA_VALUES",
+    "GRADIENTS",
+    "VALID_DIRECTIONS",
+    "OLD_GREY_SCALES",
+    "GREY_SCALES",
+    "WIND_DIRECTIONS",
+    "NOISE",
+    "FLAKES",
+    "FLAKE_COLORS",
+    "FLAKE_JUMPS",
+    "NEXT_FLAKE_MOVE",
+    "FLAKE_WEIGHT_CHARS",
+    "FLAKE_FLIPS",
+    "TWINKLE_COLORS",
+    "VALID_INTERFACES",
+    "get_image",
+    "text_to_image"
 ]
