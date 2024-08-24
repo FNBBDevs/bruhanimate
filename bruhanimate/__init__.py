@@ -16,6 +16,8 @@ from .bruheffect import (
     Line,
     DrawLinesEffect,
     SnowEffect,
+    TwinkleEffect,
+    TWINKLE_SPEC,
 )
 
 
@@ -72,7 +74,7 @@ from .demos import (
     chatbot_demo,
 )
 
-__version__ = "0.2.60"
+__version__ = "0.2.61"
 __valid_demos__ = [
     "audio_demo",
     "static_demo",
@@ -151,5 +153,7 @@ __all__ = [
     "TWINKLE_COLORS",
     "VALID_INTERFACES",
     "get_image",
-    "text_to_image"
+    "text_to_image",
+    "TwinkleEffect",
+    "TWINKLE_SPEC"
 ]
