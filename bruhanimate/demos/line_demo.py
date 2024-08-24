@@ -30,9 +30,6 @@ def demo(screen, img, frames, time, effect, background, transparent):
     # RUN THE ANIMATION
     renderer.run(end_message=False)
 
-    if sys.platform == "win32":
-        input()
-
 
 def run():
     image = images.text_to_image(

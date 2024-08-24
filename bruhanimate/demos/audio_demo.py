@@ -1,8 +1,8 @@
 import os
 os.system(" ")
 
-from bruhanimate.bruhutil import Screen, images, GRADIENTS
-from bruhrenderer import CenterRenderer
+from bruhanimate import Screen, images, GRADIENTS
+from bruhanimate import CenterRenderer
 from bruhanimate import GRADIENTS
 
 

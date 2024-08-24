@@ -2,9 +2,9 @@ import os
 import openai
 os.system(" ")
 
-from bruhutil import Buffer, Screen
-from bruhrenderer import EffectRenderer
-from bruheffect import TwinkleEffect
+from bruhanimate import Buffer, Screen
+from bruhanimate import EffectRenderer
+from bruhanimate import TwinkleEffect
 
 
 def chatbot(screen: Screen, openai_api_key: str, name: str):

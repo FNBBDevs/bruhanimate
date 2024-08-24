@@ -1,8 +1,8 @@
 import os
 os.system(" ")
 
-from bruhutil import Screen, images
-from bruhanimate.bruhrenderer import CenterRenderer
+from bruhanimate import Screen, images
+from bruhanimate import CenterRenderer
 
 
 def twinkle(screen):

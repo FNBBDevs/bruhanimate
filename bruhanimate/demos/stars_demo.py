@@ -1,8 +1,8 @@
 import os
 os.system(" ")
 
-from bruhutil import Screen
-from bruhrenderer import EffectRenderer
+from bruhanimate import Screen
+from bruhanimate import EffectRenderer
 
 
 def stars(screen):
