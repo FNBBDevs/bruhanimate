@@ -1,6 +1,5 @@
-from bruhanimate.bruhscreen import Screen
-from bruhanimate.bruhrenderer import CenterRenderer
-import bruhanimate.images as images
+from bruhutil import Screen, images
+from bruhrenderer import CenterRenderer
 
 import os
 import sys
