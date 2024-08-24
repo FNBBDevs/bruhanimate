@@ -1,11 +1,8 @@
-from bruhanimate.bruhrenderer import *
-from bruhanimate.bruhscreen import Screen
-import bruhanimate.images as images
-
 import os
-import sys
-
 os.system("")
+
+from bruhutil import Screen, images
+from bruhrenderer import PanRenderer
 
 
 def demo(screen, img, frames, time, effect, background, transparent):

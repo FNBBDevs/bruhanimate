@@ -1,10 +1,9 @@
-from bruhanimate.bruhscreen import Screen
-from bruhanimate.bruhrenderer import CenterRenderer
-import bruhanimate.images as images
-from bruhanimate import _GRADIENTS
-
 import os
 os.system(" ")
+
+from bruhutil import Screen, images, GRADIENTS
+from bruhrenderer import CenterRenderer
+from bruhanimate import GRADIENTS
 
 
 def audio(screen):
@@ -18,7 +17,7 @@ def audio(screen):
         transparent=False,
     )
     renderer.effect.set_audio_properties(num_bands=screen.width, audio_halt=15, use_gradient=True)
-    renderer.effect.set_audio_gradient(_GRADIENTS[0], mode="repeat")
+    renderer.effect.set_audio_gradient(GRADIENTS[0], mode="repeat")
     renderer.effect.set_orientation("top")
     renderer.run()
 

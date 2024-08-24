@@ -1,11 +1,8 @@
-from bruhanimate.bruhscreen import Screen
-from bruhanimate.bruhrenderer import CenterRenderer
-import bruhanimate.images as images
-
 import os
-import sys
-
 os.system(" ")
+
+from bruhutil import Screen, images
+from bruhrenderer import CenterRenderer
 
 
 def offset(screen):
