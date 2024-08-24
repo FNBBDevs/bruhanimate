@@ -1,11 +1,8 @@
-from bruhanimate.bruhscreen import Screen
-from bruhanimate.bruhrenderer import *
-from bruhanimate.images import get_image
-
 import os
-import sys
-
 os.system(" ")
+
+from bruhanimate import Screen, get_image
+from bruhanimate import CenterRenderer
 
 
 def holiday(screen):

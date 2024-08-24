@@ -1,5 +1,5 @@
-from bruhutil import VALID_DIRECTIONS
-from bruheffect import BaseEffect
+from ..bruhutil import VALID_DIRECTIONS
+from .base_effect import BaseEffect
 
 
 class OffsetEffect(BaseEffect):

@@ -1,10 +1,8 @@
 import sys
 import time
 import random
-from bruhanimate.bruhffer import Buffer
-from bruhanimate.bruheffects import *
-from bruhanimate.bruhscreen import Screen
-from bruhcolor import bruhcolored
+from ..bruhutil import Buffer, Screen
+from ..bruheffect import *
 from abc import abstractmethod
 
 _VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma", "gol", "rain", "matrix", "drawlines", "snow", "twinkle", "audio", "chat"]
@@ -64,7 +62,7 @@ class BaseRenderer:
         elif self.effect_type == "matrix":
             self.effect = MatrixEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "drawlines":
-            self.effect = DrawLines(Buffer(self.height, self.width), self.background)
+            self.effect = DrawLinesEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "snow":
             self.effect = SnowEffect(Buffer(self.height, self.width), self.background)
         elif self.effect_type == "twinkle":

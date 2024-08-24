@@ -1,7 +1,7 @@
 import random
 
-from bruhutil import WIND_DIRECTIONS
-from bruheffect import BaseEffect
+from ..bruhutil import WIND_DIRECTIONS
+from .base_effect import BaseEffect
 
 
 class RainEffect(BaseEffect):

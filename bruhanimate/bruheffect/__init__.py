@@ -7,7 +7,7 @@ from .game_of_life_effect import GameOfLifeEffect
 from .matrix_effect import MatrixEffect
 from .plasma_effect import PlasmaEffect
 from .snow_effect import SnowEffect
-from .twinkle_effect import TwinkleEffect
+from .twinkle_effect import TwinkleEffect, TWINKLE_SPEC
 from .offset_effect import OffsetEffect
 from .rain_effect  import RainEffect
 from .audio_effect import AudioEffect
@@ -32,5 +32,7 @@ __all__ = [
     "GradientNoise",
     "Loading",
     "StringStreamer",
-    "Key"
+    "Key", 
+    "Line",
+    "TWINKLE_SPEC"
 ]

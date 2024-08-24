@@ -1,6 +1,6 @@
 import random
 
-from bruhrenderer import BaseRenderer
+from .base_renderer import BaseRenderer
 
 
 class FocusRenderer(BaseRenderer):

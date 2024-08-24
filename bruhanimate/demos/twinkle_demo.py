@@ -1,11 +1,8 @@
-from bruhanimate.bruhscreen import Screen
-from bruhanimate.bruhrenderer import CenterRenderer
-import bruhanimate.images as images
-
 import os
-import sys
-
 os.system(" ")
+
+from bruhanimate import Screen, images
+from bruhanimate import CenterRenderer
 
 
 def twinkle(screen):

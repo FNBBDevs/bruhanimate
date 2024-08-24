@@ -1,11 +1,8 @@
-from bruhanimate.bruhrenderer import *
-from bruhanimate.bruhscreen import Screen
-import bruhanimate.images as images
-
 import os
-import sys
+os.system(" ")
 
-os.system("")
+from bruhanimate import Screen, images
+from bruhanimate import FocusRenderer
 
 
 def show(screen):

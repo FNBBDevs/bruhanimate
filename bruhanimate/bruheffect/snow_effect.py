@@ -1,8 +1,8 @@
 import random
 
 from bruhcolor import bruhcolored
-from bruhutil import FLAKE_COLORS, FLAKE_FLIPS, FLAKE_JUMPS, FLAKE_WEIGHT_CHARS, FLAKES, NEXT_FLAKE_MOVE
-from bruheffect import BaseEffect
+from ..bruhutil import FLAKE_COLORS, FLAKE_FLIPS, FLAKE_JUMPS, FLAKE_WEIGHT_CHARS, FLAKES, NEXT_FLAKE_MOVE
+from .base_effect import BaseEffect
 
 
 class _FLAKE:

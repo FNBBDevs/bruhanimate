@@ -1,11 +1,11 @@
 import random
 
 from bruhcolor import bruhcolored
-from bruhutil import TWINKLE_COLORS
-from bruheffect import BaseEffect
+from ..bruhutil import TWINKLE_COLORS
+from .base_effect import BaseEffect
 
 
-class _TWINKLE_SPEC:
+class TWINKLE_SPEC:
     def __init__(self, char, value):
         self.char = char
         self.value = value
@@ -33,7 +33,7 @@ class _TWINKLE_SPEC:
         return self
 
     def copy(self):
-        new_TWINKLE_SPEC = _TWINKLE_SPEC(self.char, self.value)
+        new_TWINKLE_SPEC = TWINKLE_SPEC(self.char, self.value)
         new_TWINKLE_SPEC.mode = self.mode
         return new_TWINKLE_SPEC
 
@@ -48,7 +48,7 @@ class TwinkleEffect(BaseEffect):
             for y in range(self.buffer.height()):
                 for x in range(self.buffer.width()):
                     if random.random() < 0.05:
-                        new_TWINKLE_SPEC = _TWINKLE_SPEC(".", random.randint(0, 23))
+                        new_TWINKLE_SPEC = TWINKLE_SPEC(".", random.randint(0, 23))
                         self.buffer.put_char(x, y, new_TWINKLE_SPEC)
                         self.specs.append((x, y))
         else:

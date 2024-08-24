@@ -1,11 +1,8 @@
-from bruhanimate.bruhrenderer import *
-from bruhanimate.bruhscreen import Screen
-import bruhanimate.images as images
-
 import os
-import sys
-
 os.system("")
+
+from bruhanimate import Screen, images
+from bruhanimate import PanRenderer
 
 
 def demo(screen, img, frames, time, effect, background, transparent):
@@ -32,9 +29,6 @@ def demo(screen, img, frames, time, effect, background, transparent):
 
     # RUN THE ANIMATION
     renderer.run(end_message=False)
-
-    if sys.platform == "win32":
-        input()
 
 
 def run():
