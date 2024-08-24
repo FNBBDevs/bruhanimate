@@ -1,3 +1,4 @@
+import sys
 from .base_effect import BaseEffect
 from .static_effect import StaticEffect
 from .star_effect import StarEffect
@@ -10,7 +11,6 @@ from .snow_effect import SnowEffect
 from .twinkle_effect import TwinkleEffect, TWINKLE_SPEC
 from .offset_effect import OffsetEffect
 from .rain_effect  import RainEffect
-from .audio_effect import AudioEffect
 from .noise_effect import NoiseEffect
 
 
@@ -27,7 +27,6 @@ __all__ = [
     "TwinkleEffect",
     "OffsetEffect",
     "RainEffect",
-    "AudioEffect",
     "NoiseEffect",
     "GradientNoise",
     "Loading",
@@ -36,3 +35,7 @@ __all__ = [
     "Line",
     "TWINKLE_SPEC"
 ]
+
+if sys.platform == 'win32':
+    from .audio_effect import AudioEffect
+    __all__.append("AudioEffect")
