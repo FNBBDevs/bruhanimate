@@ -24,6 +24,7 @@ from .utils import (
     VALID_DIRECTIONS,
     WIND_DIRECTIONS,
     VALID_INTERFACES,
+    sleep,
 )
 
 __all__ = [
@@ -53,5 +54,6 @@ __all__ = [
     "VALID_DIRECTIONS",
     "WIND_DIRECTIONS",
     "VALID_INTERFACES",
+    "sleep",
 ]
 

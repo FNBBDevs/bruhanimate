@@ -1,8 +1,8 @@
 import random
 
 from bruhcolor import bruhcolored
-from bruhutil import TWINKLE_COLORS
-from bruheffect import BaseEffect
+from ..bruhutil import TWINKLE_COLORS
+from .base_effect import BaseEffect
 
 
 class _TWINKLE_SPEC:

@@ -1,8 +1,7 @@
 import sys
 
-from bruhutil import Screen, INF, sleep
-from bruhrenderer import BaseRenderer
-
+from ..bruhutil import Screen, INF, sleep
+from .base_renderer import BaseRenderer
 
 class EffectRenderer(BaseRenderer):
     """

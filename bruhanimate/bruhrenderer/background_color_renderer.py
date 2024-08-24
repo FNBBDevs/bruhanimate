@@ -1,5 +1,5 @@
 from bruhcolor import bruhcolored
-from bruhrenderer import BaseRenderer
+from .base_renderer import BaseRenderer
 
 class BackgroundColorRenderer(BaseRenderer):
     def __init__(

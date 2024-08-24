@@ -2,7 +2,7 @@ import random
 import string
 
 from bruhcolor import bruhcolored
-from bruheffect import BaseEffect
+from .base_effect import BaseEffect
 
 
 class MatrixEffect(BaseEffect):

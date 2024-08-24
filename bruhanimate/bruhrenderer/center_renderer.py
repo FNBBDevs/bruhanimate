@@ -1,5 +1,5 @@
-from bruhutil import Screen
-from bruhrenderer import BaseRenderer
+from ..bruhutil import Screen
+from .base_renderer import BaseRenderer
 
 
 

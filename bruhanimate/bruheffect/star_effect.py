@@ -1,8 +1,8 @@
 import random
 
 from bruhcolor import bruhcolored
-from bruhutil import LIFE_COLORS
-from bruheffect import NoiseEffect
+from ..bruhutil import LIFE_COLORS
+from .noise_effect import NoiseEffect
 
 class StarEffect(NoiseEffect):
     """

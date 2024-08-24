@@ -7,8 +7,8 @@ import string
 
 from threading import Thread
 from bruhcolor import bruhcolored
-from bruhutil import Screen
-from bruheffect import BaseEffect
+from ..bruhutil import Screen
+from .base_effect import BaseEffect
 
 
 class Key:

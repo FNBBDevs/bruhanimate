@@ -2,8 +2,8 @@ import math
 import random
 
 from bruhcolor import bruhcolored
-from bruhutil import PLASMA_COLORS, GREY_SCALES
-from bruheffect import BaseEffect
+from ..bruhutil import PLASMA_COLORS, GREY_SCALES
+from .base_effect import BaseEffect
 
 
 class PlasmaEffect(BaseEffect):

@@ -1,4 +1,4 @@
-from bruheffect import (
+from .bruheffect import (
     BaseEffect,
     StaticEffect,
     OffsetEffect,
@@ -19,7 +19,7 @@ from bruheffect import (
 )
 
 
-from bruhutil import (
+from .bruhutil import (
     Screen,
     Buffer,
     images,
@@ -46,7 +46,7 @@ from bruhutil import (
     VALID_INTERFACES
 )
 
-from bruhrenderer import (
+from .bruhrenderer import (
     BaseRenderer,
     EffectRenderer,
     CenterRenderer,
@@ -55,7 +55,7 @@ from bruhrenderer import (
     BackgroundColorRenderer,
 )
 
-from demos import (
+from .demos import (
     line_demo,
     plasma_demo,
     snow_demo,
@@ -72,7 +72,7 @@ from demos import (
     chatbot_demo,
 )
 
-__version__ = "0.2.54"
+__version__ = "0.2.55"
 __valid_demos__ = [
     "audio_demo",
     "static_demo",

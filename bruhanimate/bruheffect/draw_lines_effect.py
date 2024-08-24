@@ -1,4 +1,4 @@
-from bruheffect import BaseEffect
+from .base_effect import BaseEffect
 
 
 class Line:

@@ -1,8 +1,8 @@
 import random
 
 from bruhcolor import bruhcolored
-from bruhutil import LIFE_COLORS, LIFE_SCALES
-from bruheffect import BaseEffect
+from ..bruhutil import LIFE_COLORS, LIFE_SCALES
+from .base_effect import BaseEffect
 
 
 class GameOfLifeEffect(BaseEffect):

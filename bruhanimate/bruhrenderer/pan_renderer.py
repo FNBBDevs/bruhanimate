@@ -1,5 +1,5 @@
-from bruhutil import Screen, VERTICAL, HORIZONTAL
-from bruhrenderer import BaseRenderer
+from ..bruhutil import Screen, VERTICAL, HORIZONTAL
+from .base_renderer import BaseRenderer
 
 class PanRenderer(BaseRenderer):
     """
