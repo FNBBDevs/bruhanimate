@@ -72,7 +72,7 @@ from .demos import (
     chatbot_demo,
 )
 
-__version__ = "0.2.57"
+__version__ = "0.2.58"
 __valid_demos__ = [
     "audio_demo",
     "static_demo",
