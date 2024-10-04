@@ -17,8 +17,8 @@ limitations under the License.
 import os
 os.system(" ")
 
-from bruhanimate import Screen, images
-from bruhanimate import CenterRenderer
+from ..bruhutil import Screen, images
+from ..bruhrenderer import CenterRenderer
 
 
 def snow(screen):

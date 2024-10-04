@@ -17,8 +17,8 @@ limitations under the License.
 import os
 os.system(" ")
 
-from bruhanimate import Screen, get_image
-from bruhanimate import CenterRenderer
+from ..bruhutil import Screen, get_image
+from ..bruhrenderer import CenterRenderer
 
 
 def holiday(screen):
