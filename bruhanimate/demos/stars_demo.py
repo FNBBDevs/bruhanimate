@@ -17,8 +17,8 @@ limitations under the License.
 import os
 os.system(" ")
 
-from bruhanimate import Screen
-from bruhanimate import EffectRenderer
+from ..bruhutil import Screen
+from ..bruhrenderer import EffectRenderer
 
 
 def stars(screen):

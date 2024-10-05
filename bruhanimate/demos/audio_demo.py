@@ -17,8 +17,8 @@ limitations under the License.
 import os
 os.system(" ")
 
-from bruhanimate import Screen, images, GRADIENTS, CenterRenderer
-
+from ..bruhutil import Screen, images, GRADIENTS
+from ..bruhrenderer import CenterRenderer
 
 def audio(screen):
     renderer = CenterRenderer(
