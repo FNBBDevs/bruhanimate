@@ -18,6 +18,7 @@ import sys
 from typing import Literal, TypeVar, Dict, Generic
 from abc import abstractmethod
 from ..bruheffect import *
+from ..bruhutil.utils import sleep
 from ..bruhutil.bruhffer import Buffer
 from ..bruhutil.bruhscreen import Screen
 from ..bruhutil.bruherrors import InvalidEffectTypeError
