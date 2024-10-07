@@ -14,23 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from bruhcolor import bruhcolored
+from typing import List
 from .base_renderer import BaseRenderer
+from bruhcolor import bruhcolored
+from ..bruhutil.bruhtypes import EffectType
+
 
 class BackgroundColorRenderer(BaseRenderer):
     def __init__(
         self,
         screen,
-        frames,
-        time,
-        img,
-        on_color_code,
-        effect_type="static",
-        background=" ",
-        transparent=False,
+        img: List[str],
+        frames: int = 100,
+        frame_time: float = 0.1,
+        effect_type: EffectType = "static",
+        background: str = " ",
+        transparent: bool = False,
+        collision: bool = False,
+        on_color_code: int = 27,
     ):
         super(BackgroundColorRenderer, self).__init__(
-            screen, frames, time, effect_type, background, transparent
+            screen, frames, frame_time, effect_type, background, transparent, collision
         )
 
         self.img = img

@@ -17,14 +17,14 @@ limitations under the License.
 import os
 os.system(" ")
 
-from ..bruhutil import Screen, images, GRADIENTS
+from ..bruhutil import Screen, bruhimage, GRADIENTS
 from ..bruhrenderer import CenterRenderer
 
 def audio(screen):
     renderer = CenterRenderer(
         screen=screen,
         frames=float("inf"),
-        img=images.text_to_image("AUDIO!"),
+        img=bruhimage.text_to_image("AUDIO!"),
         time=0.01,
         effect_type="audio",
         background=" ",

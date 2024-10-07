@@ -25,9 +25,9 @@ def sleep(s):
 
 VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma", "gol", "rain", "matrix", "drawlines", "snow", "twinkle", "audio", "chat"]
 
-HORIZONTAL = "h"
+HORIZONTAL = "horizontal"
 
-VERTICAL = "v"
+VERTICAL = "vertical"
 
 INF = float("inf")
 

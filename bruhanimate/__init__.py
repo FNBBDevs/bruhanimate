@@ -32,7 +32,7 @@ from .bruheffect import (
 from .bruhutil import (
     Screen,
     Buffer,
-    images,
+    bruhimage,
     get_image,
     text_to_image,
     LIFE_COLORS,
@@ -144,7 +144,7 @@ if sys.platform == "win32":
         "PanRenderer",
         "FocusRenderer",
         "BackgroundColorRenderer",
-        "images",
+        "bruhimage",
         "__version__",
         "__valid_demos__",
         "LIFE_COLORS",

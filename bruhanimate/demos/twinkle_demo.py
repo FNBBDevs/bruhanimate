@@ -17,14 +17,14 @@ limitations under the License.
 import os
 os.system(" ")
 
-from ..bruhutil import Screen, images
+from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import CenterRenderer
 
 
 def twinkle(screen):
     renderer = CenterRenderer(
         screen=screen,
-        img=images.text_to_image("TWINKLE!"),
+        img=bruhimage.text_to_image("TWINKLE!"),
         frames=float("inf"),
         time=0.05,
         effect_type="twinkle",

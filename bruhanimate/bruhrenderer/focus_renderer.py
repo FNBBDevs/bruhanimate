@@ -15,8 +15,9 @@ limitations under the License.
 """
 
 import random
-
+from typing import List
 from .base_renderer import BaseRenderer
+from ..bruhutil.bruhtypes import EffectType
 
 
 class FocusRenderer(BaseRenderer):
@@ -28,19 +29,20 @@ class FocusRenderer(BaseRenderer):
     def __init__(
         self,
         screen,
-        frames,
-        time,
-        img,
-        effect_type="static",
-        background=" ",
-        transparent=False,
-        start_frame=0,
-        reverse=False,
-        start_reverse=None,
-        loop=True
+        img: List[str],
+        frames: int = 100,
+        time: float = 0.1,
+        effect_type: EffectType = "static",
+        background: str = " ",
+        transparent: bool = False,
+        collision: bool = False,
+        start_frame: int = 0,
+        reverse: bool = False,
+        start_reverse: int = None,
+        loop: bool = True
     ):
         super(FocusRenderer, self).__init__(
-            screen, frames, time, effect_type, background, transparent
+            screen, frames, time, effect_type, background, transparent, collision
         )
         self.background = background if background else " "
         self.transparent = transparent if transparent else False

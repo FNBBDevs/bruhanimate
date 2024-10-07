@@ -17,7 +17,7 @@ limitations under the License.
 import os
 os.system(" ")
 
-from ..bruhutil import Screen, images
+from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import CenterRenderer
 
 
@@ -25,7 +25,7 @@ def gol(screen):
     renderer = CenterRenderer(
         screen=screen,
         frames=float("inf"),
-        img=images.text_to_image("GOL!"),
+        img=bruhimage.text_to_image("GOL!"),
         time=0.0,
         effect_type="gol",
         background=" ",

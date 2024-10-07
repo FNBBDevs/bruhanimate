@@ -17,7 +17,7 @@ limitations under the License.
 import os
 os.system(" ")
 
-from ..bruhutil import Screen, images
+from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import CenterRenderer
 
 
@@ -25,7 +25,7 @@ def static(screen):
     renderer = CenterRenderer(
         screen=screen,
         frames=float("inf"),
-        img=images.text_to_image("STATIC!"),
+        img=bruhimage.text_to_image("STATIC!"),
         time=0.0,
         effect_type="static",
         background="This is a static background! ",

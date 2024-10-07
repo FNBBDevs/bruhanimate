@@ -1,6 +1,8 @@
 from .bruhscreen import Screen
 from .bruhffer import Buffer
-from .images import get_image, text_to_image
+from .bruhimage import get_image, text_to_image
+from .bruhtypes import EffectType, Font, Image, valid_effect_types
+from .bruherrors import ScreenResizedError, InvalidEffectTypeError, InvalidImageError
 from .utils import (
     INF,
     VERTICAL,
@@ -55,5 +57,12 @@ __all__ = [
     "WIND_DIRECTIONS",
     "VALID_INTERFACES",
     "sleep",
+    "Effect",
+    "Font",
+    "Image",
+    "valid_effects",
+    "ScreenResizedError",
+    "InvalidEffectTypeError",
+    "InvalidImageError"
 ]
 
