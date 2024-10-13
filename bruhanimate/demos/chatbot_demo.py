@@ -27,7 +27,7 @@ def chatbot(screen: Screen, openai_api_key: str, name: str):
     renderer = EffectRenderer(
         screen=screen,
         frames=float("inf"),
-        time=0.03,
+        frame_time=0.03,
         effect_type="chat",
         background=" ",
         transparent=False,

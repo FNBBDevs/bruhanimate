@@ -32,7 +32,7 @@ from .bruheffect import (
 from .bruhutil import (
     Screen,
     Buffer,
-    images,
+    bruhimage,
     get_image,
     text_to_image,
     LIFE_COLORS,
@@ -45,15 +45,11 @@ from .bruhutil import (
     GREY_SCALES,
     WIND_DIRECTIONS,
     NOISE,
-    FLAKES,
-    FLAKE_COLORS,
-    FLAKE_JUMPS,
-    NEXT_FLAKE_MOVE,
+    SNOWFLAKE_COLORS,
     FLAKE_WEIGHT_CHARS,
-    FLAKE_FLIPS,
     TWINKLE_COLORS,
-    FLAKES,
     VALID_INTERFACES,
+    SNOWFLAKE_TYPES
 )
 
 from .bruhrenderer import (
@@ -82,7 +78,7 @@ from .demos import (
 )
 
 
-__version__ = "0.2.65"
+__version__ = "0.2.69"
 __valid_demos__ = [
     "static_demo",
     "offset_demo",
@@ -144,7 +140,7 @@ if sys.platform == "win32":
         "PanRenderer",
         "FocusRenderer",
         "BackgroundColorRenderer",
-        "images",
+        "bruhimage",
         "__version__",
         "__valid_demos__",
         "LIFE_COLORS",
@@ -157,12 +153,9 @@ if sys.platform == "win32":
         "GREY_SCALES",
         "WIND_DIRECTIONS",
         "NOISE",
-        "FLAKES",
-        "FLAKE_COLORS",
-        "FLAKE_JUMPS",
-        "NEXT_FLAKE_MOVE",
+        "SNOWFLAKE_COLORS",
+        "SNOWFLAKE_TYPES",
         "FLAKE_WEIGHT_CHARS",
-        "FLAKE_FLIPS",
         "TWINKLE_COLORS",
         "VALID_INTERFACES",
         "get_image",

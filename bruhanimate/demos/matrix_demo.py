@@ -17,16 +17,16 @@ limitations under the License.
 import os
 os.system(" ")
 
-from ..bruhutil import Screen, images
+from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import CenterRenderer
 
 
 def matrix(screen):
     renderer = CenterRenderer(
         screen=screen,
-        img=images.text_to_image("MATRIX!"),
+        img=bruhimage.text_to_image("MATRIX!"),
         frames=float("inf"),
-        time=0,
+        frame_time=0,
         effect_type="matrix",
         background=" ",
         transparent=False,

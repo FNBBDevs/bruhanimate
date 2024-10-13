@@ -17,7 +17,7 @@ limitations under the License.
 import os
 os.system(" ")
 
-from ..bruhutil import Screen, images
+from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import CenterRenderer
 
 
@@ -25,8 +25,8 @@ def rain(screen):
     renderer = CenterRenderer(
         screen=screen,
         frames=float("inf"),
-        img=images.text_to_image("RAIN!"),
-        time=0.01,
+        img=bruhimage.text_to_image("RAIN!"),
+        frame_time=0.01,
         effect_type="rain",
         background=" ",
         transparent=False,

@@ -10,32 +10,53 @@ from .plasma_effect import PlasmaEffect
 from .snow_effect import SnowEffect
 from .twinkle_effect import TwinkleEffect, TWINKLE_SPEC
 from .offset_effect import OffsetEffect
-from .rain_effect  import RainEffect
+from .rain_effect import RainEffect
 from .noise_effect import NoiseEffect
 
 
-__all__ = [
-    "BaseEffect",
-    "StaticEffect",
-    "StarEffect",
-    "ChatbotEffect",
-    "DrawLinesEffect",
-    "GameOfLifeEffect",
-    "MatrixEffect",
-    "PlasmaEffect",
-    "SnowEffect",
-    "TwinkleEffect",
-    "OffsetEffect",
-    "RainEffect",
-    "NoiseEffect",
-    "GradientNoise",
-    "Loading",
-    "StringStreamer",
-    "Key", 
-    "Line",
-    "TWINKLE_SPEC"
-]
-
-if sys.platform == 'win32':
+if sys.platform == "win32":
     from .audio_effect import AudioEffect
-    __all__.append("AudioEffect")
+    __all__ = [
+        "BaseEffect",
+        "AudioEffect",
+        "StaticEffect",
+        "StarEffect",
+        "ChatbotEffect",
+        "DrawLinesEffect",
+        "GameOfLifeEffect",
+        "MatrixEffect",
+        "PlasmaEffect",
+        "SnowEffect",
+        "TwinkleEffect",
+        "OffsetEffect",
+        "RainEffect",
+        "NoiseEffect",
+        "GradientNoise",
+        "Loading",
+        "StringStreamer",
+        "Key",
+        "Line",
+        "TWINKLE_SPEC",
+    ]
+else:
+    __all__ = [
+        "BaseEffect",
+        "StaticEffect",
+        "StarEffect",
+        "ChatbotEffect",
+        "DrawLinesEffect",
+        "GameOfLifeEffect",
+        "MatrixEffect",
+        "PlasmaEffect",
+        "SnowEffect",
+        "TwinkleEffect",
+        "OffsetEffect",
+        "RainEffect",
+        "NoiseEffect",
+        "GradientNoise",
+        "Loading",
+        "StringStreamer",
+        "Key",
+        "Line",
+        "TWINKLE_SPEC",
+    ]

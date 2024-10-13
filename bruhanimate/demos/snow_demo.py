@@ -17,16 +17,16 @@ limitations under the License.
 import os
 os.system(" ")
 
-from ..bruhutil import Screen, images
+from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import CenterRenderer
 
 
 def snow(screen):
     renderer = CenterRenderer(
         screen=screen,
-        img=images.text_to_image("SNOW!"),
+        img=bruhimage.text_to_image("SNOW!"),
         frames=float("inf"),
-        time=0.075,
+        frame_time=0.075,
         effect_type="snow",
         background=" ",
         transparent=True,

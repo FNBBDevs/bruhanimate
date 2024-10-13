@@ -17,18 +17,18 @@ limitations under the License.
 import os
 os.system(" ")
 
-from ..bruhutil import Screen, images
+from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import FocusRenderer
 
 
 def show(screen):
-    image = images.text_to_image("PLASMA!", padding_top_bottom=1, padding_left_right=3)
+    image = bruhimage.text_to_image("PLASMA!", padding_top_bottom=1, padding_left_right=3)
 
     # Create the renderer
     renderer = FocusRenderer(
         screen=screen,
         frames=500,
-        time=0,
+        frame_time=0,
         img=image,
         effect_type="plasma",
         background=" ",

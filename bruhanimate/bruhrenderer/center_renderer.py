@@ -14,8 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from ..bruhutil import Screen
 from .base_renderer import BaseRenderer
+from ..bruhutil import Screen
+from ..bruhutil.bruhtypes import EffectType
 
 
 class CenterRenderer(BaseRenderer):
@@ -29,13 +30,14 @@ class CenterRenderer(BaseRenderer):
         screen: Screen,
         img: list[str],
         frames: int = 100,
-        time: float = 0.1,
-        effect_type: str = "static",
+        frame_time: float = 0.1,
+        effect_type: EffectType = "static",
         background: str = " ",
         transparent: bool = False,
+        collision: bool = False
     ):
         super(CenterRenderer, self).__init__(
-            screen, frames, time, effect_type, background, transparent
+            screen, frames, frame_time, effect_type, background, transparent, collision
         )
         self.background = background
         self.transparent = transparent

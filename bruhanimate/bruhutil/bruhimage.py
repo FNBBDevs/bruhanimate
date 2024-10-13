@@ -14,12 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import re
-import random
 import pyfiglet
-import bruhcolor
+from typing import List
+from .bruhtypes import Image, Font
+from .bruherrors import InvalidImageError
 
-BRUH = [
+
+bruh = [
     r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ",
     r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ",
     r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ",
@@ -40,7 +41,7 @@ BRUH = [
     r"loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH ",
 ]
 
-BRUH_EMPTY = [
+bruh_empty = [
     r"    _             _          ",
     r"  /\ \          / /\         ",
     r" /  \ \        / /  \        ",
@@ -54,7 +55,7 @@ BRUH_EMPTY = [
     r"\________/ \/_/ \_________\/ ",
 ]
 
-BRUH_COMPUTER = [
+bruh_computer = [
     f"                       .,,uod8B8bou,,.                             ",
     f"              ..,uod8BBBBBBBBBBBBBBBBRPFT?l!i:.                    ",
     f"         ,=m8BBBBBBBBBBBBBBBRPFT?!||||||||||||||                   ",
@@ -87,7 +88,7 @@ BRUH_COMPUTER = [
     f"                      `!^\"'                                        ",
 ]
 
-COMPUTER = [
+computer = [
     f"                       .,,uod8B8bou,,.                             ",
     f"              ..,uod8BBBBBBBBBBBBBBBBRPFT?l!i:.                    ",
     f"         ,=m8BBBBBBBBBBBBBBBRPFT?!||||||||||||||                   ",
@@ -120,7 +121,7 @@ COMPUTER = [
     f"                      `!^\"'                                        ",
 ]
 
-HEY = [
+hey = [
     f"    __  __          ",
     f"   / / / /__  __  __",
     f"  / /_/ / _ \/ / / /",
@@ -129,7 +130,7 @@ HEY = [
     f"           /____/   ",
 ]
 
-TWOPOINT = [
+twopoint = [
     r"                                                                               ",
     r"   ____________ _   _ _   _  _____ _   _  _____ _      _       _____  _____    ",
     r"   | ___ \ ___ \ | | | | | |/  ___| | | ||  ___| |    | |     / __  \|  _  |   ",
@@ -140,7 +141,7 @@ TWOPOINT = [
     r"                                                                               ",
 ]
 
-CHRISTMAS_1 = [
+christmas = [
     r"                ",
     r"      _\/_      ",
     r"       /\       ",
@@ -158,61 +159,57 @@ CHRISTMAS_1 = [
     r"                ",
 ]
 
-
-_REGISTERED_IMAGES = {
-    "BRUH": BRUH,
-    "BRUH_EMPTY": BRUH_EMPTY,
-    "COMPUTER": COMPUTER,
-    "HEY": HEY,
-    "TWOPOINT": TWOPOINT,
-    "CHRISTMAS_1": CHRISTMAS_1,
+image_mappings = {
+    "bruh": bruh,
+    "bruh_empty": bruh_empty,
+    "bruh_computer": bruh_computer,
+    "computer": computer,
+    "hey": hey,
+    "twopoint": twopoint,
+    "christmas": christmas,
 }
 
 
-def get_image(name):
+def get_image(name: Image = "hey") -> List[str]:
     """
-    Function to return one of the premade images
-    :param name: name of the image to get
+    Retrieves one of the pre-defined ASCII art images based on the given name.
+
+    :param name: The name of the image to retrieve.
+    :return: A list of strings representing the ASCII art image.
     """
-    if name in _REGISTERED_IMAGES:
-        return _REGISTERED_IMAGES[name]
-    else:
-        return _REGISTERED_IMAGES["HEY"]
+    if name not in image_mappings:
+        raise InvalidImageError(f"Unknown / non-registered image: {name}")
+    return image_mappings.get(name)
 
 
 def text_to_image(
-    text, font=pyfiglet.DEFAULT_FONT, padding_top_bottom=0, padding_left_right=0
-):
+    text: str,
+    font: Font = pyfiglet.DEFAULT_FONT,
+    padding_top_bottom: int = 0,
+    padding_left_right: int = 0,
+) -> List[str]:
     """
-    Function to take a piece of text and turn it into
-    an image that can be used.
-    :param text: text to turn into an image
-    :param font: pyfiglet font to use
-    :param padding_top_bottom: padding to apply to the generated image
-    :param padding_left_right: padding to apply to the generate image
+    Converts text into ASCII art using the specified font and padding.
+
+    :param text: The text to convert into ASCII art.
+    :param font: The font to use for the ASCII art.
+    :param padding_top_bottom: Number of empty lines to add above and below the ASCII art.
+    :param padding_left_right: Number of spaces to add on the left and right of each line.
+    :return: A list of strings representing the ASCII art with padding.
     """
-    
-    img_flat = None
     try:
         img_flat = pyfiglet.Figlet(font).renderText(text)
-    except:
-        img_flat = pyfiglet.Figlet().renderText("Invalid Font")
-    img = []
-    row = ""
-    for val in img_flat:
-        if val == "\n":
-            img.append(row)
-            row = ""
-        else:
-            row += val
+    except pyfiglet.FontError:
+        img_flat = pyfiglet.Figlet("standard").renderText(text)
+
+    img = img_flat.splitlines()
 
     if padding_top_bottom > 0:
-        img = (
-            [" " * len(img[0]) for __ in range(padding_top_bottom)]
-            + img
-            + [" " * len(img[0]) for __ in range(padding_top_bottom)]
-        )
+        empty_line = " " * len(img[0])
+        img = ([empty_line] * padding_top_bottom + img + [empty_line] * padding_top_bottom)
+
     if padding_left_right > 0:
-        for i in range(len(img)):
-            img[i] = (" " * padding_left_right) + img[i] + (" " * padding_left_right)
+        padding = " " * padding_left_right
+        img = [f"{padding}{line}{padding}" for line in img]
+
     return img
