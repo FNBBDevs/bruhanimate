@@ -8,6 +8,8 @@
 <img src="https://i.ibb.co/p3mbKb1/plas.gif" alt="plas" border="0">
 
 <img src="https://i.ibb.co/pR49kL6/noises.gif" alt="noises" border="0">
+
+<img src="https://github.com/user-attachments/assets/22d61f3e-b3ca-406f-9e1c-2f539eea23c7" alt="noises" border="0">
 </div>
 
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/termcolor.svg?logo=python&logoColor=FFE873)](https://pypi.org/project/bruhanimate/)
@@ -72,7 +74,7 @@ def demo(screen, img, frames, time, effect_type, background, transparent):
 
 
 def main():
-    Screen.show(demo, args=(images.get_image("TWOPOINT"), 300, 0, "noise", " ", False))
+    Screen.show(demo, args=(images.get_image("twopoint"), 300, 0, "noise", " ", False))
 
 
 if __name__ == "__main__":
@@ -92,7 +94,7 @@ def demo(screen: Screen):
     renderer = EffectRenderer(
         screen=screen,
         frames=float("inf"),
-        time=0.1,
+        frame_time=0.1,
         effect_type="snow",
         background=" ",
         transparent=False
