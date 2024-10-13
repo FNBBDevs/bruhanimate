@@ -25,7 +25,7 @@ def stars(screen):
     renderer = EffectRenderer(
         screen=screen,
         frames=float("inf"),
-        time=0.05,
+        frame_time=0.05,
         effect_type="stars",
         background=" ",
         transparent=False,

@@ -26,7 +26,7 @@ def rain(screen):
         screen=screen,
         frames=float("inf"),
         img=bruhimage.text_to_image("RAIN!"),
-        time=0.01,
+        frame_time=0.01,
         effect_type="rain",
         background=" ",
         transparent=False,

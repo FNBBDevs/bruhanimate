@@ -26,7 +26,7 @@ def demo(screen, img, frames, time, effect, background, transparent):
     renderer = PanRenderer(
         screen=screen,
         frames=frames,
-        time=time,
+        frame_time=time,
         img=img,
         effect_type=effect,
         background=background,

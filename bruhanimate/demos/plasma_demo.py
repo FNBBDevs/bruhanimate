@@ -28,7 +28,7 @@ def show(screen):
     renderer = FocusRenderer(
         screen=screen,
         frames=500,
-        time=0,
+        frame_time=0,
         img=image,
         effect_type="plasma",
         background=" ",

@@ -25,7 +25,7 @@ def holiday(screen):
     renderer = CenterRenderer(
         screen=screen,
         frames=2000,
-        time=0.075,
+        frame_time=0.075,
         img=get_image("christmas"),
         effect_type="snow",
         background=" ",

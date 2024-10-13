@@ -26,7 +26,7 @@ def offset(screen):
         screen=screen,
         frames=float("inf"),
         img=bruhimage.text_to_image("OFFSET!"),
-        time=0.0,
+        frame_time=0.0,
         effect_type="offset",
         background="!!@@##$$%%^^&&**(())__++",
         transparent=False,

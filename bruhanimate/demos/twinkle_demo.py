@@ -26,7 +26,7 @@ def twinkle(screen):
         screen=screen,
         img=bruhimage.text_to_image("TWINKLE!"),
         frames=float("inf"),
-        time=0.05,
+        frame_time=0.05,
         effect_type="twinkle",
         background=" ",
         transparent=False,

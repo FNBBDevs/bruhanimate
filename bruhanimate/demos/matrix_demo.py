@@ -26,7 +26,7 @@ def matrix(screen):
         screen=screen,
         img=bruhimage.text_to_image("MATRIX!"),
         frames=float("inf"),
-        time=0,
+        frame_time=0,
         effect_type="matrix",
         background=" ",
         transparent=False,

@@ -26,7 +26,7 @@ def gol(screen):
         screen=screen,
         frames=float("inf"),
         img=bruhimage.text_to_image("GOL!"),
-        time=0.0,
+        frame_time=0.0,
         effect_type="gol",
         background=" ",
         transparent=False,

@@ -26,7 +26,7 @@ def static(screen):
         screen=screen,
         frames=float("inf"),
         img=bruhimage.text_to_image("STATIC!"),
-        time=0.0,
+        frame_time=1.0,
         effect_type="static",
         background="This is a static background! ",
         transparent=False,
