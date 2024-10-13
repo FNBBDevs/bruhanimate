@@ -26,7 +26,7 @@ def holiday(screen):
         screen=screen,
         frames=2000,
         time=0.075,
-        img=get_image("CHRISTMAS"),
+        img=get_image("christmas"),
         effect_type="snow",
         background=" ",
         transparent=True,
