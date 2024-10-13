@@ -72,7 +72,7 @@ def demo(screen, img, frames, time, effect_type, background, transparent):
 
 
 def main():
-    Screen.show(demo, args=(images.get_image("TWOPOINT"), 300, 0, "noise", " ", False))
+    Screen.show(demo, args=(images.get_image("twopoint"), 300, 0, "noise", " ", False))
 
 
 if __name__ == "__main__":
