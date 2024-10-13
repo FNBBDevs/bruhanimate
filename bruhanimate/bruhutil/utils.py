@@ -69,32 +69,23 @@ WIND_DIRECTIONS = ["east", "west", "none"]
 
 NOISE = "!@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
 
-FLAKES = {1: "*", 3: "+", 7: "."}
-
-FLAKE_COLORS = {1: 253, 3: 69, 7: 31}
-
-FLAKE_JUMPS = {
-    1: [1, 2, 3],
-    3: [1, 2, 3],
-    7: [1, 2],
+SNOWFLAKE_TYPES = {
+    ".": {"speed": 5},
+    ".": {"speed": 4},
+    "+": {"speed": 3},
+    "+": {"speed": 2},
+    "*": {"speed": 1},
 }
 
-NEXT_FLAKE_MOVE = {
-    ("center", "right"): 1,
-    ("center", "left"): -1,
-    ("left", "center"): 1,
-    ("right", "center"): -1,
-    ("right", "left"): None,  # not valid
-    ("left", "right"): None,  # not valid
+SNOWFLAKE_COLORS = {
+    ".": 31,
+    ".": 31,
+    "+": 69,
+    "+": 69,
+    "*": 255,
 }
 
 FLAKE_WEIGHT_CHARS = {1: ",", 4: ";", 7: "*", 12: "@", 18: "#"}
-
-FLAKE_FLIPS = {
-    1: ["*", "1"],
-    3: ["+", "3"],
-    7: [".", "7"],
-}
 
 TWINKLE_COLORS = {idx: val for idx, val in enumerate(range(232, 256))}
 

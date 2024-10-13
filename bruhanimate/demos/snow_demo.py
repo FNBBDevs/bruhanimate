@@ -26,7 +26,7 @@ def snow(screen):
         screen=screen,
         img=bruhimage.text_to_image("SNOW!"),
         frames=float("inf"),
-        time=0.075,
+        frame_time=0.075,
         effect_type="snow",
         background=" ",
         transparent=True,

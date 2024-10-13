@@ -17,119 +17,14 @@ limitations under the License.
 import random
 
 from bruhcolor import bruhcolored
-from ..bruhutil import FLAKE_COLORS, FLAKE_FLIPS, FLAKE_JUMPS, FLAKE_WEIGHT_CHARS, FLAKES, NEXT_FLAKE_MOVE
+from ..bruhutil import FLAKE_WEIGHT_CHARS, SNOWFLAKE_TYPES, SNOWFLAKE_COLORS, Buffer
 from .base_effect import BaseEffect
-
-
-class _FLAKE:
-    def __init__(self, index, x, y):
-        self.index = index
-        self.x = x
-        self.y = y
-        self.prev_x = x
-        self.prev_y = y
-        self.weight = 1
-        self.color = FLAKE_COLORS[index]
-        self.char = bruhcolored(FLAKES[index], color=self.color).colored
-        self.current_position = "center"
-        self.on_ground = False
-        self.full = False
-
-    def flip_flake(self):
-        if self.char == FLAKE_FLIPS[self.index][0]:
-            self.char = FLAKE_FLIPS[self.index][1]
-        else:
-            self.char = FLAKE_FLIPS[self.index][0]
-
-    def next_position(self, frame_number):
-        if self.on_ground:
-            return
-
-        if frame_number % self.index != 0:
-            return
-
-        if random.random() < 0.10:
-            return
-
-        self.prev_x = self.x
-        self.prev_y = self.y
-
-        self.y = self.y + random.choice(FLAKE_JUMPS[self.index])
-
-        next_position = random.choice(["left", "center", "right"])
-
-        next_flake_move = (
-            NEXT_FLAKE_MOVE[(self.current_position, next_position)]
-            if self.current_position != next_position
-            else None
-        )
-
-        if next_flake_move:
-            self.x = self.x + next_flake_move
-            self.current_position = next_position
-
-    def update_position(self, x, y):
-        self.prev_x = self.x
-        self.prev_y = self.y
-        self.x = x
-        self.y = y
-
-    def set_to_on_ground(self):
-        self.weight = 1
-        self.on_ground = True
-        self.color = 190 if random.random() < 0.01 else 255
-        self.char = bruhcolored(
-            FLAKE_WEIGHT_CHARS[self.weight], color=self.color
-        ).colored
-
-    def increment_flake_weight(self):
-        if self.weight < 18:
-            self.weight += 1
-
-        self.update_ground_flake()
-
-        if self.weight == 18:
-            self.full = True
-
-    def update_ground_flake(self):
-        if not self.full:
-            if self.char != list(FLAKE_WEIGHT_CHARS.values())[-1]:
-                if self.weight in FLAKE_WEIGHT_CHARS.keys():
-                    self.char = bruhcolored(
-                        FLAKE_WEIGHT_CHARS[self.weight], color=self.color
-                    ).colored
-
-    def __str__(self):
-        return self.char
-
-    def __repr__(self):
-        return self.char
-
-    def __len__(self):
-        return 1
-
-    def __eq__(self, other):
-        return self.char == other
-
-    def copy(self):
-        new_flake = _FLAKE(index=self.index, x=self.x, y=self.y)
-        new_flake.weight = self.weight
-        new_flake.char = self.char
-        new_flake.current_position = self.current_position
-        new_flake.color = self.color
-        new_flake.on_ground = self.on_ground
-        new_flake.x = self.x
-        new_flake.y = self.y
-        new_flake.prev_x = self.prev_x
-        new_flake.prev_y = self.prev_y
-        new_flake.full = self.full
-        return new_flake
 
 
 class SnowEffect(BaseEffect):
     def __init__(
         self,
-        buffer,
+        buffer: Buffer,
         background,
         img_start_x=None,
         img_start_y=None,
@@ -139,18 +34,13 @@ class SnowEffect(BaseEffect):
         show_info=False,
     ):
         super(SnowEffect, self).__init__(buffer, background)
-        self.image_present = (
-            True if img_start_x and img_start_y and img_width and img_height else False
-        )
+        self.image_present = (True if img_start_x and img_start_y and img_width and img_height else False)
         self.collision = collision
         self.total_ground_flakes = 0
-        self._show_info = show_info
-        self._flakes = []
-        self._ground_flakes = [
-            [None for _ in range(self.buffer.width())]
-            for __ in range(self.buffer.height())
-        ]
-        self._image_collide_flakes = [None for _ in range(self.buffer.width())]
+        self.show_info = show_info
+        self.flakes = []
+        self.ground_flakes = [[0 for _ in range(buffer.width())] for _ in range(buffer.height())]
+        self.image_flakes = [None for _ in range(self.buffer.width())]
         self.smart_transparent = False
 
     def update_collision(
@@ -160,6 +50,7 @@ class SnowEffect(BaseEffect):
         img_width,
         img_height,
         collision,
+        smart_transparent,
         image_buffer=None,
     ):
         """
@@ -187,182 +78,86 @@ class SnowEffect(BaseEffect):
         else:
             self.image_buffer = None
 
-    def show_info(self, show_info: bool):
-        self._show_info = show_info
+    def set_show_info(self, show_info: bool):
+        self.show_info = show_info
+
+    def generate_snowflake(self, x: int):
+        snowflake_type = random.choice(list(SNOWFLAKE_TYPES.keys()))
+        snowflake_char = bruhcolored(snowflake_type, SNOWFLAKE_COLORS[snowflake_type])
+        self.flakes.append({"x": x, "y": 0, "type": snowflake_type, "colored": snowflake_char, "fall_delay": 0})
+
+    def can_stack(self, x, y):
+        if y >= self.buffer.height():
+            return False
+        return self.ground_flakes[y][x] >= 18
+
+    def is_colliding(self, x: int, y: int):
+        if self.image_present:
+            if self.image_x_boundaries[0] < x < self.image_x_boundaries[1] and self.image_y_boundaries[0] < y < self.image_y_boundaries[1]:
+                return True
+        return False
+
+    def handle_snowflake_landing(self, x: int, y: int):
+        self.ground_flakes[y][x] += 1
+        weight = self.ground_flakes[y][x]
+        for w, char in sorted(FLAKE_WEIGHT_CHARS.items(), reverse=True):
+            if weight >= w:
+                self.buffer.put_char(x, y, char)
+                break
+        if weight > 18 and y > 0:
+            self.ground_flakes[y - 1][x] += 1
+
+    def add_info(self):
+        self.buffer.put_at(0, 0, f"Total Snow Flakes: {len(self.flakes)}")
+        self.buffer.put_at(0, 1, f"Total Flakes on Ground: {sum([sum([1 for v in row if v > 0]) for row in self.ground_flakes])}")
 
     def render_frame(self, frame_number):
-        # calc each flakes next position
-        for flake in self._flakes:
-            flake.next_position(frame_number)
+        """
+        Function to render the next frame of the snow effect into it's buffer.
+        :param frame_number: The current frame number (used to determine the animation state).
+        """
 
-        # generate the next set of flakes
-        for x in range(self.buffer.width()):
+        # generate a new row of snowflakes
+        for idx in range(self.buffer.width()):
             if random.random() < 0.01:
-                flake = _FLAKE(index=random.choice([1, 3, 7]), x=x, y=0)
-                self._flakes.append(flake)
+                self.generate_snowflake(idx)
+    
+        # update the positions of all flakes
+        new_flakes = []
+        for snowflake in self.flakes:
+            x, y, flake_type = snowflake["x"], snowflake["y"], snowflake["type"]
+            speed = SNOWFLAKE_TYPES[flake_type]["speed"]
 
-        if self.smart_transparent and frame_number == 0 and self.image_present:
-            self.smart_boundLine = {}
-            for x in range(self.img_width):
-                tmp_flag = False
-                for y in range(self.img_height):
-                    if self.image_buffer.buffer[y + self.img_start_y][
-                        x + self.img_start_x
-                    ] not in [" ", None]:
-                        self.smart_boundLine[x + self.img_start_x] = (
-                            y + self.img_start_y - 1
-                        )
-                        tmp_flag = True
-                        break
-                if not tmp_flag:
-                    self.smart_boundLine[x + self.img_start_x] = None
+            # clear out the old position of the snowflake
+            self.buffer.put_char(x, y, " ")
 
-        # determine what flakes are hitting the ground or need to be deleted
-        for idx, flake in enumerate(self._flakes):
-            # ground flake
-            if (
-                flake.x >= 0
-                and flake.x < self.buffer.width()
-                and flake.y >= self.buffer.height() - 1
-            ):
-                # true_y = flake.y
-
-                # need to set the y value to be the actual net available y val
-                # what isn't a valid y value?
-                # a -> value that exceeds the buffer height
-                # b -> value that intercepts a full flake in the column
-                true_y = None
-                for y in range(self.buffer.height() - 1, -1, -1):
-                    if (
-                        self._ground_flakes[y][flake.x] is None
-                        or not self._ground_flakes[y][flake.x].full
-                    ):
-                        true_y = y
-                        break
-
-                if true_y is None:
-                    break
-
-                if (
-                    isinstance(self._ground_flakes[true_y][flake.x], _FLAKE)
-                    and not self._ground_flakes[true_y][flake.x].full
-                ):
-                    ground_flake: _FLAKE = self._ground_flakes[true_y][flake.x]
-                    ground_flake.increment_flake_weight()
-                    self._ground_flakes[true_y][flake.x] = ground_flake.copy()
-                    del ground_flake
-                elif isinstance(self._ground_flakes[true_y][flake.x], _FLAKE):
-                    tmp_flake = flake.copy()
-                    tmp_flake.set_to_on_ground()
-                    tmp_flake.y = true_y - 1
-                    self._ground_flakes[true_y - 1][flake.x] = tmp_flake
-                else:
-                    tmp_flake = flake.copy()
-                    tmp_flake.set_to_on_ground()
-                    tmp_flake.y = true_y
-                    self._ground_flakes[true_y][flake.x] = tmp_flake
-                self._flakes[idx] = None
-                self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
-            elif flake.x < 0 or flake.x >= self.buffer.width():
-                self._flakes[idx] = None
-                self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
+            if snowflake["fall_delay"] < speed:
+                snowflake["fall_delay"] += 1
+                new_flakes.append(snowflake)
+                continue
             else:
-                # image collision flake
-                if not self.smart_transparent:
-                    if (
-                        self.image_present
-                        and flake.x >= self.image_x_boundaries[0]
-                        and flake.x <= self.image_x_boundaries[1]
-                        and flake.y >= self.image_y_boundaries[0]
-                        and flake.y <= self.image_y_boundaries[1]
-                    ):
-                        # colliding with image
-                        if isinstance(self._image_collide_flakes[flake.x], _FLAKE):
-                            ground_flake: _FLAKE = self._image_collide_flakes[
-                                flake.x
-                            ].copy()
-                            ground_flake.increment_flake_weight()
-                            self._image_collide_flakes[flake.x] = ground_flake
-                            del ground_flake
-                        else:
-                            tmp_flake = flake.copy()
-                            tmp_flake.set_to_on_ground()
-                            tmp_flake.y = self.image_y_boundaries[0] - 1
-                            self._image_collide_flakes[flake.x] = tmp_flake
-                        self._flakes[idx] = None
-                        self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
-                elif frame_number != 0:
-                    if self.image_present and flake.x in self.smart_boundLine.keys():
-                        if start_bound := self.smart_boundLine[flake.x]:
-                            if flake.y >= start_bound and flake.y <= self.img_end_y:
-                                # colliding with image
-                                self._flakes[idx] = None
-                                self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
+                snowflake["fall_delay"] = 0
 
-                                if isinstance(
-                                    self.buffer.get_char(flake.x, start_bound), _FLAKE
-                                ):
-                                    ground_flake: _FLAKE = self._image_collide_flakes[
-                                        flake.x
-                                    ].copy()
-                                    ground_flake.increment_flake_weight()
-                                    self._image_collide_flakes[flake.x] = ground_flake
-                                    del ground_flake
-                                else:
-                                    tmp_flake = flake.copy()
-                                    tmp_flake.set_to_on_ground()
-                                    tmp_flake.y = start_bound
-                                    self._image_collide_flakes[flake.x] = tmp_flake
+            if y + 1 >= self.buffer.height() or self.can_stack(x, y + 1):
+                self.handle_snowflake_landing(x, y)
+            else:
+                dx = random.choice([-1, 0, 1])
+                dy = 1
 
-        self._flakes = [flake for flake in self._flakes if flake]
+                new_x = max(0, min(self.buffer.width() - 1, x + dx))
+                new_y = y + dy
+                if new_y < self.buffer.height() and not self.is_colliding(new_x, new_y) and 0 <= new_x < self.buffer.width():
+                    snowflake["x"], snowflake["y"] = new_x, new_y
+                    new_flakes.append(snowflake)
+                else:
+                    self.handle_snowflake_landing(x, y)
 
-        # place the flakes into the buffer
-        for flake in self._flakes:
-            self.buffer.put_char(flake.x, flake.y, flake)
-            self.buffer.put_char(flake.prev_x, flake.prev_y, " ")
+        self.flakes = new_flakes
 
-        # place the ground flakes
-        if self.collision:
-            for y in range(self.buffer.height()):
-                for x in range(self.buffer.width()):
-                    flake = self._ground_flakes[y][x]
-                    if flake:
-                        self.buffer.put_char(flake.x, flake.y, flake)
-            for flake in self._image_collide_flakes:
-                if flake:
-                    self.buffer.put_char(flake.x, flake.y, flake)
-
-        if self._show_info:
-            self.buffer.put_at(0, 1, f"Width: {self.buffer.width()}")
-            self.buffer.put_at(0, 2, f"Height: {self.buffer.height()}")
-            self.buffer.put_at(0, 3, f"Collision Enabled: {self.collision}")
-            self.buffer.put_at(0, 4, f"Total  flakes: {len(self._flakes):3d}")
-            self.buffer.put_at(
-                0,
-                5,
-                f"Ground flakes: {sum([sum([1 for x in range(len(self._ground_flakes[0])) if self._ground_flakes[y][x]]) for y in range(len(self._ground_flakes))]):3d}",
-            )
-            self.buffer.put_at(
-                0,
-                6,
-                f"Full flakes: {sum([1 for flake in [j for sub in self._ground_flakes for j in sub] if flake and flake.full]):3d}",
-            )
-            self.buffer.put_at(0, 7, f"Image present: {self.image_present}")
-            if self.image_present:
-                self.buffer.put_at(
-                    0,
-                    8,
-                    f"Total flakes on image: {len([0 for _ in self._image_collide_flakes if _]):3d}",
-                )
-                self.buffer.put_at(
-                    0, 9, f"Image x boundaries: {self.image_x_boundaries}"
-                )
-                self.buffer.put_at(
-                    0, 10, f"Image y boundaries: {self.image_y_boundaries}"
-                )
-                self.buffer.put_at(0, 11, f"Image y bottom: {self.img_end_y}")
-
-        # for flake in [j for sub in self._ground_flakes for j in sub]:
-        #     if flake:
-        #         print(f"{flake.weight} - {flake.char} - {flake.full}")
-
+        # place the updates into the buffer
+        for snowflake in self.flakes:
+            x, y, flake_type, colored = snowflake["x"], snowflake["y"], snowflake["type"], snowflake["colored"]
+            self.buffer.put_char(x, y, colored.colored)
+        
+        if self.show_info:
+            self.add_info()

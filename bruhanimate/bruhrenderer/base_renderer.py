@@ -121,7 +121,8 @@ class BaseRenderer:
                 self.smart_transparent,
                 self.image_buffer,
             )
-        except Exception:
+        except Exception as e:
+            print(f"base_renderer: update_collision: warning: {e}")
             self.effect.update_collision(None, None, None, None, collision, None)
 
     def update_smart_transparent(self, smart_transparent: bool):
