@@ -92,7 +92,7 @@ def demo(screen: Screen):
     renderer = EffectRenderer(
         screen=screen,
         frames=float("inf"),
-        time=0.1,
+        frame_time=0.1,
         effect_type="snow",
         background=" ",
         transparent=False
