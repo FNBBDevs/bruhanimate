@@ -42,7 +42,7 @@ class FocusRenderer(BaseRenderer):
         loop: bool = True
     ):
         super(FocusRenderer, self).__init__(
-            screen, frames, time, effect_type, background, transparent, collision
+            screen, frames, frame_time, effect_type, background, transparent, collision
         )
         self.background = background if background else " "
         self.transparent = transparent if transparent else False
