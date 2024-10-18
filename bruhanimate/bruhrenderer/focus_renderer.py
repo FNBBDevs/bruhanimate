@@ -31,7 +31,7 @@ class FocusRenderer(BaseRenderer):
         screen,
         img: List[str],
         frames: int = 100,
-        time: float = 0.1,
+        frame_time: float = 0.1,
         effect_type: EffectType = "static",
         background: str = " ",
         transparent: bool = False,
