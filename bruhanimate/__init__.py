@@ -75,22 +75,26 @@ from .demos import (
     offset_demo,
     static_demo,
     chatbot_demo,
+    firework_demo,
 )
 
 
-__version__ = "0.2.69"
+__version__ = "0.2.74"
 __valid_demos__ = [
     "static_demo",
     "offset_demo",
     "matrix_demo",
     "gol_demo",
     "rain_demo",
-    "chatbot_demo" "line_demo",
+    "chatbot_demo",
+    "line_demo",
     "plasma_demo",
     "snow_demo",
     "stars_demo",
     "twinkle_demo",
-    "noise_demo" "holiday",
+    "noise_demo",
+    "holiday",
+    "firework_demo"
 ]
 
 if sys.platform == "win32":
@@ -162,6 +166,7 @@ if sys.platform == "win32":
         "text_to_image",
         "TwinkleEffect",
         "TWINKLE_SPEC",
+        "firework_demo",
     ]
 else:
     __all__ = [
@@ -229,5 +234,6 @@ else:
         "text_to_image",
         "TwinkleEffect",
         "TWINKLE_SPEC",
+        "firework_demo",
     ]
 

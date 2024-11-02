@@ -12,6 +12,7 @@ from .twinkle_effect import TwinkleEffect, TWINKLE_SPEC
 from .offset_effect import OffsetEffect
 from .rain_effect import RainEffect
 from .noise_effect import NoiseEffect
+from .firework_effect import FireworkEffect, Firework, Particle
 
 
 if sys.platform == "win32":
@@ -37,6 +38,9 @@ if sys.platform == "win32":
         "Key",
         "Line",
         "TWINKLE_SPEC",
+        "FireworkEffect",
+        "Firework",
+        "Particle"
     ]
 else:
     __all__ = [

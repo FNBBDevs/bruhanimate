@@ -31,7 +31,7 @@ class FocusRenderer(BaseRenderer):
         screen,
         img: List[str],
         frames: int = 100,
-        time: float = 0.1,
+        frame_time: float = 0.1,
         effect_type: EffectType = "static",
         background: str = " ",
         transparent: bool = False,
@@ -39,10 +39,10 @@ class FocusRenderer(BaseRenderer):
         start_frame: int = 0,
         reverse: bool = False,
         start_reverse: int = None,
-        loop: bool = True
+        loop: bool = True,
     ):
         super(FocusRenderer, self).__init__(
-            screen, frames, time, effect_type, background, transparent, collision
+            screen, frames, frame_time, effect_type, background, transparent, collision
         )
         self.background = background if background else " "
         self.transparent = transparent if transparent else False
@@ -112,12 +112,16 @@ class FocusRenderer(BaseRenderer):
         self.direction_board = [
             [
                 [
-                    -1
-                    if (self.end_board[y][x][0] - self.current_board[y][x][0]) < 0
-                    else 1,
-                    -1
-                    if (self.end_board[y][x][1] - self.current_board[y][x][1]) < 0
-                    else 1,
+                    (
+                        -1
+                        if (self.end_board[y][x][0] - self.current_board[y][x][0]) < 0
+                        else 1
+                    ),
+                    (
+                        -1
+                        if (self.end_board[y][x][1] - self.current_board[y][x][1]) < 0
+                        else 1
+                    ),
                 ]
                 for x in range(self.img_width)
             ]
@@ -173,7 +177,7 @@ class FocusRenderer(BaseRenderer):
     def render_img_frame(self, frame_number):
         """
         Renders the next image frame into the image buffer
-        """        
+        """
         if self.reverse and frame_number >= self.start_reverse:
             if not self.solved(end_state="start"):
                 for y in range(len(self.current_board)):
@@ -222,4 +226,3 @@ class FocusRenderer(BaseRenderer):
                         self.image_buffer.put_char(
                             value[0], value[1], value[2], transparent=self.transparent
                         )
-
