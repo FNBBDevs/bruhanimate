@@ -79,7 +79,7 @@ from .demos import (
 )
 
 
-__version__ = "0.2.73"
+__version__ = "0.2.74"
 __valid_demos__ = [
     "static_demo",
     "offset_demo",

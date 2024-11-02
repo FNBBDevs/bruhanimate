@@ -17,7 +17,7 @@ limitations under the License.
 from ..bruhrenderer import CenterRenderer
 from ..bruhutil import Screen, text_to_image, get_image
 
-def main(screen: Screen):
+def fireworks(screen: Screen):
     renderer = CenterRenderer(
         screen=screen,
         img=text_to_image("FIREWORKS!"),
@@ -35,5 +35,8 @@ def main(screen: Screen):
     
     renderer.run()
 
+def run():
+    Screen.show(fireworks)
+
 if __name__ == "__main__":
-    Screen.show(main)
+    run()
