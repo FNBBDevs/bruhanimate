@@ -104,6 +104,8 @@ class BaseRenderer:
             return AudioEffect(self.create_buffer(), self.background)
         elif effect_type == "chat":
             return ChatbotEffect(self.screen, self.create_buffer(), self.create_buffer(), self.background)
+        elif effect_type == "firework":
+            return FireworkEffect(self.create_buffer(), self.background)
 
     def create_buffer(self) -> Buffer:
         return Buffer(height=self.screen.height, width=self.screen.width)
