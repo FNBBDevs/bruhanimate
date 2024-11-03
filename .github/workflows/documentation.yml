@@ -37,7 +37,9 @@ jobs:
         echo "" > source/conf.py
         echo "import os" >> source/conf.py
         echo "import sys" >> source/conf.py
+        echo "sys.path.insert(0, os.path.abspath('../'))" >> source/conf.py
         echo "sys.path.insert(0, os.path.abspath('../../'))" >> source/conf.py
+        echo "sys.path.insert(0, os.path.abspath('../../bruhanimate'))" >> source/conf.py
         echo "project = 'bruhanimate'" >> source/conf.py
         echo "copyright = '2024, Ethan Christensen'" >> source/conf.py
         echo "author = 'Ethan Christensen'" >> source/conf.py
