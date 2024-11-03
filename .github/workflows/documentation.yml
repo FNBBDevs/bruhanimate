@@ -24,16 +24,13 @@ jobs:
         
     - name: Install dependencies
       run: |
-        ls -a
         python -m pip install --upgrade pip
         pip install sphinx sphinx-rtd-theme
         
     - name: Setup Sphinx documentation structure
       run: |
-        ls -a
         mkdir -p docs
         cd docs
-        ls -a
         
         sphinx-quickstart -q -p "bruhanimate" -a "Ethan Christensen" -v 1.0 -r 1.0 -l en --ext-autodoc --ext-viewcode --makefile --batchfile --sep
         
@@ -73,13 +70,13 @@ jobs:
 
     - name: Generate .rst files with sphinx-apidoc
       run: |
-        ls -a
         sphinx-apidoc -o docs/source bruhanimate/
 
     - name: Generate Documentation
       run: |
-        ls -a
         cd docs
+        ls -a
+        ls source/ -a
         make html
         
     - name: Deploy to GitHub Pages
