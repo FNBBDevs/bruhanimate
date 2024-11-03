@@ -32,30 +32,36 @@ jobs:
         mkdir -p docs
         cd docs
         
-        if [ ! -f "conf.py" ]; then
-          sphinx-quickstart -q -p "bruhanimate" -a "Ethan Christensen" -v 1.0 -r 1.0 -l en --ext-autodoc --ext-viewcode --makefile --batchfile --sep
-          
-          echo "import os" >> conf.py
-          echo "import sys" >> conf.py
-          echo "sys.path.insert(0, os.path.abspath('..'))" >> conf.py
-          echo "html_theme = 'sphinx_rtd_theme'" >> conf.py
-          echo "extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.napoleon']"
-          
-          if [ ! -f "index.rst" ]; then
-            echo "bruhanimate documentation" > index.rst
-            echo "Welcome to Your Project's documentation!" >> index.rst
-            echo "=====================================" >> index.rst
-            echo "" >> index.rst
-            echo ".. toctree::" >> index.rst
-            echo "   :maxdepth: 2" >> index.rst
-            echo "   :caption: bruhanimate:" >> index.rst
-            echo "" >> index.rst
-            echo "   bruhanimate.bruhutil" >> index.rst
-            echo "   bruhanimate.bruheffect" >> index.rst
-            echo "   bruhanimate.bruhrenderer" >> index.rst
-          fi
-        fi
+        sphinx-quickstart -q -p "bruhanimate" -a "Ethan Christensen" -v 1.0 -r 1.0 -l en --ext-autodoc --ext-viewcode --makefile --batchfile --sep
         
+        echo "" > conf.py
+        echo "import os" >> conf.py
+        echo "import sys" >> conf.py
+        echo "sys.path.insert(0, os.path.abspath('../../'))" >> conf.py
+        echo "project = 'bruhanimate'" >> conf.py
+        echo "copyright = '2024, Ethan Christensen'" >> conf.py
+        echo "author = 'Ethan Christensen'" >> conf.py
+        echo "version = '1.0'" >> conf.py
+        echo "release = '1.0'" >> conf.py
+        echo "extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.napoleon']"
+        echo "templates_path = ['_templates']" >> conf.py
+        echo "exclude_patterns = ['demos/*']" >> conf.py
+        echo "language = 'en'" >> conf.py
+        echo "html_theme = 'sphinx_rtd_theme'" >> conf.py
+        echo "html_static_path = ['_static']" >> conf.py
+        
+        echo "bruhanimate documentation" > source/index.rst
+        echo "Welcome to Your Project's documentation!" >> source/index.rst
+        echo "=====================================" >> source/index.rst
+        echo "" >> source/index.rst
+        echo ".. toctree::" >> source/index.rst
+        echo "   :maxdepth: 2" >> source/index.rst
+        echo "   :caption: bruhanimate:" >> source/index.rst
+        echo "" >> source/index.rst
+        echo "   bruhanimate.bruhutil" >> source/index.rst
+        echo "   bruhanimate.bruheffect" >> source/index.rst
+        echo "   bruhanimate.bruhrenderer" >> source/index.rst
+
     - name: Generate .rst files with sphinx-apidoc
       run: |
         sphinx-apidoc -o docs/source bruhanimate/
