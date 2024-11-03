@@ -33,7 +33,7 @@ jobs:
         cd docs
         
         if [ ! -f "conf.py" ]; then
-          sphinx-quickstart -q -p "Your Project Name" -a "Your Name" -v 1.0 -r 1.0 -l en --ext-autodoc --ext-viewcode --makefile --batchfile --sep
+          sphinx-quickstart -q -p "bruhanimate" -a "Ethan Christensen" -v 1.0 -r 1.0 -l en --ext-autodoc --ext-viewcode --makefile --batchfile --sep
           
           echo "import os" >> conf.py
           echo "import sys" >> conf.py
@@ -41,13 +41,17 @@ jobs:
           echo "html_theme = 'sphinx_rtd_theme'" >> conf.py
           
           if [ ! -f "index.rst" ]; then
-            echo "Welcome to Your Project's documentation!" > index.rst
+            echo "bruhanimate documentation" > index.rst
+            echo "Welcome to Your Project's documentation!" >> index.rst
             echo "=====================================" >> index.rst
             echo "" >> index.rst
             echo ".. toctree::" >> index.rst
             echo "   :maxdepth: 2" >> index.rst
-            echo "   :caption: Contents:" >> index.rst
+            echo "   :caption: bruhanimate:" >> index.rst
             echo "" >> index.rst
+            echo "   bruhanimate.bruhutil" >> index.rst
+            echo "   bruhanimate.bruheffect" >> index.rst
+            echo "   bruhanimate.bruhrenderer" >> index.rst
           fi
         fi
         
