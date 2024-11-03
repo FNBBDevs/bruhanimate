@@ -84,18 +84,33 @@ class Firework:
         )
         self.clear_particles = []
         self.caught_last_trail = False
-        self.speed = random.randint(1, 3)
+        self.speed = 3
         self.firework_color_type = firework_color_type
         self.colors = self.get_colors()
         self.color_enabled = color_enabled
 
+        self.trajectory_type = random.choice(['straight', 'arc', 'zigzag'])
+        self.angle = random.uniform(-0.5, 0.5)  # Angle for non-straight trajectories
+        self.arc_direction = random.choice([-1, 1])  # Direction of arc curve
+        self.zigzag_phase = 0  # For zigzag pattern
+        self.zigzag_amplitude = random.uniform(0.2, 0.5)  # Width of zigzag
+
     def update(self):
         if not self.exploded:
-            # Move firework up
+            # Store previous position
+            self.previous_x = self.x
             self.previous_y = self.y
-            self.y -= self.speed
+            
+            # Update position based on trajectory type
+            if self.trajectory_type == 'straight':
+                self.move_straight()
+            elif self.trajectory_type == 'arc':
+                self.move_arc()
+            else:  # zigzag
+                self.move_zigzag()
+            
+            # Check if reached peak
             if self.y <= self.peak:
-                # Explode when it reaches the peak
                 self.exploded = True
                 self.create_particles()
         else:
@@ -108,6 +123,24 @@ class Firework:
                     self.clear_particles.append(p)
 
             self.particles = [p for p in self.particles if p.is_alive()]
+
+    def move_straight(self):
+        # Move upward with slight angle
+        self.y -= self.speed
+        self.x += math.sin(self.angle) * self.speed * 0.5
+
+    def move_arc(self):
+        # Create arcing trajectory
+        progress = (self.height - self.y) / (self.height - self.peak)
+        arc_offset = math.sin(progress * math.pi) * 2.0
+        self.y -= self.speed
+        self.x += self.arc_direction * arc_offset * 0.2
+
+    def move_zigzag(self):
+        # Create zigzag pattern
+        self.zigzag_phase += 0.2
+        self.y -= self.speed
+        self.x += math.sin(self.zigzag_phase) * self.zigzag_amplitude
 
     def create_particles(self):
         if self.explosion_type == 'circular':
@@ -625,7 +658,7 @@ class Firework:
         """Creates two connected portals with particles flowing between them"""
         # Portal parameters
         portal_radius = 1.2
-        num_particles = 40
+        num_particles = 50
         
         # Create two portal rings
         for portal in range(2):
@@ -661,7 +694,7 @@ class Firework:
             symbol = random.choice(["*", "·", "•", "+"])
             self.particles.append(Particle(self.x, self.y, dx*0.3, dy*0.3,
                                         self.width, self.height,
-                                        symbol=symbol, life=15))
+                                        symbol=symbol, life=10))
 
     def is_active(self):
         # Firework is active if it has not exploded or if particles are still alive
@@ -691,6 +724,8 @@ class Firework:
         if not self.exploded:
             if 0 <= self.x < self.width and 0 <= self.y < self.height:
                 buffer.put_char(int(self.x), int(self.y), val="|")
+                buffer.put_char(int(self.previous_x), int(self.previous_y), val=" ")
+            else:
                 buffer.put_char(int(self.previous_x), int(self.previous_y), val=" ")
         else:
             if not self.caught_last_trail:
