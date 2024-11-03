@@ -58,7 +58,7 @@ jobs:
         
     - name: Generate .rst files with sphinx-apidoc
       run: |
-        sphinx-apidoc -o docs/ bruhanimate/
+        sphinx-apidoc -o docs/source bruhanimate/
 
     - name: Generate Documentation
       run: |
