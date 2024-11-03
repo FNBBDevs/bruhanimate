@@ -30,7 +30,7 @@ def fireworks(screen: Screen):
 
     renderer.effect.set_firework_rate(firework_rate=0.1)
     renderer.effect.set_firework_color_enabled(True)
-    renderer.effect.set_firework_color_type("solid")
+    renderer.effect.set_firework_color_type("twotone")
     renderer.effect.set_firework_type("random")
     
     renderer.run()
