@@ -34,21 +34,21 @@ jobs:
         
         sphinx-quickstart -q -p "bruhanimate" -a "Ethan Christensen" -v 1.0 -r 1.0 -l en --ext-autodoc --ext-viewcode --makefile --batchfile --sep
         
-        echo "" > conf.py
-        echo "import os" >> conf.py
-        echo "import sys" >> conf.py
-        echo "sys.path.insert(0, os.path.abspath('../../'))" >> conf.py
-        echo "project = 'bruhanimate'" >> conf.py
-        echo "copyright = '2024, Ethan Christensen'" >> conf.py
-        echo "author = 'Ethan Christensen'" >> conf.py
-        echo "version = '1.0'" >> conf.py
-        echo "release = '1.0'" >> conf.py
-        echo "extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.napoleon']"
-        echo "templates_path = ['_templates']" >> conf.py
-        echo "exclude_patterns = ['demos/*']" >> conf.py
-        echo "language = 'en'" >> conf.py
-        echo "html_theme = 'sphinx_rtd_theme'" >> conf.py
-        echo "html_static_path = ['_static']" >> conf.py
+        echo "" > source/conf.py
+        echo "import os" >> source/conf.py
+        echo "import sys" >> source/conf.py
+        echo "sys.path.insert(0, os.path.abspath('../../'))" >> source/conf.py
+        echo "project = 'bruhanimate'" >> source/conf.py
+        echo "copyright = '2024, Ethan Christensen'" >> source/conf.py
+        echo "author = 'Ethan Christensen'" >> source/conf.py
+        echo "version = '1.0'" >> source/conf.py
+        echo "release = '1.0'" >> source/conf.py
+        echo "extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.napoleon']" >> source/conf.py
+        echo "templates_path = ['_templates']" >> source/conf.py
+        echo "exclude_patterns = ['demos/*']" >> source/conf.py
+        echo "language = 'en'" >> source/conf.py
+        echo "html_theme = 'sphinx_rtd_theme'" >> source/conf.py
+        echo "html_static_path = ['_static']" >> source/conf.py
         
         echo "bruhanimate documentation" > source/index.rst
         echo "Welcome to Your Project's documentation!" >> source/index.rst
