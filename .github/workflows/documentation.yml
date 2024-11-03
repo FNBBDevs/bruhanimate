@@ -39,6 +39,7 @@ jobs:
           echo "import sys" >> conf.py
           echo "sys.path.insert(0, os.path.abspath('..'))" >> conf.py
           echo "html_theme = 'sphinx_rtd_theme'" >> conf.py
+          echo "extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.napoleon']"
           
           if [ ! -f "index.rst" ]; then
             echo "bruhanimate documentation" > index.rst
@@ -55,6 +56,10 @@ jobs:
           fi
         fi
         
+    - name: Generate .rst files with sphinx-apidoc
+      run: |
+        sphinx-apidoc -o docs/ project-folder/
+
     - name: Generate Documentation
       run: |
         cd docs
