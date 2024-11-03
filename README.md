@@ -10,6 +10,8 @@
 <img src="https://i.ibb.co/pR49kL6/noises.gif" alt="noises" border="0">
 
 <img src="https://github.com/user-attachments/assets/22d61f3e-b3ca-406f-9e1c-2f539eea23c7" alt="noises" border="0">
+
+<img src="[https://github.com/user-attachments/assets/22d61f3e-b3ca-406f-9e1c-2f539eea23c7](https://github.com/user-attachments/assets/644afa91-ffb0-465e-815f-998a59759c3b)" alt="noises" border="0">
 </div>
 
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/termcolor.svg?logo=python&logoColor=FFE873)](https://pypi.org/project/bruhanimate/)
