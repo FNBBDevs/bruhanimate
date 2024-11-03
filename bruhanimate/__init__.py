@@ -26,6 +26,9 @@ from .bruheffect import (
     SnowEffect,
     TwinkleEffect,
     TWINKLE_SPEC,
+    FireworkEffect,
+    Firework,
+    Particle
 )
 
 
@@ -79,7 +82,7 @@ from .demos import (
 )
 
 
-__version__ = "0.2.74"
+__version__ = "0.2.78"
 __valid_demos__ = [
     "static_demo",
     "offset_demo",
@@ -129,6 +132,9 @@ if sys.platform == "win32":
         "RainEffect",
         "MatrixEffect",
         "ChatbotEffect",
+        "FireworkEffect",
+        "Firework",
+        "Particle",
         "StringStreamer",
         "GradientNoise",
         "Loading",
@@ -194,6 +200,9 @@ else:
         "RainEffect",
         "MatrixEffect",
         "ChatbotEffect",
+        "FireworkEffect",
+        "Firework",
+        "Particle",
         "StringStreamer",
         "GradientNoise",
         "Loading",
