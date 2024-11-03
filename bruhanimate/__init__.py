@@ -82,7 +82,7 @@ from .demos import (
 )
 
 
-__version__ = "0.2.77"
+__version__ = "0.2.78"
 __valid_demos__ = [
     "static_demo",
     "offset_demo",
@@ -200,6 +200,9 @@ else:
         "RainEffect",
         "MatrixEffect",
         "ChatbotEffect",
+        "FireworkEffect",
+        "Firework",
+        "Particle",
         "StringStreamer",
         "GradientNoise",
         "Loading",
