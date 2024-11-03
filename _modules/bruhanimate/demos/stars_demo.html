@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bruhanimate.bruheffect.base_effect &mdash; bruhanimate 1.0 documentation</title>
+  <title>bruhanimate.demos.stars_demo &mdash; bruhanimate 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
@@ -61,7 +61,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">bruhanimate.bruheffect.base_effect</li>
+      <li class="breadcrumb-item active">bruhanimate.demos.stars_demo</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -70,7 +70,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for bruhanimate.bruheffect.base_effect</h1><div class="highlight"><pre>
+  <h1>Source code for bruhanimate.demos.stars_demo</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Copyright 2023 Ethan Christensen</span>
 
@@ -87,30 +87,40 @@
 <span class="sd">limitations under the License.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">Screen</span>
+<span class="kn">from</span> <span class="nn">..bruhrenderer</span> <span class="kn">import</span> <span class="n">EffectRenderer</span>
 
 
-<div class="viewcode-block" id="BaseEffect">
-<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.BaseEffect">[docs]</a>
-<span class="k">class</span> <span class="nc">BaseEffect</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class for keeping track of an effect, and updataing it&#39;s buffer</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="stars">
+<a class="viewcode-back" href="../../../bruhanimate.demos.html#bruhanimate.demos.stars_demo.stars">[docs]</a>
+<span class="k">def</span> <span class="nf">stars</span><span class="p">(</span><span class="n">screen</span><span class="p">):</span>
+    <span class="n">renderer</span> <span class="o">=</span> <span class="n">EffectRenderer</span><span class="p">(</span>
+        <span class="n">screen</span><span class="o">=</span><span class="n">screen</span><span class="p">,</span>
+        <span class="n">frames</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
+        <span class="n">frame_time</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+        <span class="n">effect_type</span><span class="o">=</span><span class="s2">&quot;stars&quot;</span><span class="p">,</span>
+        <span class="n">background</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span>
+        <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">buffer</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">background</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">background_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">background</span><span class="p">)</span>
+    <span class="n">renderer</span><span class="o">.</span><span class="n">effect</span><span class="o">.</span><span class="n">update_color_type</span><span class="p">(</span><span class="s2">&quot;GREYSCALE&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BaseEffect.render_frame">
-<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.BaseEffect.render_frame">[docs]</a>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        To be defined by each effect</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
-</div>
+    <span class="n">renderer</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
 
+
+
+<div class="viewcode-block" id="run">
+<a class="viewcode-back" href="../../../bruhanimate.demos.html#bruhanimate.demos.stars_demo.run">[docs]</a>
+<span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="n">Screen</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">stars</span><span class="p">)</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">run</span><span class="p">()</span>
 </pre></div>
 
            </div>

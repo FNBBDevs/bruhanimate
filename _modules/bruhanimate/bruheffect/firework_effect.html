@@ -1,0 +1,1067 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bruhanimate.bruheffect.firework_effect &mdash; bruhanimate 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            bruhanimate
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">bruhanimate:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bruhanimate.bruhutil.html">bruhanimate.bruhutil package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bruhanimate.bruheffect.html">bruhanimate.bruheffect package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bruhanimate.bruhrenderer.html">bruhanimate.bruhrenderer package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">bruhanimate</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">bruhanimate.bruheffect.firework_effect</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bruhanimate.bruheffect.firework_effect</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Copyright 2023 Ethan Christensen</span>
+
+<span class="sd">Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="sd">you may not use this file except in compliance with the License.</span>
+<span class="sd">You may obtain a copy of the License at</span>
+
+<span class="sd">    http://www.apache.org/licenses/LICENSE-2.0</span>
+
+<span class="sd">Unless required by applicable law or agreed to in writing, software</span>
+<span class="sd">distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="sd">WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="sd">See the License for the specific language governing permissions and</span>
+<span class="sd">limitations under the License.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">bruhcolor</span> <span class="kn">import</span> <span class="n">bruhcolored</span> <span class="k">as</span> <span class="n">bc</span>
+<span class="kn">from</span> <span class="nn">.base_effect</span> <span class="kn">import</span> <span class="n">BaseEffect</span>
+<span class="kn">from</span> <span class="nn">..bruhutil.bruhffer</span> <span class="kn">import</span> <span class="n">Buffer</span>
+<span class="kn">from</span> <span class="nn">..bruhutil.bruhtypes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FireworkType</span><span class="p">,</span>
+    <span class="n">valid_firework_types</span><span class="p">,</span>
+    <span class="n">FireworkColorType</span><span class="p">,</span>
+    <span class="n">valid_firework_color_types</span><span class="p">,</span>
+    <span class="n">two_tone_colors</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="Particle">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Particle">[docs]</a>
+<span class="k">class</span> <span class="nc">Particle</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">life</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">=</span> <span class="n">dx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">life</span> <span class="o">=</span> <span class="n">life</span> <span class="k">if</span> <span class="n">life</span> <span class="k">else</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>  <span class="c1"># Random lifespan for particle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span> <span class="o">=</span> <span class="n">symbol</span>
+
+<div class="viewcode-block" id="Particle.update">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Particle.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Update position</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span>
+        <span class="c1"># Apply gravity to simulate a slight downward motion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">+=</span> <span class="mf">0.05</span>
+        <span class="c1"># Decrease life</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">life</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="c1"># Flicker effect</span>
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span> <span class="k">else</span> <span class="s2">&quot;.&quot;</span></div>
+
+
+<div class="viewcode-block" id="Particle.is_alive">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Particle.is_alive">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Particle is alive if it has life left and is within bounds</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">life</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+            <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Firework">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework">[docs]</a>
+<span class="k">class</span> <span class="nc">Firework</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">firework_type</span><span class="p">:</span> <span class="n">FireworkType</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">firework_color_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">color_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">allowed_firework_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">height</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peak</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exploded</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allowed_fire_work_types</span> <span class="o">=</span> <span class="n">allowed_firework_types</span> <span class="ow">or</span> <span class="n">valid_firework_types</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">firework_type</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">firework_type</span> <span class="o">!=</span> <span class="s2">&quot;random&quot;</span> <span class="ow">and</span> <span class="n">firework_type</span> <span class="ow">in</span> <span class="n">valid_firework_types</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allowed_fire_work_types</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_particles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caught_last_trail</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">firework_color_type</span> <span class="o">=</span> <span class="n">firework_color_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_colors</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color_enabled</span> <span class="o">=</span> <span class="n">color_enabled</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">trajectory_type</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;straight&#39;</span><span class="p">,</span> <span class="s1">&#39;arc&#39;</span><span class="p">,</span> <span class="s1">&#39;zigzag&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Angle for non-straight trajectories</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arc_direction</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c1"># Direction of arc curve</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zigzag_phase</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># For zigzag pattern</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zigzag_amplitude</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Width of zigzag</span>
+
+<div class="viewcode-block" id="Firework.update">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">exploded</span><span class="p">:</span>
+            <span class="c1"># Store previous position</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">previous_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">previous_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+            
+            <span class="c1"># Update position based on trajectory type</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory_type</span> <span class="o">==</span> <span class="s1">&#39;straight&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">move_straight</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory_type</span> <span class="o">==</span> <span class="s1">&#39;arc&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">move_arc</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># zigzag</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">move_zigzag</span><span class="p">()</span>
+            
+            <span class="c1"># Check if reached peak</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peak</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">exploded</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">create_particles</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Update particles</span>
+            <span class="k">for</span> <span class="n">particle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="p">:</span>
+                <span class="n">particle</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="c1"># Remove dead particles</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">clear_particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">particles</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()]</span></div>
+
+
+<div class="viewcode-block" id="Firework.move_straight">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.move_straight">[docs]</a>
+    <span class="k">def</span> <span class="nf">move_straight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Move upward with slight angle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">*</span> <span class="mf">0.5</span></div>
+
+
+<div class="viewcode-block" id="Firework.move_arc">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.move_arc">[docs]</a>
+    <span class="k">def</span> <span class="nf">move_arc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Create arcing trajectory</span>
+        <span class="n">progress</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">peak</span><span class="p">)</span>
+        <span class="n">arc_offset</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">progress</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arc_direction</span> <span class="o">*</span> <span class="n">arc_offset</span> <span class="o">*</span> <span class="mf">0.2</span></div>
+
+
+<div class="viewcode-block" id="Firework.move_zigzag">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.move_zigzag">[docs]</a>
+    <span class="k">def</span> <span class="nf">move_zigzag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Create zigzag pattern</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zigzag_phase</span> <span class="o">+=</span> <span class="mf">0.2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zigzag_phase</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">zigzag_amplitude</span></div>
+
+
+<div class="viewcode-block" id="Firework.create_particles">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.create_particles">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_particles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s1">&#39;circular&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">circular_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s1">&#39;ring&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ring_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s1">&#39;starburst&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">starburst_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s1">&#39;cone&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cone_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s1">&#39;spiral&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spiral_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s1">&#39;wave&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wave_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s1">&#39;burst&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">burst_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s1">&#39;cross&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cross_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;flower&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flower_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;doublering&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">double_ring_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;heart&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">heart_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;star&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">star_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;fireball&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireball_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;diamond&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">diamond_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;shockwave&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">burst_with_shockwave_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;snowflake&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">snowflake_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;cluster&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cluster_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;comet&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comet_tail_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;willow&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">willow_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;dna&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dna_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;infinity&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">infinity_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;galaxy&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">galaxy_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;phoenix&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">phoenix_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;fountain&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fountain_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;butterfly&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">butterfly_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;dragon&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dragon_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;tornado&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tornado_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;matrix&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matrix_explosion</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s2">&quot;portal&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">portal_explosion</span><span class="p">()</span></div>
+
+        
+<div class="viewcode-block" id="Firework.circular_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.circular_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">circular_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.ring_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.ring_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">ring_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">12</span><span class="p">):</span>  <span class="c1"># Ring pattern with evenly spaced particles</span>
+            <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.starburst_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.starburst_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">starburst_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">45</span>
+        <span class="p">):</span>  <span class="c1"># Starburst with particles in specific directions</span>
+            <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.cone_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.cone_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">cone_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+                <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">6</span>
+            <span class="p">)</span>  <span class="c1"># Narrow range for cone shape</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="o">-</span><span class="nb">abs</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span><span class="p">)</span>  <span class="c1"># Force particles upward</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.spiral_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.spiral_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">spiral_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mf">0.3</span>  <span class="c1"># Gradually increasing angle for spiral effect</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">i</span>  <span class="c1"># Particles spread out as the spiral grows</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.wave_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.wave_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">wave_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mf">0.2</span>  <span class="c1"># Slightly increase angle for wave effect</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span> <span class="o">*</span> <span class="mf">0.5</span>  <span class="c1"># Particles move slower upward</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.burst_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.burst_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">burst_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>  <span class="c1"># Random angles for burst</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+        <span class="c1"># Particles gradually fall downward after a burst</span>
+        <span class="k">for</span> <span class="n">particle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="p">:</span>
+            <span class="n">particle</span><span class="o">.</span><span class="n">dy</span> <span class="o">+=</span> <span class="mf">0.5</span>  <span class="c1"># Increase downward velocity</span></div>
+
+
+<div class="viewcode-block" id="Firework.cross_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.cross_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">cross_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">270</span><span class="p">]:</span>  <span class="c1"># Particles in cross directions</span>
+            <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.flower_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.flower_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">flower_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">30</span><span class="p">):</span>
+            <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+            <span class="c1"># Add smaller &quot;petal&quot; particles around each main particle</span>
+            <span class="k">for</span> <span class="n">petal_angle</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]:</span>
+                <span class="n">dx_petal</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span> <span class="o">+</span> <span class="n">petal_angle</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">speed</span> <span class="o">*</span> <span class="mf">0.7</span><span class="p">)</span>
+                <span class="n">dy_petal</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span> <span class="o">+</span> <span class="n">petal_angle</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">speed</span> <span class="o">*</span> <span class="mf">0.7</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx_petal</span><span class="p">,</span> <span class="n">dy_petal</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+    
+<div class="viewcode-block" id="Firework.double_ring_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.double_ring_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">double_ring_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">radius_multiplier</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">]:</span>  <span class="c1"># Two rings at slightly different radii</span>
+            <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">15</span><span class="p">):</span>
+                <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+                <span class="n">speed</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">radius_multiplier</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.heart_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.heart_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">heart_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>  <span class="c1"># Parametric heart shape</span>
+            <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">**</span> <span class="mi">3</span> <span class="o">*</span> <span class="mf">0.1</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mi">13</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">-</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rad</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">rad</span><span class="p">)</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">rad</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.05</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+    
+<div class="viewcode-block" id="Firework.star_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.star_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">star_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>  <span class="c1"># 5-point star</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">5</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.5</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.5</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+            <span class="c1"># Add particles in opposite direction for a sharper effect</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">dx</span><span class="p">,</span> <span class="o">-</span><span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+    
+<div class="viewcode-block" id="Firework.fireball_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.fireball_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">fireball_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>  <span class="c1"># Dense number of particles</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+    
+<div class="viewcode-block" id="Firework.diamond_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.diamond_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">diamond_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span> <span class="mi">225</span><span class="p">,</span> <span class="mi">315</span><span class="p">]:</span>  <span class="c1"># Four main directions for diamond points</span>
+            <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.5</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.5</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+            <span class="c1"># Add smaller particles near each main point for a thicker diamond shape</span>
+            <span class="k">for</span> <span class="n">offset</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]:</span>
+                <span class="n">dx_offset</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span> <span class="o">+</span> <span class="n">offset</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.2</span>
+                <span class="n">dy_offset</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span> <span class="o">+</span> <span class="n">offset</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.2</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx_offset</span><span class="p">,</span> <span class="n">dy_offset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.burst_with_shockwave_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.burst_with_shockwave_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">burst_with_shockwave_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Main burst particles</span>
+        <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span>
+            <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+        
+        <span class="c1"># Shockwave particles in a ring around the burst</span>
+        <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+            <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.5</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.5</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">dy</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">life</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>  <span class="c1"># Short lifespan for shockwave</span></div>
+
+
+<div class="viewcode-block" id="Firework.snowflake_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.snowflake_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">snowflake_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">60</span><span class="p">):</span>  <span class="c1"># Six main directions</span>
+            <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+            
+            <span class="c1"># Small branches off each main point for the snowflake effect</span>
+            <span class="k">for</span> <span class="n">branch_angle</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">]:</span>  <span class="c1"># Offset angles for branches</span>
+                <span class="n">rad_branch</span> <span class="o">=</span> <span class="n">rad</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">branch_angle</span><span class="p">)</span>
+                <span class="n">dx_branch</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad_branch</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">speed</span> <span class="o">*</span> <span class="mf">0.6</span><span class="p">)</span>
+                <span class="n">dy_branch</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad_branch</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">speed</span> <span class="o">*</span> <span class="mf">0.6</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx_branch</span><span class="p">,</span> <span class="n">dy_branch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+    
+<div class="viewcode-block" id="Firework.cluster_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.cluster_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">cluster_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">30</span><span class="p">):</span>
+            <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="mf">1.2</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">main_particle</span> <span class="o">=</span> <span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">main_particle</span><span class="p">)</span>
+            
+            <span class="c1"># Surround each main particle with smaller &quot;cluster&quot; particles</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+                <span class="n">offset_dx</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+                <span class="n">offset_dy</span> <span class="o">=</span> <span class="n">dy</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">offset_dx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">offset_dy</span><span class="p">,</span> <span class="n">offset_dx</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">offset_dy</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+    
+<div class="viewcode-block" id="Firework.comet_tail_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.comet_tail_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">comet_tail_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Main comet direction</span>
+        <span class="n">comet_angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">45</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span> <span class="mi">225</span><span class="p">,</span> <span class="mi">315</span><span class="p">])</span>  <span class="c1"># Random diagonal angle for comet</span>
+        <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">comet_angle</span><span class="p">)</span>
+        <span class="n">speed</span> <span class="o">=</span> <span class="mf">1.5</span>
+        <span class="n">main_dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+        <span class="n">main_dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>  <span class="c1"># Comet particles along the main direction</span>
+            <span class="n">trail_dx</span> <span class="o">=</span> <span class="n">main_dx</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">i</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="n">trail_dy</span> <span class="o">=</span> <span class="n">main_dy</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">i</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">trail_dx</span><span class="p">,</span> <span class="n">trail_dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+        
+        <span class="c1"># Small trailing particles</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>  
+            <span class="n">trail_dx</span> <span class="o">=</span> <span class="n">main_dx</span> <span class="o">*</span> <span class="mf">0.3</span>
+            <span class="n">trail_dy</span> <span class="o">=</span> <span class="n">main_dy</span> <span class="o">*</span> <span class="mf">0.3</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">trail_dx</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">trail_dy</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="n">trail_dx</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">trail_dy</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.willow_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.willow_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">willow_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">num_arms</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># Number of branches in the willow effect</span>
+        <span class="n">angle_offset</span> <span class="o">=</span> <span class="mi">70</span>  <span class="c1"># Constrain angle range to mostly horizontal</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_arms</span><span class="p">):</span>
+            <span class="c1"># Each arm has an angle mostly to the sides (slightly up or down)</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="n">angle_offset</span><span class="p">,</span> <span class="n">angle_offset</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">num_arms</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">180</span> <span class="o">-</span> <span class="n">angle_offset</span><span class="p">,</span> <span class="mi">180</span> <span class="o">+</span> <span class="n">angle_offset</span><span class="p">)</span>
+            <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="n">initial_speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            
+            <span class="c1"># Calculate initial movement in a mostly horizontal direction</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">initial_speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="n">initial_speed</span> <span class="o">*</span> <span class="mf">0.3</span>  <span class="c1"># Smaller upward component for the drooping effect</span>
+            
+            <span class="c1"># Main particle at the start of each &quot;arm&quot;</span>
+            <span class="n">main_particle</span> <span class="o">=</span> <span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">life</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">main_particle</span><span class="p">)</span>
+            
+            <span class="c1"># Trailing particles along each arm, curving downwards like branches</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
+                <span class="c1"># Reduce horizontal speed gradually, add downward pull for the arc</span>
+                <span class="n">arc_dx</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">j</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># Slightly reduce horizontal speed over time</span>
+                <span class="n">arc_dy</span> <span class="o">=</span> <span class="n">dy</span> <span class="o">+</span> <span class="n">j</span> <span class="o">*</span> <span class="mf">0.1</span>        <span class="c1"># Increase downward speed to mimic gravity</span>
+                <span class="n">trail_particle</span> <span class="o">=</span> <span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">arc_dx</span><span class="p">,</span> <span class="n">arc_dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">life</span><span class="o">=</span><span class="mi">25</span> <span class="o">-</span> <span class="n">j</span> <span class="o">*</span> <span class="mi">8</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trail_particle</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Firework.dna_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.dna_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">dna_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a double helix pattern resembling DNA structure&quot;&quot;&quot;</span>
+        <span class="n">num_points</span> <span class="o">=</span> <span class="mi">30</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">vertical_stretch</span> <span class="o">=</span> <span class="mf">0.5</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_points</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">num_points</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>  <span class="c1"># Two complete rotations</span>
+            
+            <span class="c1"># First strand</span>
+            <span class="n">dx1</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">radius</span>
+            <span class="n">dy1</span> <span class="o">=</span> <span class="o">-</span><span class="n">vertical_stretch</span> <span class="o">*</span> <span class="n">t</span>  <span class="c1"># Negative for upward movement</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx1</span><span class="p">,</span> <span class="n">dy1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+            
+            <span class="c1"># Second strand (offset by pi)</span>
+            <span class="n">dx2</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">radius</span>
+            <span class="n">dy2</span> <span class="o">=</span> <span class="o">-</span><span class="n">vertical_stretch</span> <span class="o">*</span> <span class="n">t</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx2</span><span class="p">,</span> <span class="n">dy2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+            
+            <span class="c1"># &quot;Bridges&quot; between strands (occasional connectors)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dx_bridge</span> <span class="o">=</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">+</span> <span class="n">dx2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+                <span class="n">dy_bridge</span> <span class="o">=</span> <span class="n">dy1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx_bridge</span><span class="p">,</span> <span class="n">dy_bridge</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.infinity_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.infinity_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">infinity_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an infinity symbol (∞) pattern&quot;&quot;&quot;</span>
+        <span class="n">num_points</span> <span class="o">=</span> <span class="mi">40</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="mf">1.2</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_points</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">num_points</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+            
+            <span class="c1"># Parametric equations for infinity symbol</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">size</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">size</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.galaxy_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.galaxy_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">galaxy_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a spiral galaxy pattern with arms and central bulge&quot;&quot;&quot;</span>
+        <span class="c1"># Central bulge</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;·&quot;</span><span class="p">))</span>
+        
+        <span class="c1"># Spiral arms</span>
+        <span class="n">arms</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">for</span> <span class="n">arm</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">arms</span><span class="p">):</span>
+            <span class="n">start_angle</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">arm</span><span class="p">)</span> <span class="o">/</span> <span class="n">arms</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+                <span class="n">radius</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.05</span><span class="p">)</span>
+                <span class="n">angle</span> <span class="o">=</span> <span class="n">start_angle</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.3</span><span class="p">)</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">radius</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">radius</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.phoenix_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.phoenix_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">phoenix_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a rising phoenix pattern with wings and tail&quot;&quot;&quot;</span>
+        <span class="c1"># Central rising column</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># Upward movement</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+        
+        <span class="c1"># Wings</span>
+        <span class="n">wing_span</span> <span class="o">=</span> <span class="mi">15</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">wing_span</span><span class="p">):</span>
+            <span class="c1"># Left wing</span>
+            <span class="n">angle_left</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">150</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">4</span><span class="p">))</span>  <span class="c1"># Sweep from 150° to 90°</span>
+            <span class="n">dx_left</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle_left</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="n">dy_left</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle_left</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx_left</span><span class="p">,</span> <span class="n">dy_left</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+            
+            <span class="c1"># Right wing</span>
+            <span class="n">angle_right</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">30</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">4</span><span class="p">))</span>  <span class="c1"># Sweep from 30° to 90°</span>
+            <span class="n">dx_right</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle_right</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="n">dy_right</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle_right</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx_right</span><span class="p">,</span> <span class="n">dy_right</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+        
+        <span class="c1"># Tail feathers</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">270</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;~&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.fountain_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.fountain_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">fountain_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an upward-shooting fountain pattern with cascading particles&quot;&quot;&quot;</span>
+        <span class="n">num_streams</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="n">particles_per_stream</span> <span class="o">=</span> <span class="mi">8</span>
+        
+        <span class="k">for</span> <span class="n">stream</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_streams</span><span class="p">):</span>
+            <span class="n">base_angle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">90</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>  <span class="c1"># Mostly upward</span>
+            <span class="n">base_speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">particles_per_stream</span><span class="p">):</span>
+                <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">base_angle</span><span class="p">)</span>
+                <span class="n">speed</span> <span class="o">=</span> <span class="n">base_speed</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># Particles get slower toward end of stream</span>
+                
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+                
+                <span class="c1"># Add some slight random variation to each particle</span>
+                <span class="n">dx</span> <span class="o">+=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+                <span class="n">dy</span> <span class="o">+=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+                
+                <span class="n">particle</span> <span class="o">=</span> <span class="n">Particle</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+                    <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;:&quot;</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">particles_per_stream</span> <span class="o">//</span> <span class="mi">2</span> <span class="k">else</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+                    <span class="n">life</span><span class="o">=</span><span class="mi">20</span> <span class="o">-</span> <span class="n">i</span>  <span class="c1"># Particles at end of stream die sooner</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">particle</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Firework.butterfly_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.butterfly_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">butterfly_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a butterfly pattern with wings that flutter&quot;&quot;&quot;</span>
+        <span class="c1"># Wing shape parameters</span>
+        <span class="n">wing_points</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="n">flutter_speed</span> <span class="o">=</span> <span class="mf">0.2</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">wing_points</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">wing_points</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+            
+            <span class="c1"># Parametric equations for wing shape (modified heart curve)</span>
+            <span class="n">base_dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">t</span><span class="p">))</span>
+            <span class="n">base_dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">t</span><span class="p">))</span>
+            
+            <span class="c1"># Create left and right wings with flutter effect</span>
+            <span class="k">for</span> <span class="n">side</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>  <span class="c1"># Left and right wings</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">base_dx</span> <span class="o">*</span> <span class="n">side</span> <span class="o">*</span> <span class="mf">0.3</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">base_dy</span> <span class="o">*</span> <span class="mf">0.3</span>
+                
+                <span class="c1"># Add flutter movement</span>
+                <span class="n">dx</span> <span class="o">+=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">flutter_speed</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span>
+                
+                <span class="n">particle</span> <span class="o">=</span> <span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> 
+                                <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;·&quot;</span> <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span>
+                                <span class="n">life</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">particle</span><span class="p">)</span>
+            
+            <span class="c1"># Add body particles</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="o">*</span><span class="mf">0.1</span><span class="p">,</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;█&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.dragon_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.dragon_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">dragon_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a dragon shape with body, wings, and fire breath&quot;&quot;&quot;</span>
+        <span class="c1"># Body</span>
+        <span class="n">body_length</span> <span class="o">=</span> <span class="mi">15</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">body_length</span><span class="p">):</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>  <span class="c1"># Slight wiggle</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.3</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.05</span><span class="p">)</span>  <span class="c1"># Curves upward</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> 
+                                        <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;▲&quot;</span><span class="p">,</span> <span class="n">life</span><span class="o">=</span><span class="mi">20</span><span class="p">))</span>
+        
+        <span class="c1"># Wings</span>
+        <span class="n">wing_span</span> <span class="o">=</span> <span class="mi">12</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">wing_span</span><span class="p">):</span>
+            <span class="c1"># Left and right wings</span>
+            <span class="k">for</span> <span class="n">side</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+                <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">45</span> <span class="o">*</span> <span class="n">side</span><span class="p">)</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.15</span><span class="p">)</span> <span class="o">*</span> <span class="n">side</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+                                            <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">life</span><span class="o">=</span><span class="mi">15</span><span class="p">))</span>
+        
+        <span class="c1"># Fire breath</span>
+        <span class="n">breath_particles</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">breath_particles</span><span class="p">):</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">speed</span>  <span class="c1"># Upward fire breath</span>
+            <span class="n">symbol</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;●&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+                                        <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span> <span class="n">life</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.tornado_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.tornado_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">tornado_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a spinning tornado effect that grows wider at the top&quot;&quot;&quot;</span>
+        <span class="n">height_layers</span> <span class="o">=</span> <span class="mi">15</span>
+        <span class="n">base_radius</span> <span class="o">=</span> <span class="mf">0.2</span>
+        
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">height_layers</span><span class="p">):</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="n">base_radius</span> <span class="o">+</span> <span class="p">(</span><span class="n">layer</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># Gets wider as it goes up</span>
+            <span class="n">particles_in_layer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="n">layer</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">)</span>  <span class="c1"># More particles in higher layers</span>
+            
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">particles_in_layer</span><span class="p">):</span>
+                <span class="n">angle</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="n">particles_in_layer</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+                <span class="c1"># Add spin effect</span>
+                <span class="n">angle</span> <span class="o">+=</span> <span class="n">layer</span> <span class="o">*</span> <span class="mf">0.5</span>
+                
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">radius</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">layer</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># Upward movement, slowing at top</span>
+                
+                <span class="c1"># Vary the symbols based on position</span>
+                <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;●&quot;</span> <span class="k">if</span> <span class="n">layer</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="p">(</span><span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="n">layer</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="k">else</span> <span class="s2">&quot;·&quot;</span><span class="p">)</span>
+                
+                <span class="n">particle</span> <span class="o">=</span> <span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+                                <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span> <span class="n">life</span><span class="o">=</span><span class="mi">20</span><span class="o">-</span><span class="n">layer</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">particle</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Firework.matrix_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.matrix_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">matrix_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a Matrix-style digital rain effect&quot;&quot;&quot;</span>
+        <span class="n">num_streams</span> <span class="o">=</span> <span class="mi">15</span>
+        <span class="n">chars_per_stream</span> <span class="o">=</span> <span class="mi">8</span>
+        
+        <span class="k">for</span> <span class="n">stream</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_streams</span><span class="p">):</span>
+            <span class="c1"># Calculate stream position</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+            <span class="n">base_dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">distance</span>
+            <span class="n">base_dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">distance</span>
+            
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chars_per_stream</span><span class="p">):</span>
+                <span class="c1"># Delay each character in stream</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">base_dx</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">base_dy</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.15</span><span class="p">)</span>
+                
+                <span class="c1"># Use Matrix-like symbols</span>
+                <span class="n">symbol</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;█&#39;</span><span class="p">,</span> <span class="s1">&#39;▀&#39;</span><span class="p">,</span> <span class="s1">&#39;▄&#39;</span><span class="p">,</span> <span class="s1">&#39;■&#39;</span><span class="p">,</span> <span class="s1">&#39;░&#39;</span><span class="p">,</span> <span class="s1">&#39;▒&#39;</span><span class="p">,</span> <span class="s1">&#39;▓&#39;</span><span class="p">])</span>
+                
+                <span class="c1"># Particles later in stream die sooner</span>
+                <span class="n">life</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">-</span> <span class="n">i</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+                                            <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span> <span class="n">life</span><span class="o">=</span><span class="n">life</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.portal_explosion">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.portal_explosion">[docs]</a>
+    <span class="k">def</span> <span class="nf">portal_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates two connected portals with particles flowing between them&quot;&quot;&quot;</span>
+        <span class="c1"># Portal parameters</span>
+        <span class="n">portal_radius</span> <span class="o">=</span> <span class="mf">1.2</span>
+        <span class="n">num_particles</span> <span class="o">=</span> <span class="mi">50</span>
+        
+        <span class="c1"># Create two portal rings</span>
+        <span class="k">for</span> <span class="n">portal</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">angle_offset</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">portal</span>  <span class="c1"># Second portal on opposite side</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="mf">2.0</span>  <span class="c1"># Distance between portals</span>
+            
+            <span class="c1"># Portal position</span>
+            <span class="n">portal_x</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle_offset</span><span class="p">)</span> <span class="o">*</span> <span class="n">distance</span>
+            <span class="n">portal_y</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle_offset</span><span class="p">)</span> <span class="o">*</span> <span class="n">distance</span>
+            
+            <span class="c1"># Create portal ring</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">):</span>
+                <span class="n">angle</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="mi">12</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">portal_x</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">portal_radius</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">portal_y</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">portal_radius</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="o">*</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">dy</span><span class="o">*</span><span class="mf">0.2</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+                                            <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;O&quot;</span><span class="p">,</span> <span class="n">life</span><span class="o">=</span><span class="mi">25</span><span class="p">))</span>
+        
+        <span class="c1"># Particles flowing between portals</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_particles</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Position along path</span>
+            
+            <span class="c1"># Curved path between portals</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">portal_radius</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">portal_radius</span>
+            
+            <span class="c1"># Add some randomness to path</span>
+            <span class="n">dx</span> <span class="o">+=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+            <span class="n">dy</span> <span class="o">+=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+            
+            <span class="n">symbol</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;·&quot;</span><span class="p">,</span> <span class="s2">&quot;•&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Particle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="o">*</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">dy</span><span class="o">*</span><span class="mf">0.3</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+                                        <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span> <span class="n">life</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Firework.is_active">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.is_active">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Firework is active if it has not exploded or if particles are still alive</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">exploded</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="Firework.get_colors">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.get_colors">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">firework_color_type</span> <span class="o">==</span> <span class="s2">&quot;solid&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">firework_color_type</span> <span class="o">==</span> <span class="s2">&quot;twotone&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">two_tone_colors</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">firework_color_type</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+                <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+                <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+                <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+                <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+                <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">firework_color_type</span> <span class="o">==</span> <span class="s2">&quot;rainbow&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="mi">196</span><span class="p">,</span> <span class="mi">208</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">92</span>
+            <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Firework.render">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.render">[docs]</a>
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">):</span>
+        <span class="c1"># Draw firework trail or particles in the buffer</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">exploded</span><span class="p">:</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">:</span>
+                <span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">val</span><span class="o">=</span><span class="s2">&quot;|&quot;</span><span class="p">)</span>
+                <span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">previous_x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">previous_y</span><span class="p">),</span> <span class="n">val</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">previous_x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">previous_y</span><span class="p">),</span> <span class="n">val</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">caught_last_trail</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caught_last_trail</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">previous_x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">previous_y</span><span class="p">),</span> <span class="n">val</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">particle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="p">:</span>
+                <span class="n">px</span><span class="p">,</span> <span class="n">py</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">px</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">py</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_enabled</span><span class="p">:</span>
+                        <span class="n">color</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">)</span>
+                        <span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="n">px</span><span class="p">,</span> <span class="n">py</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">bc</span><span class="p">(</span><span class="n">particle</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span><span class="o">.</span><span class="n">colored</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="n">px</span><span class="p">,</span> <span class="n">py</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">particle</span><span class="o">.</span><span class="n">symbol</span><span class="p">)</span>
+                    <span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="o">.</span><span class="n">previous_x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="o">.</span><span class="n">previous_y</span><span class="p">),</span> <span class="n">val</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">particle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clear_particles</span><span class="p">:</span>
+                <span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="o">.</span><span class="n">previous_x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="o">.</span><span class="n">previous_y</span><span class="p">),</span> <span class="n">val</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FireworkEffect">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.FireworkEffect">[docs]</a>
+<span class="k">class</span> <span class="nc">FireworkEffect</span><span class="p">(</span><span class="n">BaseEffect</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for generating fireworks</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FireworkEffect</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">firework_type</span><span class="p">:</span> <span class="n">FireworkType</span> <span class="o">=</span> <span class="s2">&quot;circular&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">firework_color_type</span><span class="p">:</span> <span class="n">FireworkColorType</span> <span class="o">=</span> <span class="s2">&quot;solid&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireworks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Firework</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">firework_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allowed_firework_types</span> <span class="o">=</span> <span class="n">valid_firework_types</span>
+
+<div class="viewcode-block" id="FireworkEffect.set_firework_type">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.FireworkEffect.set_firework_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_firework_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">firework_type</span><span class="p">:</span> <span class="n">FireworkType</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to set the firework type of the effect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">firework_type</span> <span class="ow">in</span> <span class="n">valid_firework_types</span> <span class="ow">or</span> <span class="n">firework_type</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">firework_type</span> <span class="o">=</span> <span class="n">firework_type</span></div>
+
+
+<div class="viewcode-block" id="FireworkEffect.set_firework_color_enabled">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.FireworkEffect.set_firework_color_enabled">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_firework_color_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_enabled</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to set whether or not fireworks should have color</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color_enabled</span> <span class="o">=</span> <span class="n">color_enabled</span></div>
+
+
+<div class="viewcode-block" id="FireworkEffect.set_firework_color_type">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.FireworkEffect.set_firework_color_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_firework_color_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">firework_color_type</span><span class="p">:</span> <span class="n">FireworkColorType</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to set the firework color type of the effect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">firework_color_type</span> <span class="ow">in</span> <span class="n">valid_firework_color_types</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">firework_color_type</span> <span class="o">=</span> <span class="n">firework_color_type</span></div>
+
+
+<div class="viewcode-block" id="FireworkEffect.set_firework_rate">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.FireworkEffect.set_firework_rate">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_firework_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">firework_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to set the rate at which fireworks should be launched</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">firework_rate</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">firework_rate</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">firework_rate</span> <span class="o">=</span> <span class="n">firework_rate</span></div>
+
+
+<div class="viewcode-block" id="FireworkEffect.set_allowed_firework_types">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.FireworkEffect.set_allowed_firework_types">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_allowed_firework_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allowed_firework_types</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to set the chosen firework types of the effect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">allowed_firework_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">ft</span> <span class="k">for</span> <span class="n">ft</span> <span class="ow">in</span> <span class="n">allowed_firework_types</span> <span class="k">if</span> <span class="n">ft</span> <span class="ow">in</span> <span class="n">valid_firework_types</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">allowed_firework_types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">allowed_firework_types</span> <span class="o">=</span> <span class="n">allowed_firework_types</span></div>
+
+
+<div class="viewcode-block" id="FireworkEffect.render_frame">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.FireworkEffect.render_frame">[docs]</a>
+    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Renders the background to the screen</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">firework_rate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireworks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Firework</span><span class="p">(</span>
+                    <span class="n">firework_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">firework_type</span><span class="p">,</span>
+                    <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">(),</span>
+                    <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span>
+                    <span class="n">firework_color_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">firework_color_type</span><span class="p">,</span>
+                    <span class="n">color_enabled</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">color_enabled</span><span class="p">,</span>
+                    <span class="n">allowed_firework_types</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">allowed_firework_types</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">firework</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fireworks</span><span class="p">:</span>
+            <span class="n">firework</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="n">firework</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireworks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">firework</span> <span class="k">for</span> <span class="n">firework</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fireworks</span> <span class="k">if</span> <span class="n">firework</span><span class="o">.</span><span class="n">is_active</span><span class="p">()</span>
+        <span class="p">]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ethan Christensen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bruhanimate.bruhutil.bruhimage &mdash; bruhanimate 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            bruhanimate
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">bruhanimate:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bruhanimate.bruhutil.html">bruhanimate.bruhutil package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bruhanimate.bruheffect.html">bruhanimate.bruheffect package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bruhanimate.bruhrenderer.html">bruhanimate.bruhrenderer package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">bruhanimate</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">bruhanimate.bruhutil.bruhimage</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bruhanimate.bruhutil.bruhimage</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Copyright 2023 Ethan Christensen</span>
+
+<span class="sd">Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="sd">you may not use this file except in compliance with the License.</span>
+<span class="sd">You may obtain a copy of the License at</span>
+
+<span class="sd">    http://www.apache.org/licenses/LICENSE-2.0</span>
+
+<span class="sd">Unless required by applicable law or agreed to in writing, software</span>
+<span class="sd">distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="sd">WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="sd">See the License for the specific language governing permissions and</span>
+<span class="sd">limitations under the License.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pyfiglet</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">.bruhtypes</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">Font</span>
+<span class="kn">from</span> <span class="nn">.bruherrors</span> <span class="kn">import</span> <span class="n">InvalidImageError</span>
+
+
+<span class="n">bruh</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH         _             _           oading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH       /\ \          / /\          oading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH      /  \ \        / /  \         oading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH     / /\ \ \      / / /\ \        oading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH     \/_/\ \ \    / / /\ \ \       oading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH         / / /   /_/ /  \ \ \      oading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH        / / /    \ \ \   \ \ \     oading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH       / / /  _   \ \ \   \ \ \    oading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH      / / /_/\_\ _ \ \ \___\ \ \   oading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH     / /_____/ //\_</span><span class="se">\\</span><span class="s2"> \/____\ \ \  oading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH     \________/ \/_/ \_________\/  oading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH                                   oading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;loading BRUH SHELL 2.0 loading BRUH SHELL 2.0 loading BRUH &quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">bruh_empty</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">r</span><span class="s2">&quot;    _             _          &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;  /\ \          / /\         &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot; /  \ \        / /  \        &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;/ /\ \ \      / / /\ \       &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;\/_/\ \ \    / / /\ \ \      &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;    / / /   /_/ /  \ \ \     &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;   / / /    \ \ \   \ \ \    &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;  / / /  _   \ \ \   \ \ \   &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot; / / /_/\_\ _ \ \ \___\ \ \  &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;/ /_____/ //\_</span><span class="se">\\</span><span class="s2"> \/____\ \ \ &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;\________/ \/_/ \_________\/ &quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">bruh_computer</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">f</span><span class="s2">&quot;                       .,,uod8B8bou,,.                             &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;              ..,uod8BBBBBBBBBBBBBBBBRPFT?l!i:.                    &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         ,=m8BBBBBBBBBBBBBBBRPFT?!||||||||||||||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s1">&#39;         !...:!TVBBBRPFT||||||||||!!^^&quot;&quot;</span><span class="se">\&#39;</span><span class="s1">    |||                   &#39;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s1">&#39;         !.......:!?|||||!!^^&quot;&quot;</span><span class="se">\&#39;</span><span class="s1">             |||                   &#39;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         !.........|||   ___ ___ _   _ _  _  |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         !.........|||  | _ ) _ \ | | | || | |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         !.........|||  | _ \   / |_| | __ | |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         !.........|||  |___/_|_</span><span class="se">\\</span><span class="s2">\___/|_||_| |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         !.........|||   ---   --            |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         !.........|||  |_  ) /  \           |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         `.........|||   / / | () |        , |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;          .;.......|||  /___(_)__/     _.-!!||||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;   .,uodWBBBBb.....|||        _.-!!|||||||||!:&#39;                    &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;!YBBBBBBBBBBBBBBb..!|||:..-!!|||||||!iof68BBBBBb....               &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;!..YBBBBBBBBBBBBBBb!!||||||||!iof68BBBBBBRPFT?!::   `.             &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;!....YBBBBBBBBBBBBBBbaaitf68BBBBBBRPFT?!:::::::::     `.           &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s1">&#39;!......YBBBBBBBBBBBBBBBBBBBRPFT?!::::::;:!^&quot;`;:::       `.         &#39;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;!........YBBBBBBBBBBRPFT?!::::::::::^&#39;&#39;...::::::;         iBBbo.   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;`..........YBRPFT?!::::::::::::::::::::::::;iof68bo.      WBBBBbo. &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;  `..........:::::::::::::::::::::::;iof688888888888b.     `YBBBP^&#39;&quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;    `........::::::::::::::::;iof688888888888888888888b.     `     &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;      `......:::::::::;iof688888888888888888888888888888b.         &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;        `....:::;iof688888888888888888888888888888888899fT!        &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;          `..::!8888888888888888888888888888888899fT|!^</span><span class="se">\&quot;</span><span class="s2">&#39;          &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;            `&#39; !!988888888888888888888888899fT|!^</span><span class="se">\&quot;</span><span class="s2">&#39;                &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;                `!!8888888888888888899fT|!^</span><span class="se">\&quot;</span><span class="s2">&#39;                      &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;                  `!988888888899fT|!^</span><span class="se">\&quot;</span><span class="s2">&#39;                            &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;                    `!9899fT|!^</span><span class="se">\&quot;</span><span class="s2">&#39;                                  &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;                      `!^</span><span class="se">\&quot;</span><span class="s2">&#39;                                        &quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">computer</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">f</span><span class="s2">&quot;                       .,,uod8B8bou,,.                             &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;              ..,uod8BBBBBBBBBBBBBBBBRPFT?l!i:.                    &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         ,=m8BBBBBBBBBBBBBBBRPFT?!||||||||||||||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s1">&#39;         !...:!TVBBBRPFT||||||||||!!^^&quot;&quot;</span><span class="se">\&#39;</span><span class="s1">    |||                   &#39;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s1">&#39;         !.......:!?|||||!!^^&quot;&quot;</span><span class="se">\&#39;</span><span class="s1">             |||                   &#39;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         !.........|||                       |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         !.........|||                       |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         !.........|||                       |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         !.........|||                        |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         !.........|||                       |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         !.........|||                       |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;         `.........|||                     , |||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;          .;.......|||                 _.-!!||||                   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;   .,uodWBBBBb.....|||        _.-!!|||||||||!:&#39;                    &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;!YBBBBBBBBBBBBBBb..!|||:..-!!|||||||!iof68BBBBBb....               &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;!..YBBBBBBBBBBBBBBb!!||||||||!iof68BBBBBBRPFT?!::   `.             &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;!....YBBBBBBBBBBBBBBbaaitf68BBBBBBRPFT?!:::::::::     `.           &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s1">&#39;!......YBBBBBBBBBBBBBBBBBBBRPFT?!::::::;:!^&quot;`;:::       `.         &#39;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;!........YBBBBBBBBBBRPFT?!::::::::::^&#39;&#39;...::::::;         iBBbo.   &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;`..........YBRPFT?!::::::::::::::::::::::::;iof68bo.      WBBBBbo. &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;  `..........:::::::::::::::::::::::;iof688888888888b.     `YBBBP^&#39;&quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;    `........::::::::::::::::;iof688888888888888888888b.     `     &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;      `......:::::::::;iof688888888888888888888888888888b.         &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;        `....:::;iof688888888888888888888888888888888899fT!        &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;          `..::!8888888888888888888888888888888899fT|!^</span><span class="se">\&quot;</span><span class="s2">&#39;          &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;            `&#39; !!988888888888888888888888899fT|!^</span><span class="se">\&quot;</span><span class="s2">&#39;                &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;                `!!8888888888888888899fT|!^</span><span class="se">\&quot;</span><span class="s2">&#39;                      &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;                  `!988888888899fT|!^</span><span class="se">\&quot;</span><span class="s2">&#39;                            &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;                    `!9899fT|!^</span><span class="se">\&quot;</span><span class="s2">&#39;                                  &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;                      `!^</span><span class="se">\&quot;</span><span class="s2">&#39;                                        &quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">hey</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">f</span><span class="s2">&quot;    __  __          &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;   / / / /__  __  __&quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;  / /_/ / _ \/ / / /&quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot; / __  /  __/ /_/ / &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;/_/ /_/\___/\__, /  &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;           /____/   &quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">twopoint</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">r</span><span class="s2">&quot;                                                                               &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;   ____________ _   _ _   _  _____ _   _  _____ _      _       _____  _____    &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;   | ___ \ ___ \ | | | | | |/  ___| | | ||  ___| |    | |     / __  \|  _  |   &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;   | |_/ / |_/ / | | | |_| |\ `--.| |_| || |__ | |    | |     `&#39; / /&#39;| |/&#39; |   &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;   | ___ \    /| | | |  _  | `--. \  _  ||  __|| |    | |       / /  |  /| |   &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;   | |_/ / |\ \| |_| | | | |/\__/ / | | || |___| |____| |____ ./ /___\ |_/ /   &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;   \____/\_| \_|\___/\_| |_/\____/\_| |_/\____/\_____/\_____/ \_____(_)___/    &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;                                                                               &quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">christmas</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">r</span><span class="s2">&quot;                &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;      _\/_      &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;       /\       &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;       /\       &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;      /  \      &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;      /~~\ o    &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;     / o  \     &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;    /~~*~~~\    &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;  o /    o \    &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;   /~~~~~~~~\~` &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;  /__*_______\  &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;       ||       &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;     \====/     &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;      \__/      &quot;</span><span class="p">,</span>
+    <span class="sa">r</span><span class="s2">&quot;                &quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">image_mappings</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;bruh&quot;</span><span class="p">:</span> <span class="n">bruh</span><span class="p">,</span>
+    <span class="s2">&quot;bruh_empty&quot;</span><span class="p">:</span> <span class="n">bruh_empty</span><span class="p">,</span>
+    <span class="s2">&quot;bruh_computer&quot;</span><span class="p">:</span> <span class="n">bruh_computer</span><span class="p">,</span>
+    <span class="s2">&quot;computer&quot;</span><span class="p">:</span> <span class="n">computer</span><span class="p">,</span>
+    <span class="s2">&quot;hey&quot;</span><span class="p">:</span> <span class="n">hey</span><span class="p">,</span>
+    <span class="s2">&quot;twopoint&quot;</span><span class="p">:</span> <span class="n">twopoint</span><span class="p">,</span>
+    <span class="s2">&quot;christmas&quot;</span><span class="p">:</span> <span class="n">christmas</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="get_image">
+<a class="viewcode-back" href="../../../bruhanimate.bruhutil.html#bruhanimate.get_image">[docs]</a>
+<span class="k">def</span> <span class="nf">get_image</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">Image</span> <span class="o">=</span> <span class="s2">&quot;hey&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves one of the pre-defined ASCII art images based on the given name.</span>
+
+<span class="sd">    :param name: The name of the image to retrieve.</span>
+<span class="sd">    :return: A list of strings representing the ASCII art image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">image_mappings</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">InvalidImageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown / non-registered image: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">image_mappings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="text_to_image">
+<a class="viewcode-back" href="../../../bruhanimate.bruhutil.html#bruhanimate.text_to_image">[docs]</a>
+<span class="k">def</span> <span class="nf">text_to_image</span><span class="p">(</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">font</span><span class="p">:</span> <span class="n">Font</span> <span class="o">=</span> <span class="n">pyfiglet</span><span class="o">.</span><span class="n">DEFAULT_FONT</span><span class="p">,</span>
+    <span class="n">padding_top_bottom</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">padding_left_right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts text into ASCII art using the specified font and padding.</span>
+
+<span class="sd">    :param text: The text to convert into ASCII art.</span>
+<span class="sd">    :param font: The font to use for the ASCII art.</span>
+<span class="sd">    :param padding_top_bottom: Number of empty lines to add above and below the ASCII art.</span>
+<span class="sd">    :param padding_left_right: Number of spaces to add on the left and right of each line.</span>
+<span class="sd">    :return: A list of strings representing the ASCII art with padding.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">img_flat</span> <span class="o">=</span> <span class="n">pyfiglet</span><span class="o">.</span><span class="n">Figlet</span><span class="p">(</span><span class="n">font</span><span class="p">)</span><span class="o">.</span><span class="n">renderText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">pyfiglet</span><span class="o">.</span><span class="n">FontError</span><span class="p">:</span>
+        <span class="n">img_flat</span> <span class="o">=</span> <span class="n">pyfiglet</span><span class="o">.</span><span class="n">Figlet</span><span class="p">(</span><span class="s2">&quot;standard&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">renderText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="n">img</span> <span class="o">=</span> <span class="n">img_flat</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">padding_top_bottom</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">empty_line</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="p">([</span><span class="n">empty_line</span><span class="p">]</span> <span class="o">*</span> <span class="n">padding_top_bottom</span> <span class="o">+</span> <span class="n">img</span> <span class="o">+</span> <span class="p">[</span><span class="n">empty_line</span><span class="p">]</span> <span class="o">*</span> <span class="n">padding_top_bottom</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">padding_left_right</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">padding</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">padding_left_right</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">padding</span><span class="si">}{</span><span class="n">line</span><span class="si">}{</span><span class="n">padding</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">img</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">img</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ethan Christensen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

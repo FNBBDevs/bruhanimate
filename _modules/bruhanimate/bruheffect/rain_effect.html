@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bruhanimate.bruheffect.rain_effect &mdash; bruhanimate 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            bruhanimate
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">bruhanimate:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bruhanimate.bruhutil.html">bruhanimate.bruhutil package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bruhanimate.bruheffect.html">bruhanimate.bruheffect package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bruhanimate.bruhrenderer.html">bruhanimate.bruhrenderer package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">bruhanimate</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">bruhanimate.bruheffect.rain_effect</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bruhanimate.bruheffect.rain_effect</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Copyright 2023 Ethan Christensen</span>
+
+<span class="sd">Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="sd">you may not use this file except in compliance with the License.</span>
+<span class="sd">You may obtain a copy of the License at</span>
+
+<span class="sd">    http://www.apache.org/licenses/LICENSE-2.0</span>
+
+<span class="sd">Unless required by applicable law or agreed to in writing, software</span>
+<span class="sd">distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="sd">WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="sd">See the License for the specific language governing permissions and</span>
+<span class="sd">limitations under the License.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">WIND_DIRECTIONS</span>
+<span class="kn">from</span> <span class="nn">.base_effect</span> <span class="kn">import</span> <span class="n">BaseEffect</span>
+
+
+<div class="viewcode-block" id="RainEffect">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect">[docs]</a>
+<span class="k">class</span> <span class="nc">RainEffect</span><span class="p">(</span><span class="n">BaseEffect</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Effect to emmulate the look of rain</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">buffer</span><span class="p">,</span>
+        <span class="n">background</span><span class="p">,</span>
+        <span class="n">img_start_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">img_start_y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">img_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">img_height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">collision</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">intensity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">swells</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">wind_direction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RainEffect</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_present</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">True</span> <span class="k">if</span> <span class="n">img_start_x</span> <span class="ow">and</span> <span class="n">img_start_y</span> <span class="ow">and</span> <span class="n">img_width</span> <span class="ow">and</span> <span class="n">img_height</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collision</span> <span class="o">=</span> <span class="n">collision</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">=</span> <span class="n">intensity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">swells</span> <span class="o">=</span> <span class="n">swells</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">swell_direction</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wind_direction</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">wind_direction</span> <span class="k">if</span> <span class="n">wind_direction</span> <span class="ow">in</span> <span class="n">WIND_DIRECTIONS</span> <span class="k">else</span> <span class="s2">&quot;none&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wind_mappings</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;.</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">]],</span>
+            <span class="s2">&quot;none&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;.|&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">]],</span>
+            <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;./&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">]],</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_rain</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RainEffect.update_multiplier">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect.update_multiplier">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_multiplier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the multiplier value that relates to shift amount</span>
+<span class="sd">        :param val: value to set the multiplier to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span> <span class="o">=</span> <span class="n">val</span></div>
+
+
+<div class="viewcode-block" id="RainEffect.update_wind_direction">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect.update_wind_direction">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_wind_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the direction of the rain</span>
+<span class="sd">        :param dircetion: direction for the rain to fall (east, west, none)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">WIND_DIRECTIONS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wind_direction</span> <span class="o">=</span> <span class="n">direction</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_rain</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_set_rain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function set the rain based on the intensity and wind direction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rain</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1000</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">intensity</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rain</span> <span class="o">+=</span> <span class="s2">&quot;.&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">&gt;</span> <span class="mi">250</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rain</span> <span class="o">+=</span> <span class="s2">&quot;.&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">&gt;</span> <span class="mi">500</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rain</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wind_mappings</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_direction</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rain_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rain</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RainEffect.update_intensity">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect.update_intensity">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_intensity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intensity</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to update the intensity of the rain</span>
+<span class="sd">        :param intensity: intentisy value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">swells</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">==</span> <span class="mi">900</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">swell_direction</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">swell_direction</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">swell_direction</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">=</span> <span class="n">intensity</span> <span class="k">if</span> <span class="n">intensity</span> <span class="o">&lt;</span> <span class="mi">1000</span> <span class="k">else</span> <span class="mi">999</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_rain</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RainEffect.update_collision">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect.update_collision">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_collision</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">img_start_x</span><span class="p">,</span>
+        <span class="n">img_start_y</span><span class="p">,</span>
+        <span class="n">img_width</span><span class="p">,</span>
+        <span class="n">img_height</span><span class="p">,</span>
+        <span class="n">collision</span><span class="p">,</span>
+        <span class="n">smart_transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">image_buffer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to set whether or not to visually see the rain collide with the ground</span>
+<span class="sd">        or images if they are present</span>
+<span class="sd">        :param img_start_x: where the image starts on the screen</span>
+<span class="sd">        :param img_start_y: where the image starts on the screen</span>
+<span class="sd">        :param img_width:   the width of the image</span>
+<span class="sd">        :param img_height:  the height of the image</span>
+<span class="sd">        :param collision:   update collision variable</span>
+<span class="sd">        :param smart_transparent: update smart_transparent</span>
+<span class="sd">        :param image_buffer: the buffer that contains the image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_present</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">True</span> <span class="k">if</span> <span class="n">img_start_x</span> <span class="ow">and</span> <span class="n">img_start_y</span> <span class="ow">and</span> <span class="n">img_width</span> <span class="ow">and</span> <span class="n">img_height</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collision</span> <span class="o">=</span> <span class="n">collision</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_present</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img_start_x</span> <span class="o">=</span> <span class="n">img_start_x</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img_start_y</span> <span class="o">=</span> <span class="n">img_start_y</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img_height</span> <span class="o">=</span> <span class="n">img_height</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img_width</span> <span class="o">=</span> <span class="n">img_width</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smart_transparent</span> <span class="o">=</span> <span class="n">smart_transparent</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_buffer</span> <span class="o">=</span> <span class="n">image_buffer</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_buffer</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="RainEffect.update_swells">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect.update_swells">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_swells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">swells</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to set whether the intensity should evolve on it&#39;s own</span>
+<span class="sd">        :param swells: True / False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">swells</span> <span class="o">=</span> <span class="n">swells</span></div>
+
+
+<div class="viewcode-block" id="RainEffect.render_frame">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect.render_frame">[docs]</a>
+    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to render the next frame of the Rain Effect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">swells</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_intensity</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">frame_number</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_at</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">rain</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rain_length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+                        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">width</span><span class="p">())</span>
+                    <span class="p">]</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">wind_mappings</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_direction</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">scroll</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_at</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">rain</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rain_length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+                        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">width</span><span class="p">())</span>
+                    <span class="p">]</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">collision</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()):</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">width</span><span class="p">()):</span>
+                        <span class="c1"># Wipe prior frames impact</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">get_char</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;v&quot;</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_present</span><span class="p">:</span>
+                                <span class="c1"># if we are inscope of the image we need to process impacts</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_buffer</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">():</span>
+                                        <span class="k">if</span> <span class="p">(</span>
+                                            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_buffer</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">x</span><span class="p">]</span>
+                                            <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+                                            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">get_char</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                                            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wind_mappings</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_direction</span><span class="p">][</span>
+                                                <span class="mi">2</span>
+                                            <span class="p">]</span>
+                                        <span class="p">):</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">)</span>
+
+                            <span class="c1"># impacting the bottom</span>
+                            <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="p">(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">get_char</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                                    <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wind_mappings</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_direction</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+                                <span class="p">):</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ethan Christensen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

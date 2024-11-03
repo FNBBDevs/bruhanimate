@@ -1,0 +1,1046 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bruhanimate.bruheffect.chatbot_effect &mdash; bruhanimate 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            bruhanimate
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">bruhanimate:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bruhanimate.bruhutil.html">bruhanimate.bruhutil package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bruhanimate.bruheffect.html">bruhanimate.bruheffect package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bruhanimate.bruhrenderer.html">bruhanimate.bruhrenderer package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">bruhanimate</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">bruhanimate.bruheffect.chatbot_effect</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bruhanimate.bruheffect.chatbot_effect</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Copyright 2023 Ethan Christensen</span>
+
+<span class="sd">Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="sd">you may not use this file except in compliance with the License.</span>
+<span class="sd">You may obtain a copy of the License at</span>
+
+<span class="sd">    http://www.apache.org/licenses/LICENSE-2.0</span>
+
+<span class="sd">Unless required by applicable law or agreed to in writing, software</span>
+<span class="sd">distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="sd">WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="sd">See the License for the specific language governing permissions and</span>
+<span class="sd">limitations under the License.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">openai</span>
+<span class="kn">import</span> <span class="nn">string</span>
+
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
+<span class="kn">from</span> <span class="nn">bruhcolor</span> <span class="kn">import</span> <span class="n">bruhcolored</span>
+<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">Screen</span>
+<span class="kn">from</span> <span class="nn">.base_effect</span> <span class="kn">import</span> <span class="n">BaseEffect</span>
+
+
+<div class="viewcode-block" id="Key">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Key">[docs]</a>
+<span class="k">class</span> <span class="nc">Key</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">representation</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">character</span> <span class="o">=</span> <span class="n">character</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">representation</span> <span class="o">=</span> <span class="n">representation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">character</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">character</span></div>
+
+
+
+<div class="viewcode-block" id="GradientNoise">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.GradientNoise">[docs]</a>
+<span class="k">class</span> <span class="nc">GradientNoise</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">char_halt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color_halt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gradient_length</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__gradient_length</span> <span class="o">=</span> <span class="n">gradient_length</span>
+        <span class="c1"># colors to use for gradient</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__gradient</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">c</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="mi">232</span><span class="p">,</span>
+                <span class="mi">232</span><span class="p">,</span>
+                <span class="mi">232</span><span class="p">,</span>
+                <span class="mi">232</span><span class="p">,</span>
+                <span class="mi">233</span><span class="p">,</span>
+                <span class="mi">233</span><span class="p">,</span>
+                <span class="mi">233</span><span class="p">,</span>
+                <span class="mi">233</span><span class="p">,</span>
+                <span class="mi">234</span><span class="p">,</span>
+                <span class="mi">234</span><span class="p">,</span>
+                <span class="mi">234</span><span class="p">,</span>
+                <span class="mi">234</span><span class="p">,</span>
+                <span class="mi">235</span><span class="p">,</span>
+                <span class="mi">235</span><span class="p">,</span>
+                <span class="mi">235</span><span class="p">,</span>
+                <span class="mi">235</span><span class="p">,</span>
+                <span class="mi">236</span><span class="p">,</span>
+                <span class="mi">236</span><span class="p">,</span>
+                <span class="mi">236</span><span class="p">,</span>
+                <span class="mi">236</span><span class="p">,</span>
+                <span class="mi">237</span><span class="p">,</span>
+                <span class="mi">238</span><span class="p">,</span>
+                <span class="mi">239</span><span class="p">,</span>
+                <span class="mi">240</span><span class="p">,</span>
+                <span class="mi">241</span><span class="p">,</span>
+                <span class="mi">242</span><span class="p">,</span>
+                <span class="mi">243</span><span class="p">,</span>
+                <span class="mi">244</span><span class="p">,</span>
+                <span class="mi">245</span><span class="p">,</span>
+                <span class="mi">246</span><span class="p">,</span>
+                <span class="mi">247</span><span class="p">,</span>
+                <span class="mi">248</span><span class="p">,</span>
+                <span class="mi">249</span><span class="p">,</span>
+                <span class="mi">250</span><span class="p">,</span>
+                <span class="mi">251</span><span class="p">,</span>
+                <span class="mi">252</span><span class="p">,</span>
+                <span class="mi">253</span><span class="p">,</span>
+                <span class="mi">254</span><span class="p">,</span>
+                <span class="mi">255</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__gradient_length</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="c1"># delay to changing the chars in the noise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__char_halt</span> <span class="o">=</span> <span class="n">char_halt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__char_frame_number</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># delay to change the gradient shift</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__color_halt</span> <span class="o">=</span> <span class="n">color_halt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__color_frame_number</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">done_generating</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">string_chars</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot; &quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">string_colors</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__gradient</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__gradient</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colored_chars</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">bruhcolored</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">string_chars</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_colors</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="c1"># change the gradient</span>
+<div class="viewcode-block" id="GradientNoise.update_gradient">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.GradientNoise.update_gradient">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__gradient</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gradient</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__gradient_length</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="GradientNoise.generate">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.GradientNoise.generate">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">done_generating</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="c1"># is it time to change the noise chars?</span>
+        <span class="k">if</span> <span class="n">frame_number</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__char_halt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__char_frame_number</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">string_chars</span><span class="p">):</span>
+                <span class="c1"># frame == 0 basically</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">string_chars</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                        <span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="s2">&quot;1234567890!@#$%^&amp;*()_+-=&lt;&gt;,.:</span><span class="se">\&quot;</span><span class="s2">;&#39;</span><span class="si">{}</span><span class="s2">[]?/&quot;</span>
+                    <span class="p">)</span>
+                <span class="c1"># randomly decide to update this char to a new one</span>
+                <span class="k">elif</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.6</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">string_chars</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                        <span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="s2">&quot;1234567890!@#$%^&amp;*()_+-=&lt;&gt;,.:</span><span class="se">\&quot;</span><span class="s2">;&#39;</span><span class="si">{}</span><span class="s2">[]?/&quot;</span>
+                    <span class="p">)</span>
+        <span class="c1"># is it time to change the gradient position?</span>
+        <span class="k">if</span> <span class="n">frame_number</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__color_halt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__color_frame_number</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">string_colors</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__gradient</span><span class="p">[(</span><span class="n">i</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__color_frame_number</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__gradient</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
+            <span class="p">]</span>
+
+        <span class="c1"># update the color characters exposed to the main program</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colored_chars</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">bruhcolored</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">string_chars</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_colors</span><span class="p">)</span>
+        <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="GradientNoise.mark_done">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.GradientNoise.mark_done">[docs]</a>
+    <span class="k">def</span> <span class="nf">mark_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">done_generating</span> <span class="o">=</span> <span class="kc">True</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Loading">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Loading">[docs]</a>
+<span class="k">class</span> <span class="nc">Loading</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">animate_part</span><span class="p">:</span> <span class="n">GradientNoise</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">animate_part</span> <span class="o">=</span> <span class="n">animate_part</span>
+
+<div class="viewcode-block" id="Loading.update">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Loading.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">animate_part</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Loading.mark_done">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Loading.mark_done">[docs]</a>
+    <span class="k">def</span> <span class="nf">mark_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">animate_part</span><span class="o">.</span><span class="n">mark_done</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="StringStreamer">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.StringStreamer">[docs]</a>
+<span class="k">class</span> <span class="nc">StringStreamer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start_frame</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">halt</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__start_frame</span> <span class="o">=</span> <span class="n">start_frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__halt</span> <span class="o">=</span> <span class="n">halt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__chars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elapsed</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">complete</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="StringStreamer.generate">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.StringStreamer.generate">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">complete</span> <span class="ow">or</span> <span class="n">frame</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__start_frame</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">frame</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__halt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elapsed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chars</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elapsed</span><span class="p">)])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elapsed</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chars</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">complete</span> <span class="o">=</span> <span class="kc">True</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="OllamaApiCaller">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.OllamaApiCaller">[docs]</a>
+<span class="k">class</span> <span class="nc">OllamaApiCaller</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">use_message_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">message_history_cap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://127.0.0.1:11434/api/chat&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">busy</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ready&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_message_history</span> <span class="o">=</span> <span class="n">use_message_history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_history_cap</span> <span class="o">=</span> <span class="n">message_history_cap</span>
+
+<div class="viewcode-block" id="OllamaApiCaller.chat">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.OllamaApiCaller.chat">[docs]</a>
+    <span class="k">def</span> <span class="nf">chat</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">previous_messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">busy</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;running&quot;</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+            <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">}]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_history</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_history</span>
+                <span class="o">+</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">}]</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;stream&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">busy</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;finished&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_message_history</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message_history</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;assistant&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">},</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_history</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_history_cap</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">message_history_cap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_history_cap</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="OpenAiCaller">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.OpenAiCaller">[docs]</a>
+<span class="k">class</span> <span class="nc">OpenAiCaller</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">client</span><span class="p">:</span> <span class="n">openai</span><span class="o">.</span><span class="n">OpenAI</span> <span class="o">|</span> <span class="n">openai</span><span class="o">.</span><span class="n">AzureOpenAI</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">use_message_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">message_history_cap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">busy</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ready&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_message_history</span> <span class="o">=</span> <span class="n">use_message_history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_history_cap</span> <span class="o">=</span> <span class="n">message_history_cap</span>
+
+<div class="viewcode-block" id="OpenAiCaller.chat">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.OpenAiCaller.chat">[docs]</a>
+    <span class="k">def</span> <span class="nf">chat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">busy</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;running&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">messages</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">}]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_history</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_history</span>
+                <span class="o">+</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">}]</span>
+            <span class="p">),</span>
+            <span class="n">max_tokens</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">busy</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;finished&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_message_history</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message_history</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">},</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_history</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_history_cap</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">message_history_cap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_history_cap</span><span class="p">[</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_history</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_history_cap</span> <span class="p">:</span>
+                <span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ChatbotEffect">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect">[docs]</a>
+<span class="k">class</span> <span class="nc">ChatbotEffect</span><span class="p">(</span><span class="n">BaseEffect</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">Screen</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">back_buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ChatbotEffect</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">back_buffer</span> <span class="o">=</span> <span class="n">back_buffer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">screen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_stats</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_chatbot_response</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_chatbot_response_words</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># manages how the buffer is updated . . .</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span> <span class="o">=</span> <span class="p">{</span><span class="n">idx</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">screen</span><span class="o">.</span><span class="n">height</span><span class="p">)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_key</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_message</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">second_effect</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chat_thread</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_thinker</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_processed_chatbot_words</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_chatbot_response_words_idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_print_halt</span> <span class="o">=</span> <span class="mi">25</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_current_y_idx</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span> <span class="o">=</span> <span class="mi">10</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_y_turn_start_idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chat_y_turn_start_idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_bottom_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># colors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_text_color</span> <span class="o">=</span> <span class="mi">243</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_background_color</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_text_color</span> <span class="o">=</span> <span class="mi">255</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_background_color</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_avatar_color</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_avatar_text_color</span> <span class="o">=</span> <span class="mi">255</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_avatar_color</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_avatar_text_color</span> <span class="o">=</span> <span class="mi">255</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_noise_char_halt</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_noise_color_halt</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blink_halt</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blink_color_one</span> <span class="o">=</span> <span class="mi">255</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blink_color_two</span> <span class="o">=</span> <span class="mi">232</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor_char_color</span> <span class="o">=</span> <span class="mi">255</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">divider</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_text_color</span> <span class="o">=</span> <span class="p">[</span><span class="mi">21</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span> <span class="mi">93</span><span class="p">,</span> <span class="mi">129</span><span class="p">,</span> <span class="mi">165</span><span class="p">,</span> <span class="mi">201</span><span class="p">,</span> <span class="mi">165</span><span class="p">,</span> <span class="mi">129</span><span class="p">,</span> <span class="mi">93</span><span class="p">,</span> <span class="mi">57</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_idx</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_mul</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">ydx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">screen</span><span class="o">.</span><span class="n">height</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="n">ydx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">Key</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)],</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">),</span> <span class="n">x</span><span class="o">=</span><span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">ydx</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span><span class="p">)</span>
+                <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_history</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_y_top</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_y_bottom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avatar_placed</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">__expand_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="o">|</span><span class="nb">str</span><span class="p">],</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mul</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">original_list</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mul</span><span class="p">):</span>
+                <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+        <span class="n">new_list</span> <span class="o">=</span> <span class="n">l</span> <span class="o">*</span> <span class="n">v</span>
+        <span class="k">return</span> <span class="n">new_list</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ChatbotEffect.set_chatbot_properties">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_chatbot_properties">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_chatbot_properties</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">interface</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">client</span><span class="p">:</span> <span class="n">openai</span><span class="o">.</span><span class="n">OpenAI</span> <span class="o">|</span> <span class="n">openai</span><span class="o">.</span><span class="n">AzureOpenAI</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_message_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">message_history_cap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">interface</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">interface</span>
+        <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="k">if</span> <span class="n">interface</span> <span class="o">==</span> <span class="s2">&quot;ollama&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span> <span class="o">=</span> <span class="n">OllamaApiCaller</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                <span class="n">use_message_history</span><span class="o">=</span><span class="n">use_message_history</span><span class="p">,</span>
+                <span class="n">message_history_cap</span><span class="o">=</span><span class="n">message_history_cap</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">interface</span> <span class="o">==</span> <span class="s2">&quot;openai&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">client</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="s2">&quot;An OpenAI client object must be provided for interface of type &#39;openai&#39;.&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span> <span class="o">=</span> <span class="n">OpenAiCaller</span><span class="p">(</span>
+                <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                <span class="n">use_message_history</span><span class="o">=</span><span class="n">use_message_history</span><span class="p">,</span>
+                <span class="n">message_history_cap</span><span class="o">=</span><span class="n">message_history_cap</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ChatbotEffect.set_second_effect">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_second_effect">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_second_effect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">effect</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">second_effect</span> <span class="o">=</span> <span class="n">effect</span></div>
+
+
+<div class="viewcode-block" id="ChatbotEffect.set_chatbot_print_halt">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_chatbot_print_halt">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_chatbot_print_halt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">halt</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_print_halt</span> <span class="o">=</span> <span class="n">halt</span></div>
+
+
+<div class="viewcode-block" id="ChatbotEffect.set_gradient_noise_halts">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_gradient_noise_halts">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_gradient_noise_halts</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">char_halt</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">color_halt</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">char_halt</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gradient_noise_char_halt</span> <span class="o">=</span> <span class="n">char_halt</span>
+        <span class="k">if</span> <span class="n">color_halt</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gradient_noise_color_halt</span> <span class="o">=</span> <span class="n">color_halt</span></div>
+
+
+<div class="viewcode-block" id="ChatbotEffect.set_chatbot_user_colors">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_chatbot_user_colors">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_chatbot_user_colors</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">chatbot_text_color</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">chatbot_background_color</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">chatbot_avatar_color</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">chatbot_avatar_text_color</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">user_text_color</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">user_background_color</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">user_avatar_color</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">user_avatar_text_color</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">chatbot_text_color</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_text_color</span> <span class="o">=</span> <span class="n">chatbot_text_color</span>
+        <span class="k">if</span> <span class="n">chatbot_background_color</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_background_color</span> <span class="o">=</span> <span class="n">chatbot_background_color</span>
+        <span class="k">if</span> <span class="n">chatbot_avatar_color</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_avatar_color</span> <span class="o">=</span> <span class="n">chatbot_avatar_color</span>
+        <span class="k">if</span> <span class="n">chatbot_avatar_text_color</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_avatar_text_color</span> <span class="o">=</span> <span class="n">chatbot_avatar_text_color</span>
+        <span class="k">if</span> <span class="n">user_text_color</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_text_color</span> <span class="o">=</span> <span class="n">user_text_color</span>
+        <span class="k">if</span> <span class="n">user_background_color</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_background_color</span> <span class="o">=</span> <span class="n">user_background_color</span>
+        <span class="k">if</span> <span class="n">user_avatar_color</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_avatar_color</span> <span class="o">=</span> <span class="n">user_avatar_color</span>
+        <span class="k">if</span> <span class="n">user_avatar_text_color</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_avatar_text_color</span> <span class="o">=</span> <span class="n">user_avatar_text_color</span></div>
+
+
+<div class="viewcode-block" id="ChatbotEffect.set_avatar_properties">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_avatar_properties">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_avatar_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span>
+        <span class="k">for</span> <span class="n">ydx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">height</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="n">ydx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">Key</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)],</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">),</span> <span class="n">x</span><span class="o">=</span><span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">ydx</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span><span class="p">)</span>
+            <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ChatbotEffect.set_chatbot_stats">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_chatbot_stats">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_chatbot_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_stats</span> <span class="o">=</span> <span class="n">show</span></div>
+
+
+<div class="viewcode-block" id="ChatbotEffect.set_chatbot_blink_halt">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_chatbot_blink_halt">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_chatbot_blink_halt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">halt</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blink_halt</span> <span class="o">=</span> <span class="n">halt</span></div>
+
+
+<div class="viewcode-block" id="ChatbotEffect.set_divider_flag">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_divider_flag">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_divider_flag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">divider</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">divider_character</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">divider</span> <span class="o">=</span> <span class="n">divider</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span> <span class="o">=</span> <span class="n">divider_character</span></div>
+
+
+<div class="viewcode-block" id="ChatbotEffect.set_chatbot_cursor_colors">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_chatbot_cursor_colors">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_chatbot_cursor_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_one</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color_two</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blink_color_one</span> <span class="o">=</span> <span class="n">color_one</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blink_color_two</span> <span class="o">=</span> <span class="n">color_two</span></div>
+
+
+<div class="viewcode-block" id="ChatbotEffect.set_chatbot_text_gradient">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_chatbot_text_gradient">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_chatbot_text_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="o">|</span><span class="nb">str</span><span class="p">],</span> <span class="n">mul</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_text_color</span> <span class="o">=</span> <span class="n">gradient</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_mul</span> <span class="o">=</span> <span class="n">mul</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__handle_keyboard_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="o">-</span><span class="mi">300</span><span class="p">:</span>  <span class="c1"># backspace</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span><span class="p">:</span>
+                    <span class="k">return</span>
+                <span class="n">all_key_history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">all_key_history</span> <span class="o">==</span> <span class="p">[]:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_current_y_idx</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">-=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">:</span>
+                            <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span>
+                                <span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">x</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">last_key</span> <span class="o">=</span> <span class="n">all_key_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span> <span class="o">-=</span> <span class="nb">len</span><span class="p">(</span><span class="n">last_key</span><span class="o">.</span><span class="n">representation</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_key_history</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_message</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">user_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_message</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span>  <span class="c1"># enter</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">&gt;=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scroll_keys</span><span class="p">(</span><span class="n">shift</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_key</span> <span class="o">!=</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span>
+            <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="mi">11</span><span class="p">:</span>  <span class="c1"># tab</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span> <span class="o">+=</span> <span class="mi">4</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">Key</span><span class="p">(</span>
+                        <span class="n">character</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span>
+                        <span class="n">representation</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+                        <span class="n">value</span><span class="o">=</span><span class="n">result</span><span class="p">,</span>
+                        <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span><span class="p">,</span>
+                        <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="o">-</span><span class="mi">204</span><span class="p">:</span> <span class="c1"># arrow up</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">current_bottom_y</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="o">-</span><span class="mi">206</span><span class="p">:</span> <span class="c1"># arrow down</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_bottom_y</span> <span class="o">&lt;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">current_bottom_y</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">result</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">Key</span><span class="p">(</span>
+                        <span class="n">character</span><span class="o">=</span><span class="n">bruhcolored</span><span class="p">(</span>
+                            <span class="n">text</span><span class="o">=</span><span class="nb">chr</span><span class="p">(</span><span class="n">result</span><span class="p">),</span>
+                            <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_text_color</span><span class="p">,</span>
+                            <span class="n">on_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_background_color</span><span class="p">,</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">colored</span><span class="p">,</span>
+                        <span class="n">representation</span><span class="o">=</span><span class="p">[</span><span class="n">result</span><span class="p">],</span>
+                        <span class="n">value</span><span class="o">=</span><span class="n">result</span><span class="p">,</span>
+                        <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span><span class="p">,</span>
+                        <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_key</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_message</span> <span class="o">+=</span> <span class="nb">chr</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">__scroll_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">first_key</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">last_key</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">first_key</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">first_key</span><span class="p">,</span> <span class="n">last_key</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="n">key</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="n">last_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">Key</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)],</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">),</span> <span class="n">x</span><span class="o">=</span><span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">last_key</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span><span class="p">)</span>
+                <span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_bottom_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_bottom_y</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__scroll_down</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">last_key</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="n">last_key</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">Key</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)],</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">),</span> <span class="n">x</span><span class="o">=</span><span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">last_key</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span><span class="p">)</span>
+                <span class="p">]</span>
+        <span class="c1"># if len(self.all_keys) &gt;= 100:</span>
+        <span class="c1">#     first_key = min(self.all_keys.keys())</span>
+        <span class="c1">#     del self.all_keys[first_key]</span>
+        <span class="c1">#     self.all_keys = {k-1:v for k,v in self.all_keys.items()}</span>
+        <span class="c1"># else:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_bottom_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_bottom_y</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">()))}</span>
+
+<div class="viewcode-block" id="ChatbotEffect.scroll_keys">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.scroll_keys">[docs]</a>
+    <span class="k">def</span> <span class="nf">scroll_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shift</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__scroll_down</span><span class="p">()</span> <span class="k">if</span> <span class="n">shift</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scroll_up</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ChatbotEffect.place_all_keys">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.place_all_keys">[docs]</a>
+    <span class="k">def</span> <span class="nf">place_all_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_bottom_y</span> <span class="ow">or</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">displacement</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">jdx</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vals</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">representation</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">key</span><span class="o">.</span><span class="n">representation</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="n">displacement</span><span class="p">,</span> <span class="n">idx</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span><span class="p">,</span> <span class="nb">chr</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+                        <span class="n">displacement</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">displacement</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="n">displacement</span><span class="p">,</span> <span class="n">idx</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">character</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ChatbotEffect.render_frame">
+<a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.render_frame">[docs]</a>
+    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">clear_buffer</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_placed</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_y_turn_start_idx</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span>
+                        <span class="n">bruhcolored</span><span class="p">(</span>
+                            <span class="n">c</span><span class="p">,</span>
+                            <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_avatar_text_color</span><span class="p">,</span>
+                            <span class="n">on_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_avatar_color</span><span class="p">,</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">colored</span><span class="p">,</span>
+                        <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)],</span>
+                        <span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_y_turn_start_idx</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span>
+                        <span class="n">bruhcolored</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">on_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_avatar_color</span><span class="p">)</span><span class="o">.</span><span class="n">colored</span><span class="p">,</span>
+                        <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)],</span>
+                        <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">),</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">avatar_placed</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">wait_for_input</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_event</span><span class="p">()</span>
+            <span class="n">flip_turn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__handle_keyboard_result</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">flip_turn</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">avatar_placed</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">divider</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">Key</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span><span class="p">,</span>
+                                <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span><span class="p">)],</span>
+                                <span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span><span class="p">),</span>
+                                <span class="kc">None</span><span class="p">,</span>
+                                <span class="kc">None</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">width</span><span class="p">()):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">Key</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span><span class="p">,</span>
+                                <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span><span class="p">)],</span>
+                                <span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span><span class="p">),</span>
+                                <span class="kc">None</span><span class="p">,</span>
+                                <span class="kc">None</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">&gt;=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">scroll_keys</span><span class="p">(</span><span class="n">shift</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chat_y_turn_start_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># call llm with self.user_message</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;ready&quot;</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_message</span><span class="p">[:]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span>
+                    <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">chat</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">(</span>
+                        <span class="n">message</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_thinker</span> <span class="o">=</span> <span class="n">GradientNoise</span><span class="p">(</span>
+                    <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">,</span>
+                    <span class="n">length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">char_halt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_noise_char_halt</span><span class="p">,</span>
+                    <span class="n">color_halt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_noise_color_halt</span><span class="p">,</span>
+                    <span class="n">gradient_length</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>  <span class="c1"># .update_gradient([21, 57, 93, 129, 165, 201, 165, 129, 93, 57])</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">thread</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;finished&quot;</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">response</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">width</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">last_chatbot_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">response</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">last_chatbot_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">response</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_chatbot_response_words</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_chatbot_response</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_message</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;printing&quot;</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_text_color</span> <span class="o">==</span> <span class="s2">&quot;gradient&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">gradient_idx</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">gradient_text_color_for_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__expand_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_text_color</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_chatbot_response</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;printing&quot;</span><span class="p">:</span>
+                <span class="c1"># print out the characters!</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_placed</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chat_y_turn_start_idx</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span>
+                            <span class="n">bruhcolored</span><span class="p">(</span>
+                                <span class="n">c</span><span class="p">,</span>
+                                <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chatbot_avatar_text_color</span><span class="p">,</span>
+                                <span class="n">on_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chatbot_avatar_color</span><span class="p">,</span>
+                            <span class="p">)</span><span class="o">.</span><span class="n">colored</span><span class="p">,</span>
+                            <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)],</span>
+                            <span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+                            <span class="kc">None</span><span class="p">,</span>
+                            <span class="kc">None</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chat_y_turn_start_idx</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span>
+                            <span class="n">bruhcolored</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">on_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chatbot_avatar_color</span><span class="p">)</span><span class="o">.</span><span class="n">colored</span><span class="p">,</span>
+                            <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)],</span>
+                            <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">),</span>
+                            <span class="kc">None</span><span class="p">,</span>
+                            <span class="kc">None</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">avatar_placed</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">frame_number</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_print_halt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_processed_chatbot_words</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_chatbot_response_words</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;done&quot;</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">current_chatbot_response_words_idx</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">total_processed_chatbot_words</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">next_word</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">last_chatbot_response_words</span><span class="p">[</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">current_chatbot_response_words_idx</span>
+                            <span class="p">]</span>
+                            <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+                        <span class="p">)</span>
+                        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">character</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">next_word</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">&gt;=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">):</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">scroll_keys</span><span class="p">(</span><span class="n">shift</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">character</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">&gt;=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">):</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">scroll_keys</span><span class="p">(</span><span class="n">shift</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">][</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span> <span class="o">-</span> <span class="mi">2</span>
+                                <span class="p">]</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span>
+                                    <span class="n">character</span><span class="o">=</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span>
+                                    <span class="n">representation</span><span class="o">=</span><span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)],</span>
+                                    <span class="n">value</span><span class="o">=</span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">),</span>
+                                    <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                    <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                <span class="p">)</span>
+                                <span class="k">continue</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="n">Key</span><span class="p">(</span>
+                                    <span class="n">character</span><span class="o">=</span><span class="n">bruhcolored</span><span class="p">(</span>
+                                        <span class="n">text</span><span class="o">=</span><span class="n">character</span><span class="p">,</span>
+                                        <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chatbot_text_color</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_text_color</span> <span class="o">!=</span> <span class="s2">&quot;gradient&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_text_color_for_message</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+                                        <span class="n">on_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chatbot_background_color</span><span class="p">,</span>
+                                    <span class="p">)</span><span class="o">.</span><span class="n">colored</span><span class="p">,</span>
+                                    <span class="n">representation</span><span class="o">=</span><span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="n">character</span><span class="p">)],</span>
+                                    <span class="n">value</span><span class="o">=</span><span class="nb">ord</span><span class="p">(</span><span class="n">character</span><span class="p">),</span>
+                                    <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span><span class="p">,</span>
+                                    <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">,</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                            <span class="k">if</span> <span class="n">character</span> <span class="o">!=</span> <span class="s2">&quot; &quot;</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">gradient_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="k">if</span> <span class="p">(</span>
+                                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">])</span>
+                                <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">width</span><span class="p">()</span>
+                            <span class="p">):</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">&gt;=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">):</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">scroll_keys</span><span class="p">(</span><span class="n">shift</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">][</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span> <span class="o">-</span> <span class="mi">2</span>
+                                <span class="p">]</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span>
+                                    <span class="n">character</span><span class="o">=</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span>
+                                    <span class="n">representation</span><span class="o">=</span><span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)],</span>
+                                    <span class="n">value</span><span class="o">=</span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">),</span>
+                                    <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                    <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">current_chatbot_response_words_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">total_processed_chatbot_words</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">avatar_placed</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_thinker</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ready&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">global_current_y_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">divider</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">&gt;=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">scroll_keys</span><span class="p">(</span><span class="n">shift</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">Key</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span><span class="p">,</span>
+                                <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span><span class="p">)],</span>
+                                <span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span><span class="p">),</span>
+                                <span class="kc">None</span><span class="p">,</span>
+                                <span class="kc">None</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">width</span><span class="p">()):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">Key</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span><span class="p">,</span>
+                                <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span><span class="p">)],</span>
+                                <span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span><span class="p">),</span>
+                                <span class="kc">None</span><span class="p">,</span>
+                                <span class="kc">None</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span> <span class="o">&gt;=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scroll_keys</span><span class="p">(</span><span class="n">shift</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_y_turn_start_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_thinker</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">frame_number</span><span class="o">=</span><span class="n">frame_number</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">second_effect</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">second_effect</span><span class="o">.</span><span class="n">render_frame</span><span class="p">(</span><span class="n">frame_number</span><span class="o">=</span><span class="n">frame_number</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">sync_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">second_effect</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">place_all_keys</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_thinker</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;running&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chatbot_thinker</span><span class="o">.</span><span class="n">colored_chars</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_thinker</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_thinker</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">colored</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_stats</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_at</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">-</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;CURSOR X: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">transparent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_at</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">-</span> <span class="mi">4</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;CURSOR Y: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">transparent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_at</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;CHATBOT STATE: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chatbot</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">transparent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_at</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;CHATBOT RESPONSE WORD COUNT: </span><span class="si">{</span><span class="mi">0</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">last_chatbot_response_words</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_chatbot_response_words</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">transparent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_at</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;PROCESSED RESPONSE WORDS: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">total_processed_chatbot_words</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">transparent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">frame_number</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">blink_halt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cursor_char_color</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">blink_color_one</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor_char_color</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">blink_color_two</span>
+                    <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">blink_color_two</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_char</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_y_idx</span><span class="p">,</span>
+                <span class="n">bruhcolored</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">on_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cursor_char_color</span><span class="p">)</span><span class="o">.</span><span class="n">colored</span><span class="p">,</span>
+                <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ethan Christensen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
