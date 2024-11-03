@@ -1,0 +1,6 @@
+future
+bruhcolor
+pyfiglet
+numpy
+openai
+requests
