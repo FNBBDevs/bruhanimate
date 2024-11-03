@@ -26,6 +26,9 @@ from .bruheffect import (
     SnowEffect,
     TwinkleEffect,
     TWINKLE_SPEC,
+    FireworkEffect,
+    Firework,
+    Particle
 )
 
 
@@ -129,6 +132,9 @@ if sys.platform == "win32":
         "RainEffect",
         "MatrixEffect",
         "ChatbotEffect",
+        "FireworkEffect",
+        "Firework",
+        "Particle",
         "StringStreamer",
         "GradientNoise",
         "Loading",

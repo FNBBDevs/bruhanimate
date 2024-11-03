@@ -16,6 +16,7 @@ limitations under the License.
 
 import math
 import random
+from typing import List
 from bruhcolor import bruhcolored as bc
 from .base_effect import BaseEffect
 from ..bruhutil.bruhffer import Buffer
@@ -65,7 +66,7 @@ class Particle:
 
 
 class Firework:
-    def __init__(self, firework_type: FireworkType, height, width, firework_color_type: str = None, color_enabled: bool = False):
+    def __init__(self, firework_type: FireworkType, height, width, firework_color_type: str = None, color_enabled: bool = False, allowed_firework_types: List[str] = None):
         self.width = width
         self.height = height
         self.x = random.randint(0, self.width - 1)
@@ -75,10 +76,11 @@ class Firework:
         self.peak = random.randint(5, self.height // 2)
         self.exploded = False
         self.particles = []
+        self.allowed_fire_work_types = allowed_firework_types or valid_firework_types
         self.explosion_type = (
             firework_type
             if (firework_type != "random" and firework_type in valid_firework_types)
-            else random.choice(valid_firework_types)
+            else random.choice(self.allowed_fire_work_types)
         )
         self.clear_particles = []
         self.caught_last_trail = False
@@ -144,7 +146,29 @@ class Firework:
             self.cluster_explosion()
         elif self.explosion_type == "comet":
             self.comet_tail_explosion()
-
+        elif self.explosion_type == "willow":
+            self.willow_explosion()
+        elif self.explosion_type == "dna":
+            self.dna_explosion()
+        elif self.explosion_type == "infinity":
+            self.infinity_explosion()
+        elif self.explosion_type == "galaxy":
+            self.galaxy_explosion()
+        elif self.explosion_type == "phoenix":
+            self.phoenix_explosion()
+        elif self.explosion_type == "fountain":
+            self.fountain_explosion()
+        elif self.explosion_type == "butterfly":
+            self.butterfly_explosion()
+        elif self.explosion_type == "dragon":
+            self.dragon_explosion()
+        elif self.explosion_type == "tornado":
+            self.tornado_explosion()
+        elif self.explosion_type == "matrix":
+            self.matrix_explosion()
+        elif self.explosion_type == "portal":
+            self.portal_explosion()
+        
     def circular_explosion(self):
         for _ in range(30):
             angle = random.uniform(0, 2 * math.pi)
@@ -338,6 +362,307 @@ class Firework:
             trail_dy = main_dy * 0.3
             self.particles.append(Particle(self.x - trail_dx * i, self.y - trail_dy * i, trail_dx * 0.5, trail_dy * 0.5, self.width, self.height))
 
+    def willow_explosion(self):
+        num_arms = 10  # Number of branches in the willow effect
+        angle_offset = 70  # Constrain angle range to mostly horizontal
+
+        for i in range(num_arms):
+            # Each arm has an angle mostly to the sides (slightly up or down)
+            angle = random.uniform(-angle_offset, angle_offset) if i < num_arms / 2 else random.uniform(180 - angle_offset, 180 + angle_offset)
+            rad = math.radians(angle)
+            initial_speed = random.uniform(0.5, 1.0)
+            
+            # Calculate initial movement in a mostly horizontal direction
+            dx = math.cos(rad) * initial_speed
+            dy = math.sin(rad) * initial_speed * 0.3  # Smaller upward component for the drooping effect
+            
+            # Main particle at the start of each "arm"
+            main_particle = Particle(self.x, self.y, dx, dy, self.width, self.height, life=25)
+            self.particles.append(main_particle)
+            
+            # Trailing particles along each arm, curving downwards like branches
+            for j in range(1, 6):
+                # Reduce horizontal speed gradually, add downward pull for the arc
+                arc_dx = dx * (1 - j * 0.1)  # Slightly reduce horizontal speed over time
+                arc_dy = dy + j * 0.1        # Increase downward speed to mimic gravity
+                trail_particle = Particle(self.x, self.y, arc_dx, arc_dy, self.width, self.height, life=25 - j * 8)
+                self.particles.append(trail_particle)
+
+    def dna_explosion(self):
+        """Creates a double helix pattern resembling DNA structure"""
+        num_points = 30
+        radius = 1.0
+        vertical_stretch = 0.5
+        
+        for i in range(num_points):
+            t = (i / num_points) * 4 * math.pi  # Two complete rotations
+            
+            # First strand
+            dx1 = math.cos(t) * radius
+            dy1 = -vertical_stretch * t  # Negative for upward movement
+            self.particles.append(Particle(self.x, self.y, dx1, dy1, self.width, self.height))
+            
+            # Second strand (offset by pi)
+            dx2 = math.cos(t + math.pi) * radius
+            dy2 = -vertical_stretch * t
+            self.particles.append(Particle(self.x, self.y, dx2, dy2, self.width, self.height))
+            
+            # "Bridges" between strands (occasional connectors)
+            if i % 4 == 0:
+                dx_bridge = (dx1 + dx2) / 2
+                dy_bridge = dy1
+                self.particles.append(Particle(self.x, self.y, dx_bridge, dy_bridge, self.width, self.height, symbol="-"))
+
+    def infinity_explosion(self):
+        """Creates an infinity symbol (∞) pattern"""
+        num_points = 40
+        size = 1.2
+        
+        for i in range(num_points):
+            t = (i / num_points) * 2 * math.pi
+            
+            # Parametric equations for infinity symbol
+            dx = size * math.cos(t) / (1 + math.sin(t)**2)
+            dy = size * math.sin(t) * math.cos(t) / (1 + math.sin(t)**2)
+            
+            self.particles.append(Particle(self.x, self.y, dx, dy, self.width, self.height))
+
+    def galaxy_explosion(self):
+        """Creates a spiral galaxy pattern with arms and central bulge"""
+        # Central bulge
+        for _ in range(20):
+            angle = random.uniform(0, 2 * math.pi)
+            speed = random.uniform(0.2, 0.5)
+            dx = math.cos(angle) * speed
+            dy = math.sin(angle) * speed
+            self.particles.append(Particle(self.x, self.y, dx, dy, self.width, self.height, symbol="·"))
+        
+        # Spiral arms
+        arms = 2
+        for arm in range(arms):
+            start_angle = (2 * math.pi * arm) / arms
+            for i in range(30):
+                radius = 0.1 + (i * 0.05)
+                angle = start_angle + (i * 0.3)
+                dx = math.cos(angle) * radius
+                dy = math.sin(angle) * radius
+                self.particles.append(Particle(self.x, self.y, dx, dy, self.width, self.height))
+
+    def phoenix_explosion(self):
+        """Creates a rising phoenix pattern with wings and tail"""
+        # Central rising column
+        for i in range(10):
+            dy = -1.0 - (i * 0.1)  # Upward movement
+            dx = random.uniform(-0.2, 0.2)
+            self.particles.append(Particle(self.x, self.y, dx, dy, self.width, self.height))
+        
+        # Wings
+        wing_span = 15
+        for i in range(wing_span):
+            # Left wing
+            angle_left = math.radians(150 - (i * 4))  # Sweep from 150° to 90°
+            dx_left = math.cos(angle_left) * (i * 0.1)
+            dy_left = math.sin(angle_left) * (i * 0.1)
+            self.particles.append(Particle(self.x, self.y, dx_left, dy_left, self.width, self.height))
+            
+            # Right wing
+            angle_right = math.radians(30 + (i * 4))  # Sweep from 30° to 90°
+            dx_right = math.cos(angle_right) * (i * 0.1)
+            dy_right = math.sin(angle_right) * (i * 0.1)
+            self.particles.append(Particle(self.x, self.y, dx_right, dy_right, self.width, self.height))
+        
+        # Tail feathers
+        for i in range(5):
+            angle = math.radians(270 + random.uniform(-30, 30))
+            speed = 0.5 + (i * 0.1)
+            dx = math.cos(angle) * speed
+            dy = math.sin(angle) * speed
+            self.particles.append(Particle(self.x, self.y, dx, dy, self.width, self.height, symbol="~"))
+
+    def fountain_explosion(self):
+        """Creates an upward-shooting fountain pattern with cascading particles"""
+        num_streams = 5
+        particles_per_stream = 8
+        
+        for stream in range(num_streams):
+            base_angle = -90 + random.uniform(-15, 15)  # Mostly upward
+            base_speed = random.uniform(1.0, 1.5)
+            
+            for i in range(particles_per_stream):
+                angle = math.radians(base_angle)
+                speed = base_speed - (i * 0.1)  # Particles get slower toward end of stream
+                
+                dx = math.cos(angle) * speed
+                dy = math.sin(angle) * speed
+                
+                # Add some slight random variation to each particle
+                dx += random.uniform(-0.1, 0.1)
+                dy += random.uniform(-0.1, 0.1)
+                
+                particle = Particle(
+                    self.x, self.y, dx, dy, self.width, self.height,
+                    symbol=":" if i < particles_per_stream // 2 else ".",
+                    life=20 - i  # Particles at end of stream die sooner
+                )
+                self.particles.append(particle)
+
+    def butterfly_explosion(self):
+        """Creates a butterfly pattern with wings that flutter"""
+        # Wing shape parameters
+        wing_points = 20
+        flutter_speed = 0.2
+        
+        for i in range(wing_points):
+            t = (i / wing_points) * 2 * math.pi
+            
+            # Parametric equations for wing shape (modified heart curve)
+            base_dx = math.sin(t) * (math.exp(math.cos(t)) - 2*math.cos(4*t))
+            base_dy = math.cos(t) * (math.exp(math.cos(t)) - 2*math.cos(4*t))
+            
+            # Create left and right wings with flutter effect
+            for side in [-1, 1]:  # Left and right wings
+                dx = base_dx * side * 0.3
+                dy = base_dy * 0.3
+                
+                # Add flutter movement
+                dx += math.sin(t * flutter_speed) * 0.1
+                
+                particle = Particle(self.x, self.y, dx, dy, self.width, self.height, 
+                                symbol="·" if i % 2 == 0 else "*",
+                                life=random.randint(15, 25))
+                self.particles.append(particle)
+            
+            # Add body particles
+            if i < 5:
+                self.particles.append(Particle(self.x, self.y, 0, i*0.1, 
+                                            self.width, self.height, symbol="█"))
+
+    def dragon_explosion(self):
+        """Creates a dragon shape with body, wings, and fire breath"""
+        # Body
+        body_length = 15
+        for i in range(body_length):
+            angle = math.radians(random.uniform(-10, 10))  # Slight wiggle
+            dx = math.cos(angle) * 0.3
+            dy = -0.5 + (i * 0.05)  # Curves upward
+            self.particles.append(Particle(self.x, self.y, dx, dy, self.width, self.height, 
+                                        symbol="▲", life=20))
+        
+        # Wings
+        wing_span = 12
+        for i in range(wing_span):
+            # Left and right wings
+            for side in [-1, 1]:
+                angle = math.radians(45 * side)
+                dx = math.cos(angle) * (i * 0.15) * side
+                dy = math.sin(angle) * (i * 0.1) - 0.5
+                self.particles.append(Particle(self.x, self.y, dx, dy, self.width, self.height,
+                                            symbol="*", life=15))
+        
+        # Fire breath
+        breath_particles = 20
+        for i in range(breath_particles):
+            angle = math.radians(random.uniform(-30, 30))
+            speed = random.uniform(1.0, 2.0)
+            dx = math.cos(angle) * speed
+            dy = -math.sin(angle) * speed  # Upward fire breath
+            symbol = random.choice(["^", "*", "●"])
+            self.particles.append(Particle(self.x, self.y, dx, dy, self.width, self.height,
+                                        symbol=symbol, life=10))
+
+    def tornado_explosion(self):
+        """Creates a spinning tornado effect that grows wider at the top"""
+        height_layers = 15
+        base_radius = 0.2
+        
+        for layer in range(height_layers):
+            radius = base_radius + (layer * 0.1)  # Gets wider as it goes up
+            particles_in_layer = int(6 + layer * 1.5)  # More particles in higher layers
+            
+            for p in range(particles_in_layer):
+                angle = (p / particles_in_layer) * 2 * math.pi
+                # Add spin effect
+                angle += layer * 0.5
+                
+                dx = math.cos(angle) * radius
+                dy = -1 + (layer * 0.1)  # Upward movement, slowing at top
+                
+                # Vary the symbols based on position
+                symbol = "●" if layer < 3 else ("*" if layer < 10 else "·")
+                
+                particle = Particle(self.x, self.y, dx, dy, self.width, self.height,
+                                symbol=symbol, life=20-layer)
+                self.particles.append(particle)
+
+    def matrix_explosion(self):
+        """Creates a Matrix-style digital rain effect"""
+        num_streams = 15
+        chars_per_stream = 8
+        
+        for stream in range(num_streams):
+            # Calculate stream position
+            angle = random.uniform(0, 2 * math.pi)
+            distance = random.uniform(0.5, 2.0)
+            base_dx = math.cos(angle) * distance
+            base_dy = math.sin(angle) * distance
+            
+            for i in range(chars_per_stream):
+                # Delay each character in stream
+                dx = base_dx
+                dy = base_dy + (i * 0.15)
+                
+                # Use Matrix-like symbols
+                symbol = random.choice(['0', '1', '█', '▀', '▄', '■', '░', '▒', '▓'])
+                
+                # Particles later in stream die sooner
+                life = 20 - i
+                
+                self.particles.append(Particle(self.x, self.y, dx, dy, 
+                                            self.width, self.height,
+                                            symbol=symbol, life=life))
+
+    def portal_explosion(self):
+        """Creates two connected portals with particles flowing between them"""
+        # Portal parameters
+        portal_radius = 1.2
+        num_particles = 40
+        
+        # Create two portal rings
+        for portal in range(2):
+            angle_offset = math.pi * portal  # Second portal on opposite side
+            distance = 2.0  # Distance between portals
+            
+            # Portal position
+            portal_x = math.cos(angle_offset) * distance
+            portal_y = math.sin(angle_offset) * distance
+            
+            # Create portal ring
+            for i in range(12):
+                angle = (i / 12) * 2 * math.pi
+                dx = portal_x + math.cos(angle) * portal_radius
+                dy = portal_y + math.sin(angle) * portal_radius
+                
+                self.particles.append(Particle(self.x, self.y, dx*0.2, dy*0.2,
+                                            self.width, self.height,
+                                            symbol="O", life=25))
+        
+        # Particles flowing between portals
+        for _ in range(num_particles):
+            t = random.uniform(0, 1)  # Position along path
+            
+            # Curved path between portals
+            dx = math.cos(t * math.pi * 2) * portal_radius
+            dy = math.sin(t * math.pi * 2) * portal_radius
+            
+            # Add some randomness to path
+            dx += random.uniform(-0.2, 0.2)
+            dy += random.uniform(-0.2, 0.2)
+            
+            symbol = random.choice(["*", "·", "•", "+"])
+            self.particles.append(Particle(self.x, self.y, dx*0.3, dy*0.3,
+                                        self.width, self.height,
+                                        symbol=symbol, life=15))
+
     def is_active(self):
         # Firework is active if it has not exploded or if particles are still alive
         return not self.exploded or len(self.particles) > 0
@@ -397,6 +722,7 @@ class FireworkEffect(BaseEffect):
         self.color_enabled: bool = False
         self.fireworks: list[Firework] = []
         self.firework_rate: float = 0.05
+        self.allowed_firework_types = valid_firework_types
 
     def set_firework_type(self, firework_type: FireworkType):
         """
@@ -425,6 +751,14 @@ class FireworkEffect(BaseEffect):
         if firework_rate > 0.0 and firework_rate <= 1.0:
             self.firework_rate = firework_rate
 
+    def set_allowed_firework_types(self, allowed_firework_types):
+        """
+        Function to set the chosen firework types of the effect
+        """
+        allowed_firework_types = [ft for ft in allowed_firework_types if ft in valid_firework_types]
+        if len(allowed_firework_types) > 0:
+            self.allowed_firework_types = allowed_firework_types
+
     def render_frame(self, frame_number):
         """
         Renders the background to the screen
@@ -437,7 +771,8 @@ class FireworkEffect(BaseEffect):
                     height=self.buffer.height(),
                     width=self.buffer.width(),
                     firework_color_type=self.firework_color_type,
-                    color_enabled=self.color_enabled
+                    color_enabled=self.color_enabled,
+                    allowed_firework_types=self.allowed_firework_types
                 )
             )
 
