@@ -30,8 +30,10 @@ jobs:
         
     - name: Setup Sphinx documentation structure
       run: |
+        ls -a
         mkdir -p docs
         cd docs
+        ls -a
         
         sphinx-quickstart -q -p "bruhanimate" -a "Ethan Christensen" -v 1.0 -r 1.0 -l en --ext-autodoc --ext-viewcode --makefile --batchfile --sep
         
