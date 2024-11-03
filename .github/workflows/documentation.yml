@@ -19,7 +19,7 @@ jobs:
           echo "Listing root directory contents:"
           ls -al
           echo "Listing docs directory contents:"
-          ls -al docs/
+          ls -al bruhanimate/
       - name: Sphinx build
         run: |
           sphinx-build docs _build
