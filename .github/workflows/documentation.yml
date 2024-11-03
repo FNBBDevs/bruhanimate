@@ -71,10 +71,12 @@ jobs:
 
     - name: Generate .rst files with sphinx-apidoc
       run: |
+        ls -a
         sphinx-apidoc -o docs/source bruhanimate/
 
     - name: Generate Documentation
       run: |
+        ls -a
         cd docs
         make html
         
