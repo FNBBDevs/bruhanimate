@@ -1,5 +1,9 @@
 name: Generate Sphinx Documentation
 
+# Add permissions configuration
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ main ]
@@ -25,22 +29,17 @@ jobs:
         
     - name: Setup Sphinx documentation structure
       run: |
-        # Create docs directory if it doesn't exist
         mkdir -p docs
         cd docs
         
-        # Only initialize sphinx if conf.py doesn't exist
         if [ ! -f "conf.py" ]; then
-          # Create default sphinx structure non-interactively
           sphinx-quickstart -q -p "Your Project Name" -a "Your Name" -v 1.0 -r 1.0 -l en --ext-autodoc --ext-viewcode --makefile --batchfile --sep
           
-          # Update conf.py with some common settings
           echo "import os" >> conf.py
           echo "import sys" >> conf.py
           echo "sys.path.insert(0, os.path.abspath('..'))" >> conf.py
           echo "html_theme = 'sphinx_rtd_theme'" >> conf.py
           
-          # Create a basic index.rst if it doesn't exist
           if [ ! -f "index.rst" ]; then
             echo "Welcome to Your Project's documentation!" > index.rst
             echo "=====================================" >> index.rst
