@@ -89,6 +89,8 @@
 
 <span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">VALID_DIRECTIONS</span>
 <span class="kn">from</span> <span class="nn">.base_effect</span> <span class="kn">import</span> <span class="n">BaseEffect</span>
+<span class="kn">from</span> <span class="nn">..bruhutil.bruhffer</span> <span class="kn">import</span> <span class="n">Buffer</span>
+
 
 
 <div class="viewcode-block" id="OffsetEffect">
@@ -99,16 +101,26 @@
 <span class="sd">    :new-param direction: which way the offset should go.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;right&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the offset effect.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            buffer (Buffer): Effect buffer to push updates to.</span>
+<span class="sd">            background (str): Character or string to use as the background.</span>
+<span class="sd">            direction (str): Direction for the effect, defaults to right.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">OffsetEffect</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="n">direction</span> <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">VALID_DIRECTIONS</span> <span class="k">else</span> <span class="s2">&quot;right&quot;</span>
 
 <div class="viewcode-block" id="OffsetEffect.update_direction">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.OffsetEffect.update_direction">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to update the direction of the offset</span>
-<span class="sd">        :param direction: East / West</span>
+<span class="sd">        Function to update the direction of the offset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            direction (str): Direction the background text should go.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="n">direction</span> <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">VALID_DIRECTIONS</span> <span class="k">else</span> <span class="s2">&quot;right&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">clear_buffer</span><span class="p">()</span></div>
@@ -116,9 +128,12 @@
 
 <div class="viewcode-block" id="OffsetEffect.render_frame">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.OffsetEffect.render_frame">[docs]</a>
-    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to render the next frame of the Offset effect</span>
+<span class="sd">        Function to render the frame based on the current direction and frame number.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_number (int): Current frame number of the animation. Not used by the effect, but required for backwards compatibility.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()):</span>
             <span class="n">row</span> <span class="o">=</span> <span class="p">(</span>

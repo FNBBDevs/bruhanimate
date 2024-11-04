@@ -88,12 +88,23 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">.base_effect</span> <span class="kn">import</span> <span class="n">BaseEffect</span>
+<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">Buffer</span>
 
 
 <div class="viewcode-block" id="Line">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Line">[docs]</a>
 <span class="k">class</span> <span class="nc">Line</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_point</span><span class="p">,</span> <span class="n">end_point</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing a line segment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_point</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">end_point</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a Line object with the given start and end points.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            start_point (tuple[int]): Start point of the line segment as a tuple (x, y).</span>
+<span class="sd">            end_point (tuple[int]): End point of the line segment as a tuple (x, y).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">start_point</span> <span class="ow">and</span> <span class="n">end_point</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start_point</span> <span class="o">=</span> <span class="p">(</span><span class="n">start_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">start_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">end_point</span> <span class="o">=</span> <span class="p">(</span><span class="n">end_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">end_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
@@ -103,7 +114,14 @@
 
 <div class="viewcode-block" id="Line.update_points">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Line.update_points">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_point</span><span class="p">,</span> <span class="n">end_point</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_point</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">end_point</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the points of the line segment with new values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            start_point (tuple[int]): New start point of the line segment as a tuple (x, y).</span>
+<span class="sd">            end_point (tuple[int]): New end point of the line segment as a tuple (x, y).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_point</span> <span class="o">=</span> <span class="p">(</span><span class="n">start_point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">start_point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">end_point</span> <span class="o">=</span> <span class="p">(</span><span class="n">end_point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">end_point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
 
@@ -111,6 +129,12 @@
 <div class="viewcode-block" id="Line.get_points">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Line.get_points">[docs]</a>
     <span class="k">def</span> <span class="nf">get_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the start and end points of the line segment.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple[tuple[int], tuple[int]]: The start and end points of the line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_point</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_point</span></div>
 </div>
 
@@ -119,7 +143,16 @@
 <div class="viewcode-block" id="DrawLinesEffect">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.DrawLinesEffect">[docs]</a>
 <span class="k">class</span> <span class="nc">DrawLinesEffect</span><span class="p">(</span><span class="n">BaseEffect</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">,</span> <span class="n">char</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">char</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">thin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the DrawLinesEffect class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            buffer (Buffer): Effect buffer to push updates to.</span>
+<span class="sd">            background (str): Character or string to use as the background.</span>
+<span class="sd">            char (str, optional): Character to use for line drawing. Defaults to None.</span>
+<span class="sd">            thin (bool, optional): Whether or not the line should be thin. Defaults to False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">DrawLinesEffect</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char</span> <span class="o">=</span> <span class="n">char</span>
@@ -127,13 +160,26 @@
 
 <div class="viewcode-block" id="DrawLinesEffect.add_line">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.DrawLinesEffect.add_line">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_point</span><span class="p">,</span> <span class="n">end_point</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_point</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">end_point</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a line to the effect.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            start_point (tuple[int]): Start point of the line as a tuple (x, y).</span>
+<span class="sd">            end_point (tuple[int]): End point of the line as a tuple (x, y).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Line</span><span class="p">(</span><span class="n">start_point</span><span class="p">,</span> <span class="n">end_point</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="DrawLinesEffect.render_frame">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.DrawLinesEffect.render_frame">[docs]</a>
-    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Renders the effect for a given frame number.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_number (int): The current frame number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">frame_number</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">put_at</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">width</span><span class="p">())</span>

@@ -105,7 +105,23 @@
 <div class="viewcode-block" id="Particle">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Particle">[docs]</a>
 <span class="k">class</span> <span class="nc">Particle</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">life</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class representing a particle in a firework.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dy</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">symbol</span><span class="p">:</span> <span class="nb">chr</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">life</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a particle with the given parameters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (int): The x position of the particle.</span>
+<span class="sd">            y (int): The y position of the particle.</span>
+<span class="sd">            dx (float): The horizontal velocity of the particle.</span>
+<span class="sd">            dy (float): The vertical velocity of the particle.</span>
+<span class="sd">            width (int): The width of the canvas or screen.</span>
+<span class="sd">            height (int): The height of the canvas or screen.</span>
+<span class="sd">            symbol (chr, optional): The character that will be deplayed to the screen. Defaults to &quot;*&quot;.</span>
+<span class="sd">            life (int, optional): How long this particle can live for (frames). Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">previous_x</span> <span class="o">=</span> <span class="n">x</span>
@@ -120,16 +136,17 @@
 <div class="viewcode-block" id="Particle.update">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Particle.update">[docs]</a>
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Update position</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to update a particle and it&#39;s parameters each frame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">previous_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">previous_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span>
-        <span class="c1"># Apply gravity to simulate a slight downward motion</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">+=</span> <span class="mf">0.05</span>
-        <span class="c1"># Decrease life</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">life</span> <span class="o">-=</span> <span class="mi">1</span>
-        <span class="c1"># Flicker effect</span>
+
+        <span class="c1"># This is what flickers the particles, like a firework</span>
         <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span> <span class="k">else</span> <span class="s2">&quot;.&quot;</span></div>
 
@@ -137,6 +154,9 @@
 <div class="viewcode-block" id="Particle.is_alive">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Particle.is_alive">[docs]</a>
     <span class="k">def</span> <span class="nf">is_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether or not the particle is still alive. A Particle is alive if it has life left and is within bounds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Particle is alive if it has life left and is within bounds</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">life</span> <span class="o">&gt;</span> <span class="mi">0</span>
@@ -150,7 +170,22 @@
 <div class="viewcode-block" id="Firework">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework">[docs]</a>
 <span class="k">class</span> <span class="nc">Firework</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">firework_type</span><span class="p">:</span> <span class="n">FireworkType</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">firework_color_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">color_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">allowed_firework_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Firework class. Responsible for creating and updating fireworks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">firework_type</span><span class="p">:</span> <span class="n">FireworkType</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">firework_color_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">color_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">allowed_firework_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Firework object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            firework_type (FireworkType): The type of firework this object should be. (eg. &#39;random&#39;, &#39;ring&#39;, &#39;snowflake&#39;).</span>
+<span class="sd">            height (int): The height of the display area (generally the terminal window).</span>
+<span class="sd">            width (int): The width of the display area (generally the terminal window).</span>
+<span class="sd">            firework_color_type (str, optional): The type of color to be applied to the Firework. Defaults to None.</span>
+<span class="sd">            color_enabled (bool, optional): Whether of not the Firework should have color. Defaults to False.</span>
+<span class="sd">            allowed_firework_types (List[str], optional): List of allowed firework types in the instance firework_type is &#39;random&#39;. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
@@ -182,6 +217,12 @@
 <div class="viewcode-block" id="Firework.update">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.update">[docs]</a>
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to update the firework&#39;s state.</span>
+<span class="sd">        If the firework hasn&#39;t exploded yet, then it&#39;s trail needs to be advanced.</span>
+<span class="sd">        If the firework has exploded, then we need to update the particles that make</span>
+<span class="sd">        up the firework.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">exploded</span><span class="p">:</span>
             <span class="c1"># Store previous position</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">previous_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
@@ -214,6 +255,9 @@
 <div class="viewcode-block" id="Firework.move_straight">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.move_straight">[docs]</a>
     <span class="k">def</span> <span class="nf">move_straight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to move the firework trail straight up and down.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Move upward with slight angle</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">*</span> <span class="mf">0.5</span></div>
@@ -222,6 +266,9 @@
 <div class="viewcode-block" id="Firework.move_arc">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.move_arc">[docs]</a>
     <span class="k">def</span> <span class="nf">move_arc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to move the firework trail in an arcing trajectory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Create arcing trajectory</span>
         <span class="n">progress</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">peak</span><span class="p">)</span>
         <span class="n">arc_offset</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">progress</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span>
@@ -232,6 +279,9 @@
 <div class="viewcode-block" id="Firework.move_zigzag">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.move_zigzag">[docs]</a>
     <span class="k">def</span> <span class="nf">move_zigzag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to move the firework trail in a zigzag pattern.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Create zigzag pattern</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zigzag_phase</span> <span class="o">+=</span> <span class="mf">0.2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span>
@@ -241,6 +291,10 @@
 <div class="viewcode-block" id="Firework.create_particles">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.create_particles">[docs]</a>
     <span class="k">def</span> <span class="nf">create_particles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to create the particles for the firework after it has</span>
+<span class="sd">        reached it&#39;s peak. It is determined by the firework_type parameter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s1">&#39;circular&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">circular_explosion</span><span class="p">()</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explosion_type</span> <span class="o">==</span> <span class="s1">&#39;ring&#39;</span><span class="p">:</span>
@@ -304,6 +358,9 @@
 <div class="viewcode-block" id="Firework.circular_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.circular_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">circular_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a circular explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
             <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
             <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
@@ -315,6 +372,9 @@
 <div class="viewcode-block" id="Firework.ring_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.ring_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">ring_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a ring explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">12</span><span class="p">):</span>  <span class="c1"># Ring pattern with evenly spaced particles</span>
             <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
             <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span>
@@ -325,6 +385,9 @@
 <div class="viewcode-block" id="Firework.starburst_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.starburst_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">starburst_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a starburst explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
             <span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">45</span>
         <span class="p">):</span>  <span class="c1"># Starburst with particles in specific directions</span>
@@ -338,6 +401,9 @@
 <div class="viewcode-block" id="Firework.cone_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.cone_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">cone_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a cone explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
             <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
                 <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">6</span>
@@ -351,6 +417,9 @@
 <div class="viewcode-block" id="Firework.spiral_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.spiral_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">spiral_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a spiral explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
             <span class="n">angle</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mf">0.3</span>  <span class="c1"># Gradually increasing angle for spiral effect</span>
             <span class="n">speed</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">i</span>  <span class="c1"># Particles spread out as the spiral grows</span>
@@ -362,6 +431,9 @@
 <div class="viewcode-block" id="Firework.wave_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.wave_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">wave_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a wave explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
             <span class="n">angle</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mf">0.2</span>  <span class="c1"># Slightly increase angle for wave effect</span>
             <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
@@ -373,6 +445,9 @@
 <div class="viewcode-block" id="Firework.burst_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.burst_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">burst_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a burst explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
             <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>  <span class="c1"># Random angles for burst</span>
             <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
@@ -387,6 +462,9 @@
 <div class="viewcode-block" id="Firework.cross_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.cross_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">cross_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a cross explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">270</span><span class="p">]:</span>  <span class="c1"># Particles in cross directions</span>
             <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
             <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
@@ -398,6 +476,9 @@
 <div class="viewcode-block" id="Firework.flower_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.flower_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">flower_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a flower explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">30</span><span class="p">):</span>
             <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
             <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
@@ -414,6 +495,9 @@
 <div class="viewcode-block" id="Firework.double_ring_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.double_ring_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">double_ring_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a double ring explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">radius_multiplier</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">]:</span>  <span class="c1"># Two rings at slightly different radii</span>
             <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">15</span><span class="p">):</span>
                 <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
@@ -426,6 +510,9 @@
 <div class="viewcode-block" id="Firework.heart_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.heart_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">heart_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a heart explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>  <span class="c1"># Parametric heart shape</span>
             <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
             <span class="n">dx</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">**</span> <span class="mi">3</span> <span class="o">*</span> <span class="mf">0.1</span>
@@ -436,6 +523,9 @@
 <div class="viewcode-block" id="Firework.star_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.star_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">star_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a star explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>  <span class="c1"># 5-point star</span>
             <span class="n">angle</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">5</span>
             <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.5</span>
@@ -448,6 +538,9 @@
 <div class="viewcode-block" id="Firework.fireball_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.fireball_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">fireball_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a fireball explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>  <span class="c1"># Dense number of particles</span>
             <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
             <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
@@ -459,6 +552,9 @@
 <div class="viewcode-block" id="Firework.diamond_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.diamond_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">diamond_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a diamond explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span> <span class="mi">225</span><span class="p">,</span> <span class="mi">315</span><span class="p">]:</span>  <span class="c1"># Four main directions for diamond points</span>
             <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
             <span class="n">dx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.5</span>
@@ -474,6 +570,9 @@
 <div class="viewcode-block" id="Firework.burst_with_shockwave_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.burst_with_shockwave_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">burst_with_shockwave_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a burst with shockwave explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Main burst particles</span>
         <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span>
             <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
@@ -493,6 +592,9 @@
 <div class="viewcode-block" id="Firework.snowflake_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.snowflake_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">snowflake_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a snowflake explosion effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">60</span><span class="p">):</span>  <span class="c1"># Six main directions</span>
             <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
             <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
@@ -511,6 +613,9 @@
 <div class="viewcode-block" id="Firework.cluster_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.cluster_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">cluster_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a cluster explosion effect with particles moving in different directions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">30</span><span class="p">):</span>
             <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
             <span class="n">speed</span> <span class="o">=</span> <span class="mf">1.2</span>
@@ -529,6 +634,9 @@
 <div class="viewcode-block" id="Firework.comet_tail_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.comet_tail_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">comet_tail_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a comet tail explosion effect with particles following a comet-like path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Main comet direction</span>
         <span class="n">comet_angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">45</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span> <span class="mi">225</span><span class="p">,</span> <span class="mi">315</span><span class="p">])</span>  <span class="c1"># Random diagonal angle for comet</span>
         <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">comet_angle</span><span class="p">)</span>
@@ -551,6 +659,9 @@
 <div class="viewcode-block" id="Firework.willow_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.willow_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">willow_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a willow explosion effect with multiple branches extending from the center</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_arms</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># Number of branches in the willow effect</span>
         <span class="n">angle_offset</span> <span class="o">=</span> <span class="mi">70</span>  <span class="c1"># Constrain angle range to mostly horizontal</span>
 
@@ -580,7 +691,9 @@
 <div class="viewcode-block" id="Firework.dna_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.dna_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">dna_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a double helix pattern resembling DNA structure&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a double helix pattern resembling DNA structure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_points</span> <span class="o">=</span> <span class="mi">30</span>
         <span class="n">radius</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="n">vertical_stretch</span> <span class="o">=</span> <span class="mf">0.5</span>
@@ -608,7 +721,9 @@
 <div class="viewcode-block" id="Firework.infinity_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.infinity_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">infinity_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an infinity symbol (∞) pattern&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an infinity symbol (∞) pattern</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_points</span> <span class="o">=</span> <span class="mi">40</span>
         <span class="n">size</span> <span class="o">=</span> <span class="mf">1.2</span>
         
@@ -625,7 +740,9 @@
 <div class="viewcode-block" id="Firework.galaxy_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.galaxy_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">galaxy_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a spiral galaxy pattern with arms and central bulge&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a spiral galaxy pattern with arms and central bulge</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Central bulge</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
             <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
@@ -649,7 +766,9 @@
 <div class="viewcode-block" id="Firework.phoenix_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.phoenix_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">phoenix_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a rising phoenix pattern with wings and tail&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a rising phoenix pattern with wings and tail</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Central rising column</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
             <span class="n">dy</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># Upward movement</span>
@@ -683,7 +802,9 @@
 <div class="viewcode-block" id="Firework.fountain_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.fountain_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">fountain_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an upward-shooting fountain pattern with cascading particles&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an upward-shooting fountain pattern with cascading particles</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_streams</span> <span class="o">=</span> <span class="mi">5</span>
         <span class="n">particles_per_stream</span> <span class="o">=</span> <span class="mi">8</span>
         
@@ -713,7 +834,9 @@
 <div class="viewcode-block" id="Firework.butterfly_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.butterfly_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">butterfly_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a butterfly pattern with wings that flutter&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a butterfly pattern with wings that flutter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Wing shape parameters</span>
         <span class="n">wing_points</span> <span class="o">=</span> <span class="mi">20</span>
         <span class="n">flutter_speed</span> <span class="o">=</span> <span class="mf">0.2</span>
@@ -747,7 +870,9 @@
 <div class="viewcode-block" id="Firework.dragon_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.dragon_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">dragon_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a dragon shape with body, wings, and fire breath&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a dragon shape with body, wings, and fire breath</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Body</span>
         <span class="n">body_length</span> <span class="o">=</span> <span class="mi">15</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">body_length</span><span class="p">):</span>
@@ -783,7 +908,9 @@
 <div class="viewcode-block" id="Firework.tornado_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.tornado_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">tornado_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a spinning tornado effect that grows wider at the top&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a spinning tornado effect that grows wider at the top</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">height_layers</span> <span class="o">=</span> <span class="mi">15</span>
         <span class="n">base_radius</span> <span class="o">=</span> <span class="mf">0.2</span>
         
@@ -810,7 +937,9 @@
 <div class="viewcode-block" id="Firework.matrix_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.matrix_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">matrix_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a Matrix-style digital rain effect&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Matrix-style digital rain effect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_streams</span> <span class="o">=</span> <span class="mi">15</span>
         <span class="n">chars_per_stream</span> <span class="o">=</span> <span class="mi">8</span>
         
@@ -840,7 +969,9 @@
 <div class="viewcode-block" id="Firework.portal_explosion">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.portal_explosion">[docs]</a>
     <span class="k">def</span> <span class="nf">portal_explosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates two connected portals with particles flowing between them&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates two connected portals with particles flowing between them</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Portal parameters</span>
         <span class="n">portal_radius</span> <span class="o">=</span> <span class="mf">1.2</span>
         <span class="n">num_particles</span> <span class="o">=</span> <span class="mi">50</span>
@@ -885,6 +1016,12 @@
 <div class="viewcode-block" id="Firework.is_active">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.is_active">[docs]</a>
     <span class="k">def</span> <span class="nf">is_active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if the portal is active (emitting particles), False otherwise.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Whether or not the firework is still alive</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Firework is active if it has not exploded or if particles are still alive</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">exploded</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
 
@@ -892,6 +1029,12 @@
 <div class="viewcode-block" id="Firework.get_colors">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.get_colors">[docs]</a>
     <span class="k">def</span> <span class="nf">get_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the colors for the firework based on its color type.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[int]: List of colors that should be used to color the firework.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">firework_color_type</span> <span class="o">==</span> <span class="s2">&quot;solid&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)]</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">firework_color_type</span> <span class="o">==</span> <span class="s2">&quot;twotone&quot;</span><span class="p">:</span>
@@ -914,6 +1057,12 @@
 <div class="viewcode-block" id="Firework.render">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Firework.render">[docs]</a>
     <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render the firework to a Buffer object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            buffer (Buffer): Buffer used to house the image effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Draw firework trail or particles in the buffer</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">exploded</span><span class="p">:</span>
             <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">:</span>
@@ -949,6 +1098,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the fireworks effect</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            buffer (Buffer): Image buffer used to push updates to</span>
+<span class="sd">            background (str): Character that should be used for the background of the buffer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FireworkEffect</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">firework_type</span><span class="p">:</span> <span class="n">FireworkType</span> <span class="o">=</span> <span class="s2">&quot;circular&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">firework_color_type</span><span class="p">:</span> <span class="n">FireworkColorType</span> <span class="o">=</span> <span class="s2">&quot;solid&quot;</span>

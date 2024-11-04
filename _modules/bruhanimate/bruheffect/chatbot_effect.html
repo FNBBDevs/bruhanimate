@@ -96,14 +96,27 @@
 
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
 <span class="kn">from</span> <span class="nn">bruhcolor</span> <span class="kn">import</span> <span class="n">bruhcolored</span>
-<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">Screen</span>
+<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">Screen</span><span class="p">,</span> <span class="n">Buffer</span>
 <span class="kn">from</span> <span class="nn">.base_effect</span> <span class="kn">import</span> <span class="n">BaseEffect</span>
 
 
 <div class="viewcode-block" id="Key">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Key">[docs]</a>
 <span class="k">class</span> <span class="nc">Key</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">representation</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing a key on the keyboard with its position and value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">representation</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a Key object with the given parameters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            character (str): The character represented by the key.</span>
+<span class="sd">            representation (list[str]): The visual representation of the key.</span>
+<span class="sd">            value (int): The value of the key.</span>
+<span class="sd">            x (int): The x-coordinate of the key on the screen.</span>
+<span class="sd">            y (int): The y-coordinate of the key on the screen.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">character</span> <span class="o">=</span> <span class="n">character</span>
@@ -121,7 +134,21 @@
 <div class="viewcode-block" id="GradientNoise">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.GradientNoise">[docs]</a>
 <span class="k">class</span> <span class="nc">GradientNoise</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">char_halt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color_halt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gradient_length</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing a noise effect with a color gradient.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">char_halt</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">color_halt</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">gradient_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a GradientNoise object with the given parameters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (int): The x-coordinate of the noise effect on the screen.</span>
+<span class="sd">            y (int): The y-coordinate of the noise effect on the screen.</span>
+<span class="sd">            length (int): The length of the noise effect on the screen.</span>
+<span class="sd">            char_halt (int, optional): The halt of characters changing (frame_number % character_halt == 0). Defaults to 1.</span>
+<span class="sd">            color_halt (int, optional): The halt of colors changing (frame_number % color_halt == 0). Defaults to 1.</span>
+<span class="sd">            gradient_length (int, optional): Length of the gradient. Defaults to 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__gradient_length</span> <span class="o">=</span> <span class="n">gradient_length</span>
@@ -192,7 +219,13 @@
     <span class="c1"># change the gradient</span>
 <div class="viewcode-block" id="GradientNoise.update_gradient">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.GradientNoise.update_gradient">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the gradient of the noise.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gradient (list[int]): The new gradient to use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__gradient</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gradient</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__gradient_length</span><span class="p">)]</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -200,6 +233,12 @@
 <div class="viewcode-block" id="GradientNoise.generate">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.GradientNoise.generate">[docs]</a>
     <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates the next frame of the noise.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_number (int): The current frame number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">done_generating</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="c1"># is it time to change the noise chars?</span>
@@ -242,6 +281,9 @@
 <div class="viewcode-block" id="Loading">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.Loading">[docs]</a>
 <span class="k">class</span> <span class="nc">Loading</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to handle the loading animation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">animate_part</span><span class="p">:</span> <span class="n">GradientNoise</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">animate_part</span> <span class="o">=</span> <span class="n">animate_part</span>
 
@@ -262,7 +304,20 @@
 <div class="viewcode-block" id="StringStreamer">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.StringStreamer">[docs]</a>
 <span class="k">class</span> <span class="nc">StringStreamer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to handle the string streamer animation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start_frame</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">halt</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the StringStreamer class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (int): The x position of the string streamer.</span>
+<span class="sd">            y (int): The y position of the string streamer.</span>
+<span class="sd">            text (str): The text to be displayed.</span>
+<span class="sd">            start_frame (int): The frame number to start the animation.</span>
+<span class="sd">            halt (int, optional): Halt value to delay the animation (frame_number &amp; halt == 0). Defaults to 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
@@ -275,6 +330,12 @@
 <div class="viewcode-block" id="StringStreamer.generate">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.StringStreamer.generate">[docs]</a>
     <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the string streamer animation for a given frame number.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame (int): The current frame number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">complete</span> <span class="ow">or</span> <span class="n">frame</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__start_frame</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">frame</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__halt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -288,12 +349,23 @@
 <div class="viewcode-block" id="OllamaApiCaller">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.OllamaApiCaller">[docs]</a>
 <span class="k">class</span> <span class="nc">OllamaApiCaller</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to interact with the Ollama API.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">use_message_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">message_history_cap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the OllamaApiCaller class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model (str): The Ollama model to use.</span>
+<span class="sd">            use_message_history (bool, optional): Whether or not to use message history. Defaults to False.</span>
+<span class="sd">            message_history_cap (int, optional): How many messages should we use, sliding window. Defaults to 5.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://127.0.0.1:11434/api/chat&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">busy</span> <span class="o">=</span> <span class="kc">False</span>
@@ -308,6 +380,17 @@
     <span class="k">def</span> <span class="nf">chat</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">previous_messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a chat message to the Ollama API and get a response.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message (str): The message to send.</span>
+<span class="sd">            user (str | None): The user who sent the message.</span>
+<span class="sd">            previous_messages (list[str] | None, optional): Past sent messages. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Response from ollama.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">busy</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;running&quot;</span>
         <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
@@ -341,6 +424,9 @@
 <div class="viewcode-block" id="OpenAiCaller">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.OpenAiCaller">[docs]</a>
 <span class="k">class</span> <span class="nc">OpenAiCaller</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to interact with the OpenAI API using the `openai` Python package.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">client</span><span class="p">:</span> <span class="n">openai</span><span class="o">.</span><span class="n">OpenAI</span> <span class="o">|</span> <span class="n">openai</span><span class="o">.</span><span class="n">AzureOpenAI</span><span class="p">,</span>
@@ -348,6 +434,15 @@
         <span class="n">use_message_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">message_history_cap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the OpenAiCaller class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            client (openai.OpenAI | openai.AzureOpenAI): The OpenAI client object.</span>
+<span class="sd">            model (str): The OpenAI model to be used.</span>
+<span class="sd">            use_message_history (bool, optional): Whether or not to use message history. Defaults to False.</span>
+<span class="sd">            message_history_cap (int, optional): Amount of messages from history to use, sliding window. Defaults to 5.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">client</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">busy</span> <span class="o">=</span> <span class="kc">False</span>
@@ -360,6 +455,16 @@
 <div class="viewcode-block" id="OpenAiCaller.chat">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.OpenAiCaller.chat">[docs]</a>
     <span class="k">def</span> <span class="nf">chat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a chat message to the OpenAI API and get a response.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message (str): The message to be sent to the OpenAI API.</span>
+<span class="sd">            user (str | None): The user who sent the message.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The response from the OpenAI API.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">busy</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;running&quot;</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
@@ -394,7 +499,19 @@
 <div class="viewcode-block" id="ChatbotEffect">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect">[docs]</a>
 <span class="k">class</span> <span class="nc">ChatbotEffect</span><span class="p">(</span><span class="n">BaseEffect</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">Screen</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">back_buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to create a chatbot effect.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">Screen</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">,</span> <span class="n">back_buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the ChatbotEffect class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            screen (Screen): Our instance of the terminal window</span>
+<span class="sd">            buffer (Buffer): Effect buffer to push updates to.</span>
+<span class="sd">            back_buffer (Buffer): The buffer to push the effect updates to.</span>
+<span class="sd">            background (str, optional): Character or string to use for the background. Defaults to &quot; &quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ChatbotEffect</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">back_buffer</span> <span class="o">=</span> <span class="n">back_buffer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">screen</span>
@@ -467,6 +584,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">avatar_placed</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__expand_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="o">|</span><span class="nb">str</span><span class="p">],</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mul</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Expands a list by adding `n` elements to the end of it, each multiplied by `mul`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            original_list (list[int | str]): The list to be expanded.</span>
+<span class="sd">            n (int): The number of elements to add to the end of the list.</span>
+<span class="sd">            mul (int, optional): The multiplier for each added element. Defaults to 1.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            _type_: _description_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">original_list</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mul</span><span class="p">):</span>
@@ -486,6 +613,20 @@
         <span class="n">use_message_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">message_history_cap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the properties for the chatbot.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            interface (str | None): The interface type, e.g., &quot;OpenAI&quot; or &quot;Azure OpenAI&quot;.</span>
+<span class="sd">            model (str): The name of the AI model to use.</span>
+<span class="sd">            user (str | None, optional): The name of the user. Defaults to None.</span>
+<span class="sd">            client (openai.OpenAI | openai.AzureOpenAI | None, optional): The client to use. Defaults to None.</span>
+<span class="sd">            use_message_history (bool, optional): Whether or not to use message history. Defaults to False.</span>
+<span class="sd">            message_history_cap (int, optional): How many messages from history to use, sliding window. Defaults to 5.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: If the interface is not recognized, an exception will be raised.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">interface</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">interface</span>
         <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
@@ -513,12 +654,24 @@
 <div class="viewcode-block" id="ChatbotEffect.set_second_effect">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_second_effect">[docs]</a>
     <span class="k">def</span> <span class="nf">set_second_effect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">effect</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the second effect for the chatbot.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            effect (str): The effect to use</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">second_effect</span> <span class="o">=</span> <span class="n">effect</span></div>
 
 
 <div class="viewcode-block" id="ChatbotEffect.set_chatbot_print_halt">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_chatbot_print_halt">[docs]</a>
     <span class="k">def</span> <span class="nf">set_chatbot_print_halt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">halt</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the chatbot print halt value to control how often it prints messages.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            halt (int): (frame_number % halt == 0)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_print_halt</span> <span class="o">=</span> <span class="n">halt</span></div>
 
 
@@ -527,6 +680,13 @@
     <span class="k">def</span> <span class="nf">set_gradient_noise_halts</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">char_halt</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">color_halt</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the gradient noise halts for character and color shifts.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            char_halt (int | None, optional): Sets the character halt for gradient noise. Defaults to None.</span>
+<span class="sd">            color_halt (int | None, optional): Sets the color halt for gradient noise. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">char_halt</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gradient_noise_char_halt</span> <span class="o">=</span> <span class="n">char_halt</span>
         <span class="k">if</span> <span class="n">color_halt</span><span class="p">:</span>
@@ -546,6 +706,19 @@
         <span class="n">user_avatar_color</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">user_avatar_text_color</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the colors for the chatbot and user messages.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chatbot_text_color (int | str | None, optional): Color of chatbot output text. Defaults to None.</span>
+<span class="sd">            chatbot_background_color (int | str | None, optional): Background of chatbot output text. Defaults to None.</span>
+<span class="sd">            chatbot_avatar_color (int | str | None, optional): Text color of avatar logo. Defaults to None.</span>
+<span class="sd">            chatbot_avatar_text_color (int | str | None, optional): Background color of avatar logo. Defaults to None.</span>
+<span class="sd">            user_text_color (int | str | None, optional): Color of user text. Defaults to None.</span>
+<span class="sd">            user_background_color (int | str | None, optional): Background color of user text. Defaults to None.</span>
+<span class="sd">            user_avatar_color (int | str | None, optional): Text color of user avatar. Defaults to None.</span>
+<span class="sd">            user_avatar_text_color (int | str | None, optional): Background color of user avatar. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">chatbot_text_color</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">chatbot_text_color</span> <span class="o">=</span> <span class="n">chatbot_text_color</span>
         <span class="k">if</span> <span class="n">chatbot_background_color</span><span class="p">:</span>
@@ -567,6 +740,12 @@
 <div class="viewcode-block" id="ChatbotEffect.set_avatar_properties">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_avatar_properties">[docs]</a>
     <span class="k">def</span> <span class="nf">set_avatar_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set avatar properties for user and chatbot.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            size (int): Length of the avatars on left side of screen.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span> <span class="o">=</span> <span class="n">size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span>
         <span class="k">for</span> <span class="n">ydx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">height</span><span class="p">):</span>
@@ -579,18 +758,37 @@
 <div class="viewcode-block" id="ChatbotEffect.set_chatbot_stats">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_chatbot_stats">[docs]</a>
     <span class="k">def</span> <span class="nf">set_chatbot_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set chatbot stats on the right side of screen.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            show (bool, optional): Whether or not to show chatbot stats. Defaults to False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_stats</span> <span class="o">=</span> <span class="n">show</span></div>
 
 
 <div class="viewcode-block" id="ChatbotEffect.set_chatbot_blink_halt">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_chatbot_blink_halt">[docs]</a>
     <span class="k">def</span> <span class="nf">set_chatbot_blink_halt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">halt</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set chatbot blink and halt properties.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            halt (int): (frame_number % halt == 0)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">blink_halt</span> <span class="o">=</span> <span class="n">halt</span></div>
 
 
 <div class="viewcode-block" id="ChatbotEffect.set_divider_flag">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_divider_flag">[docs]</a>
     <span class="k">def</span> <span class="nf">set_divider_flag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">divider</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">divider_character</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the divider flag and character for screen.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            divider (bool): Whether or not to show the divider.</span>
+<span class="sd">            divider_character (str, optional): Character to use for the divider. Defaults to &quot;-&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">divider</span> <span class="o">=</span> <span class="n">divider</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">divider_character</span> <span class="o">=</span> <span class="n">divider_character</span></div>
 
@@ -598,6 +796,13 @@
 <div class="viewcode-block" id="ChatbotEffect.set_chatbot_cursor_colors">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_chatbot_cursor_colors">[docs]</a>
     <span class="k">def</span> <span class="nf">set_chatbot_cursor_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_one</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color_two</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the colors for chatbot cursor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            color_one (int | str): First color of cursor.</span>
+<span class="sd">            color_two (int | str): Second color of cursor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">blink_color_one</span> <span class="o">=</span> <span class="n">color_one</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">blink_color_two</span> <span class="o">=</span> <span class="n">color_two</span></div>
 
@@ -605,11 +810,27 @@
 <div class="viewcode-block" id="ChatbotEffect.set_chatbot_text_gradient">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.set_chatbot_text_gradient">[docs]</a>
     <span class="k">def</span> <span class="nf">set_chatbot_text_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="o">|</span><span class="nb">str</span><span class="p">],</span> <span class="n">mul</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the text color for chatbot to use a gradient.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gradient (list[int | str]): Gradient color to use for chatbot loading.</span>
+<span class="sd">            mul (int): Multiplier for the gradient effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient_text_color</span> <span class="o">=</span> <span class="n">gradient</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient_mul</span> <span class="o">=</span> <span class="n">mul</span></div>
 
 
-    <span class="k">def</span> <span class="nf">__handle_keyboard_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__handle_keyboard_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle the keyboard input and return a result.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            result (int): Result from pressing down keyboard from win32 package.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Something . . . </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="o">-</span><span class="mi">300</span><span class="p">:</span>  <span class="c1"># backspace</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_cursor_x_idx</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_size</span><span class="p">:</span>
@@ -683,6 +904,9 @@
                 <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__scroll_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scroll up the display by one line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">first_key</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">last_key</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">first_key</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -699,6 +923,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">current_bottom_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_bottom_y</span> <span class="o">-</span> <span class="mi">1</span>
 
     <span class="k">def</span> <span class="nf">__scroll_down</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scroll down the display by one line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">last_key</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="p">[</span><span class="n">last_key</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Key</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)],</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">),</span> <span class="n">x</span><span class="o">=</span><span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">last_key</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -716,12 +943,21 @@
 <div class="viewcode-block" id="ChatbotEffect.scroll_keys">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.scroll_keys">[docs]</a>
     <span class="k">def</span> <span class="nf">scroll_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shift</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scroll the keys up or down by one line</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            shift (int, optional): How much to scroll. Defaults to 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__scroll_down</span><span class="p">()</span> <span class="k">if</span> <span class="n">shift</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scroll_up</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ChatbotEffect.place_all_keys">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.place_all_keys">[docs]</a>
     <span class="k">def</span> <span class="nf">place_all_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Place all keys on to the buffer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_bottom_y</span> <span class="ow">or</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_top_y</span><span class="p">:</span>
                 <span class="k">continue</span>
@@ -738,7 +974,13 @@
 
 <div class="viewcode-block" id="ChatbotEffect.render_frame">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.ChatbotEffect.render_frame">[docs]</a>
-    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render the current state of the buffer to the terminal.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_number (int): The frame number to render.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">clear_buffer</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar_placed</span><span class="p">:</span>

@@ -90,7 +90,7 @@
 <span class="kn">import</span> <span class="nn">random</span>
 
 <span class="kn">from</span> <span class="nn">bruhcolor</span> <span class="kn">import</span> <span class="n">bruhcolored</span>
-<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">LIFE_COLORS</span><span class="p">,</span> <span class="n">LIFE_SCALES</span>
+<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">LIFE_COLORS</span><span class="p">,</span> <span class="n">LIFE_SCALES</span><span class="p">,</span> <span class="n">Buffer</span>
 <span class="kn">from</span> <span class="nn">.base_effect</span> <span class="kn">import</span> <span class="n">BaseEffect</span>
 
 
@@ -103,13 +103,24 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">buffer</span><span class="p">,</span>
-        <span class="n">background</span><span class="p">,</span>
-        <span class="n">decay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">color</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">color_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">scale</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
+        <span class="n">buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">,</span>
+        <span class="n">background</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">decay</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">color</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">color_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;random&quot;</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the Game of Life effect with a buffer and background color.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            buffer (Buffer): Effect buffer to push updates to.</span>
+<span class="sd">            background (str): Character of string to use as the background.</span>
+<span class="sd">            decay (bool, optional): Whether or not cells should decay. Defaults to False.</span>
+<span class="sd">            color (bool, optional): Whether or not the decay should use color. Defaults to False.</span>
+<span class="sd">            color_type (str, optional): Type of color scale to use. Defaults to None.</span>
+<span class="sd">            scale (str, optional): Type of gray scale to use. Defaults to &quot;random&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">GameOfLifeEffect</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">decay</span> <span class="o">=</span> <span class="n">decay</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
@@ -134,7 +145,7 @@
 
     <span class="k">def</span> <span class="nf">_set_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to set the attributes of the effect</span>
+<span class="sd">        Function to set the attributes of the effect.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">grey_scale</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">LIFE_SCALES</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">LIFE_SCALES</span><span class="o">.</span><span class="n">keys</span><span class="p">()))]</span>
@@ -148,11 +159,14 @@
 
 <div class="viewcode-block" id="GameOfLifeEffect.update_decay">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.GameOfLifeEffect.update_decay">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_decay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decay</span><span class="p">,</span> <span class="n">color_type</span><span class="o">=</span><span class="s2">&quot;GREYSCALE&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_decay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decay</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">color_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;GREYSCALE&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;random&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to enable to decay and select the color map</span>
-<span class="sd">        :param decay: True / False</span>
-<span class="sd">        :param color_type: color map for the effect</span>
+<span class="sd">        Function to enable the decay and select the color map.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            decay (bool): Whether or not the cell should decay</span>
+<span class="sd">            color_type (str, optional): Type of color to use. Defaults to &quot;GREYSCALE&quot;.</span>
+<span class="sd">            scale (str, optional): Type of scale to use. Defaults to &quot;random&quot;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">decay</span> <span class="o">=</span> <span class="n">decay</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
@@ -163,16 +177,26 @@
 
 <div class="viewcode-block" id="GameOfLifeEffect.update_rules">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.GameOfLifeEffect.update_rules">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">life_rule</span><span class="p">,</span> <span class="n">death_rule</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">life_rule</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">death_rule</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to update the rules for life and death.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            life_rule (list[int]): Lower and upper bound for number of neighbors that lead to life.</span>
+<span class="sd">            death_rule (list[int]): Lower and upper bound for number of neighbors that lead to death.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="s2">&quot;life&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">life_rule</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="s2">&quot;death&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">death_rule</span></div>
 
 
 <div class="viewcode-block" id="GameOfLifeEffect.render_frame">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.GameOfLifeEffect.render_frame">[docs]</a>
-    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to render the next frame of the GOL effect</span>
+<span class="sd">        Function to render the next frame of the GOL effect.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_number (int): The current frame number to render.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">frame_number</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># INITIALIZE THE GAME</span>
             <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()):</span>

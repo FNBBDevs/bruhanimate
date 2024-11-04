@@ -91,19 +91,26 @@
 
 <span class="kn">from</span> <span class="nn">bruhcolor</span> <span class="kn">import</span> <span class="n">bruhcolored</span>
 <span class="kn">from</span> <span class="nn">.base_effect</span> <span class="kn">import</span> <span class="n">BaseEffect</span>
+<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">Buffer</span>
 
 
 <div class="viewcode-block" id="NoiseEffect">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.NoiseEffect">[docs]</a>
 <span class="k">class</span> <span class="nc">NoiseEffect</span><span class="p">(</span><span class="n">BaseEffect</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class for generating noise.</span>
-<span class="sd">    :param intensity: randomness for the noise, higher the value the slower the effect (due to computation).</span>
-<span class="sd">                      Will be a value 1 - 999</span>
-<span class="sd">    :param color: whether or not ro color the noise</span>
+<span class="sd">    A noise effect that adds random pixels to the screen with a specified intensity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">,</span> <span class="n">intensity</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">intensity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the NoiseEffect class with a specified buffer, background color, noise intensity, and whether to use colors.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            buffer (Buffer): Effect buffer to push updates tol.</span>
+<span class="sd">            background (str): Character or string for background.</span>
+<span class="sd">            intensity (int, optional): How offten the nosie should update. Defaults to 200.</span>
+<span class="sd">            color (bool, optional): Whether or not the effect should use color. Defaults to False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NoiseEffect</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">=</span> <span class="p">(</span>
@@ -116,7 +123,7 @@
 
 <div class="viewcode-block" id="NoiseEffect.update_intensity">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.NoiseEffect.update_intensity">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_intensity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intensity</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_intensity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intensity</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to update the intensity of the effect</span>
 <span class="sd">        :param intensity: new intensity</span>
@@ -128,11 +135,13 @@
 
 <div class="viewcode-block" id="NoiseEffect.update_color">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.NoiseEffect.update_color">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">characters</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">characters</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to enable / disable color for the effect</span>
-<span class="sd">        :param color: True / False</span>
-<span class="sd">        :param character: True / False to make characters visable</span>
+<span class="sd">        Function to update the color and character set for the noise.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            color (bool): Whether or not the noise should use color.</span>
+<span class="sd">            characters (str): The set of characters that can be used for noise generation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">characters</span> <span class="o">=</span> <span class="n">characters</span></div>
@@ -140,9 +149,12 @@
 
 <div class="viewcode-block" id="NoiseEffect.render_frame">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.NoiseEffect.render_frame">[docs]</a>
-    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to render the next frame of the Noise effect</span>
+<span class="sd">        Function to render the frame with noise effect applied.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_number (int): The current frame number being rendered.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()):</span>

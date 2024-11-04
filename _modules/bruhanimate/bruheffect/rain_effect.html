@@ -89,7 +89,7 @@
 
 <span class="kn">import</span> <span class="nn">random</span>
 
-<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">WIND_DIRECTIONS</span>
+<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">WIND_DIRECTIONS</span><span class="p">,</span> <span class="n">Buffer</span>
 <span class="kn">from</span> <span class="nn">.base_effect</span> <span class="kn">import</span> <span class="n">BaseEffect</span>
 
 
@@ -102,17 +102,32 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">buffer</span><span class="p">,</span>
-        <span class="n">background</span><span class="p">,</span>
-        <span class="n">img_start_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">img_start_y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">img_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">img_height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">collision</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">intensity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">swells</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">wind_direction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="n">buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">,</span>
+        <span class="n">background</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">img_start_x</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">img_start_y</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">img_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">img_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">collision</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">intensity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">swells</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">wind_direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the RainEffect class with given parameters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            buffer (Buffer): Effect buffer to push updates to.</span>
+<span class="sd">            background (str): Character or string to use for the background.</span>
+<span class="sd">            img_start_x (int, optional): Where the image starts on the x axis. Defaults to None.</span>
+<span class="sd">            img_start_y (int, optional): Where the image starts on the y axis. Defaults to None.</span>
+<span class="sd">            img_width (int, optional): The width of the image. Defaults to None.</span>
+<span class="sd">            img_height (int, optional): The height of the image. Defaults to None.</span>
+<span class="sd">            collision (bool, optional): Whether or not the effect should hit the image. Defaults to False.</span>
+<span class="sd">            intensity (int, optional): How intense should the rain be. Defaults to 1.</span>
+<span class="sd">            swells (bool, optional): Where or not to increase and deacrease the intensity automatically. Defaults to False.</span>
+<span class="sd">            wind_direction (str, optional): Which direction the rain should fall. Defaults to &quot;none&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RainEffect</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">image_present</span> <span class="o">=</span> <span class="p">(</span>
@@ -135,20 +150,24 @@
 
 <div class="viewcode-block" id="RainEffect.update_multiplier">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect.update_multiplier">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_multiplier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_multiplier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update the multiplier value that relates to shift amount</span>
-<span class="sd">        :param val: value to set the multiplier to</span>
+<span class="sd">        Update the multiplier value that relates to shift amount.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            val (int): multiplier value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span> <span class="o">=</span> <span class="n">val</span></div>
 
 
 <div class="viewcode-block" id="RainEffect.update_wind_direction">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect.update_wind_direction">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_wind_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_wind_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update the direction of the rain</span>
-<span class="sd">        :param dircetion: direction for the rain to fall (east, west, none)</span>
+<span class="sd">        Update the direction of the rain.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            direction (str): Direction the rain should fall.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">WIND_DIRECTIONS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wind_direction</span> <span class="o">=</span> <span class="n">direction</span>
@@ -157,7 +176,7 @@
 
     <span class="k">def</span> <span class="nf">_set_rain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function set the rain based on the intensity and wind direction</span>
+<span class="sd">        Set the rain based on intensity and wind direction.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rain</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1000</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">intensity</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
@@ -170,10 +189,12 @@
 
 <div class="viewcode-block" id="RainEffect.update_intensity">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect.update_intensity">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_intensity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intensity</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_intensity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intensity</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to update the intensity of the rain</span>
-<span class="sd">        :param intensity: intentisy value</span>
+<span class="sd">        Function to update the intensity of the rain.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            intensity (int): The intensity of the rain.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">swells</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">==</span> <span class="mi">900</span><span class="p">:</span>
@@ -190,24 +211,25 @@
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect.update_collision">[docs]</a>
     <span class="k">def</span> <span class="nf">update_collision</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">img_start_x</span><span class="p">,</span>
-        <span class="n">img_start_y</span><span class="p">,</span>
-        <span class="n">img_width</span><span class="p">,</span>
-        <span class="n">img_height</span><span class="p">,</span>
-        <span class="n">collision</span><span class="p">,</span>
-        <span class="n">smart_transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">image_buffer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">img_start_x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">img_start_y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">img_width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">img_height</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">collision</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">smart_transparent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">image_buffer</span><span class="p">:</span> <span class="n">Buffer</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to set whether or not to visually see the rain collide with the ground</span>
-<span class="sd">        or images if they are present</span>
-<span class="sd">        :param img_start_x: where the image starts on the screen</span>
-<span class="sd">        :param img_start_y: where the image starts on the screen</span>
-<span class="sd">        :param img_width:   the width of the image</span>
-<span class="sd">        :param img_height:  the height of the image</span>
-<span class="sd">        :param collision:   update collision variable</span>
-<span class="sd">        :param smart_transparent: update smart_transparent</span>
-<span class="sd">        :param image_buffer: the buffer that contains the image</span>
+<span class="sd">        or images if they are present.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            img_start_x (int): Where the image starts on the screen.</span>
+<span class="sd">            img_start_y (int): Where the image starts on the screen.</span>
+<span class="sd">            img_width (int): The width of the image.</span>
+<span class="sd">            img_height (int): The height of the image.</span>
+<span class="sd">            collision (bool): Update collision variable.</span>
+<span class="sd">            smart_transparent (bool): Update smart_transparent. Defaults to False.</span>
+<span class="sd">            image_buffer (Buffer): The buffer that contains the image. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">image_present</span> <span class="o">=</span> <span class="p">(</span>
             <span class="kc">True</span> <span class="k">if</span> <span class="n">img_start_x</span> <span class="ow">and</span> <span class="n">img_start_y</span> <span class="ow">and</span> <span class="n">img_width</span> <span class="ow">and</span> <span class="n">img_height</span> <span class="k">else</span> <span class="kc">False</span>
@@ -226,19 +248,24 @@
 
 <div class="viewcode-block" id="RainEffect.update_swells">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect.update_swells">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_swells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">swells</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_swells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">swells</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to set whether the intensity should evolve on it&#39;s own</span>
-<span class="sd">        :param swells: True / False</span>
+<span class="sd">        Function to update whether or not there are swells in the rain effect.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            swells (bool): Whether or not there are swells in the rain effect.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">swells</span> <span class="o">=</span> <span class="n">swells</span></div>
 
 
 <div class="viewcode-block" id="RainEffect.render_frame">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.RainEffect.render_frame">[docs]</a>
-    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to render the next frame of the Rain Effect</span>
+<span class="sd">        Function to render the next frame of the Rain Effect.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_number (int): The current frame number to render.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">swells</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_intensity</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>

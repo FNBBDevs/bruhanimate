@@ -91,7 +91,7 @@
 <span class="kn">import</span> <span class="nn">random</span>
 
 <span class="kn">from</span> <span class="nn">bruhcolor</span> <span class="kn">import</span> <span class="n">bruhcolored</span>
-<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">PLASMA_COLORS</span><span class="p">,</span> <span class="n">GREY_SCALES</span>
+<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">PLASMA_COLORS</span><span class="p">,</span> <span class="n">GREY_SCALES</span><span class="p">,</span> <span class="n">Buffer</span>
 <span class="kn">from</span> <span class="nn">.base_effect</span> <span class="kn">import</span> <span class="n">BaseEffect</span>
 
 
@@ -102,7 +102,14 @@
 <span class="sd">    Function to generate a plasma like effect</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the plasma effect class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            buffer (Buffer): Effect buffer to push updates to.</span>
+<span class="sd">            background (str): Character or string to use as the background.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PlasmaEffect</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="kc">False</span>
@@ -118,18 +125,27 @@
 
 <div class="viewcode-block" id="PlasmaEffect.update_info_visibility">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.PlasmaEffect.update_info_visibility">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_info_visibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_info_visibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to enable or disable info about the effect</span>
+<span class="sd">        Function to toggle visibility of info text.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            visible (bool): Toggle visibility.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">visible</span></div>
 
 
 <div class="viewcode-block" id="PlasmaEffect.update_grey_scale_size">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.PlasmaEffect.update_grey_scale_size">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_grey_scale_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_grey_scale_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to change the size of the grey scale</span>
+<span class="sd">        Function to change the size of the grey scale.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            size (int): Size of the grey scale to use.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: If the requested grey scale size is not available.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">size</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">16</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
@@ -147,13 +163,14 @@
 
 <div class="viewcode-block" id="PlasmaEffect.update_color_properties">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.PlasmaEffect.update_color_properties">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_color_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">characters</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_color</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_color_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">characters</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">random_color</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to update the color properties. random_color overrules other functions</span>
-<span class="sd">        like update greyscale size and update color</span>
-<span class="sd">        :param color: True / False to enable color</span>
-<span class="sd">        :param characters: True / False to show the characters</span>
-<span class="sd">        :param random_color: True / False to generate random colors</span>
+<span class="sd">        Function to update the color properties. random_color overrules other functions.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            color (bool): Toggle the use of colors.</span>
+<span class="sd">            characters (bool, optional): Toggle the use of characters. Defaults to True.</span>
+<span class="sd">            random_color (bool, optional): Toggle the use of random colors. Defaults to False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">random_color</span>
@@ -166,9 +183,15 @@
 
 <div class="viewcode-block" id="PlasmaEffect.update_color">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.PlasmaEffect.update_color">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to update the colors used</span>
+<span class="sd">        Function to update the color palette.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            colors (list[int]): List of RGB values for the color palette.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: If the number of colors does not match the length of the scale.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">random</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">):</span>
@@ -181,10 +204,12 @@
 
 <div class="viewcode-block" id="PlasmaEffect.update_background">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.PlasmaEffect.update_background">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_background</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">background</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_background</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update the background character(s)</span>
-<span class="sd">        :param background: the new background</span>
+<span class="sd">        Function to update the background color or character.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            background (str): Character or string to set the background to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">background</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">background_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">background</span><span class="p">)</span></div>
@@ -194,13 +219,19 @@
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.PlasmaEffect.update_plasma_values">[docs]</a>
     <span class="k">def</span> <span class="nf">update_plasma_values</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">a</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
-        <span class="n">b</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
-        <span class="n">c</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
-        <span class="n">d</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+        <span class="n">a</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+        <span class="n">b</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+        <span class="n">c</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+        <span class="n">d</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to set the plasma values</span>
+<span class="sd">        Function to set the plasma values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            a (int, optional): Value a. Defaults to random.randint(1, 50).</span>
+<span class="sd">            b (int, optional): Value b. Defaults to random.randint(1, 50).</span>
+<span class="sd">            c (int, optional): Value c. Defaults to random.randint(1, 50).</span>
+<span class="sd">            d (int, optional): Value d. Defaults to random.randint(1, 50).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span></div>
 
@@ -209,7 +240,7 @@
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.PlasmaEffect.shuffle_plasma_values">[docs]</a>
     <span class="k">def</span> <span class="nf">shuffle_plasma_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to generate a new-random set of plasma values</span>
+<span class="sd">        Function to shuffle the plasma values randomly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vals</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
@@ -221,9 +252,12 @@
 
 <div class="viewcode-block" id="PlasmaEffect.render_frame">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.PlasmaEffect.render_frame">[docs]</a>
-    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function to render the next frame of the Plasma Effect</span>
+<span class="sd">        Function to render the plasma effect frame by frame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_number (int): The current frame number.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ayo</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()):</span>
@@ -272,9 +306,19 @@
 
 <div class="viewcode-block" id="PlasmaEffect.func">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.PlasmaEffect.func">[docs]</a>
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Helper function to calculate the plasma value given the four plasma values</span>
+<span class="sd">        Generates a plasma effect using the Perlin noise algorithm.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (int): x</span>
+<span class="sd">            y (int): y</span>
+<span class="sd">            a (int): a</span>
+<span class="sd">            b (int): b</span>
+<span class="sd">            n (int): n</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: value of the Perlin noise at (x, y)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span>
             <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>

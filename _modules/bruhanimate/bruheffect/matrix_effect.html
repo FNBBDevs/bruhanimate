@@ -92,26 +92,40 @@
 
 <span class="kn">from</span> <span class="nn">bruhcolor</span> <span class="kn">import</span> <span class="n">bruhcolored</span>
 <span class="kn">from</span> <span class="nn">.base_effect</span> <span class="kn">import</span> <span class="n">BaseEffect</span>
+<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">Buffer</span>
 
 
 <div class="viewcode-block" id="MatrixEffect">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.MatrixEffect">[docs]</a>
 <span class="k">class</span> <span class="nc">MatrixEffect</span><span class="p">(</span><span class="n">BaseEffect</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Effect to mimic the cliche coding backgroud with falling random characters</span>
+<span class="sd">    Effect to mimic the cliche coding backgroud with falling random characters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">buffer</span><span class="p">,</span>
-        <span class="n">background</span><span class="p">,</span>
-        <span class="n">chracter_halt_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-        <span class="n">color_halt_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-        <span class="n">character_randomness_one</span><span class="o">=</span><span class="mf">0.70</span><span class="p">,</span>
-        <span class="n">character_randomness_two</span><span class="o">=</span><span class="mf">0.60</span><span class="p">,</span>
-        <span class="n">color_randomness</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span>
-        <span class="n">gradient_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">buffer</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">,</span>
+        <span class="n">background</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">chracter_halt_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="n">color_halt_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="n">character_randomness_one</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.70</span><span class="p">,</span>
+        <span class="n">character_randomness_two</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.60</span><span class="p">,</span>
+        <span class="n">color_randomness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.50</span><span class="p">,</span>
+        <span class="n">gradient_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the MatrixEffect class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            buffer (Buffer): Effect buffer to push changes to.</span>
+<span class="sd">            background (str): Character or string used for the background.</span>
+<span class="sd">            chracter_halt_range (tuple[int], optional): Halt range. Defaults to (1, 2).</span>
+<span class="sd">            color_halt_range (tuple[int], optional): Halt range. Defaults to (1, 2).</span>
+<span class="sd">            character_randomness_one (float, optional): Frequency to update a character. Defaults to 0.70.</span>
+<span class="sd">            character_randomness_two (float, optional): Frequency to update a character. Defaults to 0.60.</span>
+<span class="sd">            color_randomness (float, optional): Frequency to move the color gradient. Defaults to 0.50.</span>
+<span class="sd">            gradient_length (int, optional): Length of the color gradient. Defaults to 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MatrixEffect</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__character_choices</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="s2">&quot;1234567890!@#$%^&amp;*()_+-=&lt;&gt;,.:</span><span class="se">\&quot;</span><span class="s2">;&#39;</span><span class="si">{}</span><span class="s2">[]?/&quot;</span>
@@ -174,13 +188,24 @@
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.MatrixEffect.set_matrix_properties">[docs]</a>
     <span class="k">def</span> <span class="nf">set_matrix_properties</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">chacter_halt_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-        <span class="n">color_halt_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-        <span class="n">character_randomness_one</span><span class="o">=</span><span class="mf">0.70</span><span class="p">,</span>
-        <span class="n">character_randomness_two</span><span class="o">=</span><span class="mf">0.60</span><span class="p">,</span>
-        <span class="n">color_randomness</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span>
-        <span class="n">gradient_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">chacter_halt_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="n">color_halt_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="n">character_randomness_one</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.70</span><span class="p">,</span>
+        <span class="n">character_randomness_two</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.60</span><span class="p">,</span>
+        <span class="n">color_randomness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.50</span><span class="p">,</span>
+        <span class="n">gradient_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the matrix properties for the MatrixEffect.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chracter_halt_range (tuple[int], optional): Halt range. Defaults to (1, 2).</span>
+<span class="sd">            color_halt_range (tuple[int], optional): Halt range. Defaults to (1, 2).</span>
+<span class="sd">            character_randomness_one (float, optional): Frequency to update a character. Defaults to 0.70.</span>
+<span class="sd">            character_randomness_two (float, optional): Frequency to update a character. Defaults to 0.60.</span>
+<span class="sd">            color_randomness (float, optional): Frequency to move the color gradient. Defaults to 0.50.</span>
+<span class="sd">            gradient_length (int, optional): Length of the color gradient. Defaults to 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__character_randomness_one</span> <span class="o">=</span> <span class="n">character_randomness_one</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__character_randomness_two</span> <span class="o">=</span> <span class="n">character_randomness_two</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__color_randomness</span> <span class="o">=</span> <span class="n">color_randomness</span>
@@ -206,7 +231,13 @@
 
 <div class="viewcode-block" id="MatrixEffect.set_matrix_gradient">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.MatrixEffect.set_matrix_gradient">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_matrix_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">set_matrix_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the base gradient of the matrix. This will reset the current gradient and recreate it based on the new base gradient.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gradient (list[int]): List of colors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__base_gradient</span> <span class="o">=</span> <span class="n">gradient</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__gradient</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">color</span>
@@ -218,10 +249,19 @@
 <div class="viewcode-block" id="MatrixEffect.get_gradient">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.MatrixEffect.get_gradient">[docs]</a>
     <span class="k">def</span> <span class="nf">get_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current gradient.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[int]: The current gradient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__base_gradient</span></div>
 
 
     <span class="k">def</span> <span class="nf">__initialize_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the buffer with characters and colors based on the current settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">height</span><span class="p">()):</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">width</span><span class="p">()):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__buffer_characters</span><span class="p">[</span><span class="n">y</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__character_choices</span><span class="p">)</span>
@@ -237,9 +277,12 @@
 
 <div class="viewcode-block" id="MatrixEffect.render_frame">
 <a class="viewcode-back" href="../../../bruhanimate.bruheffect.html#bruhanimate.MatrixEffect.render_frame">[docs]</a>
-    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Renders the next frame for the Matrix effect into the effect buffer</span>
+<span class="sd">        Render a single frame of the matrix effect.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_number (int): The current frame number.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">frame_number</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__initialize_buffer</span><span class="p">()</span>
