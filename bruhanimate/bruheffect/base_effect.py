@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 from abc import abstractmethod
+from ..bruhutil.bruhffer import Buffer
 
 
 class BaseEffect:
@@ -22,7 +23,14 @@ class BaseEffect:
     Class for keeping track of an effect, and updataing it's buffer
     """
 
-    def __init__(self, buffer, background):
+    def __init__(self, buffer: Buffer, background: str):
+        """
+        Base class for all effects.
+
+        Args:
+            buffer (Buffer): Effect buffer to push updates to.
+            background (str): character or string to use for the background.
+        """
         self.buffer = buffer
         self.background = background
         self.background_length = len(background)
@@ -30,5 +38,5 @@ class BaseEffect:
     @abstractmethod
     def render_frame(self, frame_number):
         """
-        To be defined by each effect
+        To be defined by each effect.
         """

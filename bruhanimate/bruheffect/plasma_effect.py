@@ -18,7 +18,7 @@ import math
 import random
 
 from bruhcolor import bruhcolored
-from ..bruhutil import PLASMA_COLORS, GREY_SCALES
+from ..bruhutil import PLASMA_COLORS, GREY_SCALES, Buffer
 from .base_effect import BaseEffect
 
 
@@ -27,7 +27,14 @@ class PlasmaEffect(BaseEffect):
     Function to generate a plasma like effect
     """
 
-    def __init__(self, buffer, background):
+    def __init__(self, buffer: Buffer, background: str):
+        """
+        Initializes the plasma effect class.
+
+        Args:
+            buffer (Buffer): Effect buffer to push updates to.
+            background (str): Character or string to use as the background.
+        """
         super(PlasmaEffect, self).__init__(buffer, background)
         self.info = False
         self.random = False
@@ -41,15 +48,24 @@ class PlasmaEffect(BaseEffect):
             random.randint(1, 100),
         ]
 
-    def update_info_visibility(self, visible):
+    def update_info_visibility(self, visible: bool):
         """
-        Function to enable or disable info about the effect
+        Function to toggle visibility of info text.
+
+        Args:
+            visible (bool): Toggle visibility.
         """
         self.info = visible
 
-    def update_grey_scale_size(self, size):
+    def update_grey_scale_size(self, size: int):
         """
-        Function to change the size of the grey scale
+        Function to change the size of the grey scale.
+
+        Args:
+            size (int): Size of the grey scale to use.
+
+        Raises:
+            Exception: If the requested grey scale size is not available.
         """
         if size in [8, 10, 16]:
             self.scale = random.choice(
@@ -64,13 +80,14 @@ class PlasmaEffect(BaseEffect):
                 f"only 8, 10, and 16 are supported grey scale sizes, you provided {size}"
             )
 
-    def update_color_properties(self, color, characters=True, random_color=False):
+    def update_color_properties(self, color: bool, characters: bool = True, random_color: bool = False):
         """
-        Function to update the color properties. random_color overrules other functions
-        like update greyscale size and update color
-        :param color: True / False to enable color
-        :param characters: True / False to show the characters
-        :param random_color: True / False to generate random colors
+        Function to update the color properties. random_color overrules other functions.
+
+        Args:
+            color (bool): Toggle the use of colors.
+            characters (bool, optional): Toggle the use of characters. Defaults to True.
+            random_color (bool, optional): Toggle the use of random colors. Defaults to False.
         """
         self.color = color
         self.random = random_color
@@ -80,9 +97,15 @@ class PlasmaEffect(BaseEffect):
             self.colors = [random.randint(0, 255) for _ in range(len(self.scale))]
         self.characters = characters
 
-    def update_color(self, colors):
+    def update_color(self, colors: list[int]):
         """
-        Function to update the colors used
+        Function to update the color palette.
+
+        Args:
+            colors (list[int]): List of RGB values for the color palette.
+
+        Raises:
+            Exception: If the number of colors does not match the length of the scale.
         """
         if not self.random:
             if len(colors) == len(self.scale):
@@ -92,29 +115,37 @@ class PlasmaEffect(BaseEffect):
                     f"update_color(..) must be provided a list of {len(self.scale)} colors, you provided {len(colors)}"
                 )
 
-    def update_background(self, background):
+    def update_background(self, background: str):
         """
-        Update the background character(s)
-        :param background: the new background
+        Function to update the background color or character.
+
+        Args:
+            background (str): Character or string to set the background to.
         """
         self.background = background
         self.background_length = len(self.background)
 
     def update_plasma_values(
         self,
-        a=random.randint(1, 50),
-        b=random.randint(1, 50),
-        c=random.randint(1, 50),
-        d=random.randint(1, 50),
+        a: int = random.randint(1, 50),
+        b: int = random.randint(1, 50),
+        c: int = random.randint(1, 50),
+        d: int = random.randint(1, 50),
     ):
         """
-        Function to set the plasma values
+        Function to set the plasma values.
+
+        Args:
+            a (int, optional): Value a. Defaults to random.randint(1, 50).
+            b (int, optional): Value b. Defaults to random.randint(1, 50).
+            c (int, optional): Value c. Defaults to random.randint(1, 50).
+            d (int, optional): Value d. Defaults to random.randint(1, 50).
         """
         self.vals = [a, b, c, d]
 
     def shuffle_plasma_values(self):
         """
-        Function to generate a new-random set of plasma values
+        Function to shuffle the plasma values randomly.
         """
         self.vals = [
             random.randint(1, 50),
@@ -123,9 +154,12 @@ class PlasmaEffect(BaseEffect):
             random.randint(1, 50),
         ]
 
-    def render_frame(self, frame_number):
+    def render_frame(self, frame_number: int):
         """
-        Function to render the next frame of the Plasma Effect
+        Function to render the plasma effect frame by frame.
+
+        Args:
+            frame_number (int): The current frame number.
         """
         self.ayo += 1
         for y in range(self.buffer.height()):
@@ -171,9 +205,19 @@ class PlasmaEffect(BaseEffect):
             for i in range(1, 5):
                 self.buffer.put_at(0, i, f"VAL {i}: {str(self.vals[i-1]):>3s} ")
 
-    def func(self, x, y, a, b, n):
+    def func(self, x: int, y: int, a: int, b: int, n: int):
         """
-        Helper function to calculate the plasma value given the four plasma values
+        Generates a plasma effect using the Perlin noise algorithm.
+
+        Args:
+            x (int): x
+            y (int): y
+            a (int): a
+            b (int): b
+            n (int): n
+
+        Returns:
+            float: value of the Perlin noise at (x, y)
         """
         return math.sin(
             math.sqrt(

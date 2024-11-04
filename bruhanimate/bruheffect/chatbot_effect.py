@@ -23,12 +23,25 @@ import string
 
 from threading import Thread
 from bruhcolor import bruhcolored
-from ..bruhutil import Screen
+from ..bruhutil import Screen, Buffer
 from .base_effect import BaseEffect
 
 
 class Key:
-    def __init__(self, character, representation, value, x, y):
+    """
+    A class representing a key on the keyboard with its position and value.
+    """
+    def __init__(self, character: str, representation: list[str], value: int, x: int, y: int):
+        """
+        Initializes a Key object with the given parameters.
+
+        Args:
+            character (str): The character represented by the key.
+            representation (list[str]): The visual representation of the key.
+            value (int): The value of the key.
+            x (int): The x-coordinate of the key on the screen.
+            y (int): The y-coordinate of the key on the screen.
+        """
         self.x = x
         self.y = y
         self.character = character
@@ -43,7 +56,21 @@ class Key:
 
 
 class GradientNoise:
-    def __init__(self, x, y, length, char_halt=1, color_halt=1, gradient_length=1):
+    """
+    A class representing a noise effect with a color gradient.
+    """
+    def __init__(self, x: int, y: int, length: int, char_halt: int = 1, color_halt: int = 1, gradient_length: int = 1):
+        """
+        Initializes a GradientNoise object with the given parameters.
+
+        Args:
+            x (int): The x-coordinate of the noise effect on the screen.
+            y (int): The y-coordinate of the noise effect on the screen.
+            length (int): The length of the noise effect on the screen.
+            char_halt (int, optional): The halt of characters changing (frame_number % character_halt == 0). Defaults to 1.
+            color_halt (int, optional): The halt of colors changing (frame_number % color_halt == 0). Defaults to 1.
+            gradient_length (int, optional): Length of the gradient. Defaults to 1.
+        """
         self.x = x
         self.y = y
         self.__gradient_length = gradient_length
@@ -112,11 +139,23 @@ class GradientNoise:
         ]
 
     # change the gradient
-    def update_gradient(self, gradient):
+    def update_gradient(self, gradient: list[int]):
+        """
+        Updates the gradient of the noise.
+
+        Args:
+            gradient (list[int]): The new gradient to use.
+        """
         self.__gradient = [c for c in gradient for _ in range(self.__gradient_length)]
         return self
 
     def generate(self, frame_number: int):
+        """
+        Generates the next frame of the noise.
+
+        Args:
+            frame_number (int): The current frame number.
+        """
         if self.done_generating:
             return
         # is it time to change the noise chars?
@@ -152,6 +191,9 @@ class GradientNoise:
 
 
 class Loading:
+    """
+    A class to handle the loading animation.
+    """
     def __init__(self, animate_part: GradientNoise):
         self.animate_part = animate_part
 
@@ -163,7 +205,20 @@ class Loading:
 
 
 class StringStreamer:
+    """
+    A class to handle the string streamer animation.
+    """
     def __init__(self, x: int, y: int, text: str, start_frame: int, halt: int = 1):
+        """
+        Initialize the StringStreamer class.
+
+        Args:
+            x (int): The x position of the string streamer.
+            y (int): The y position of the string streamer.
+            text (str): The text to be displayed.
+            start_frame (int): The frame number to start the animation.
+            halt (int, optional): Halt value to delay the animation (frame_number & halt == 0). Defaults to 1.
+        """
         self.x = x
         self.y = y
         self.text = text
@@ -174,6 +229,12 @@ class StringStreamer:
         self.complete = False
 
     def generate(self, frame: int):
+        """
+        Generate the string streamer animation for a given frame number.
+
+        Args:
+            frame (int): The current frame number.
+        """
         if self.complete or frame < self.__start_frame:
             return
         if frame % self.__halt == 0:
@@ -183,12 +244,23 @@ class StringStreamer:
 
 
 class OllamaApiCaller:
+    """
+    A class to interact with the Ollama API.
+    """
     def __init__(
         self,
         model: str,
         use_message_history: bool = False,
         message_history_cap: int = 5,
     ):
+        """
+        Initialize the OllamaApiCaller class.
+
+        Args:
+            model (str): The Ollama model to use.
+            use_message_history (bool, optional): Whether or not to use message history. Defaults to False.
+            message_history_cap (int, optional): How many messages should we use, sliding window. Defaults to 5.
+        """
         self.model = model
         self.url = "http://127.0.0.1:11434/api/chat"
         self.busy = False
@@ -201,6 +273,17 @@ class OllamaApiCaller:
     def chat(
         self, message: str, user: str | None, previous_messages: list[str] | None = None
     ) -> str:
+        """
+        Send a chat message to the Ollama API and get a response.
+
+        Args:
+            message (str): The message to send.
+            user (str | None): The user who sent the message.
+            previous_messages (list[str] | None, optional): Past sent messages. Defaults to None.
+
+        Returns:
+            str: Response from ollama.
+        """
         self.busy = True
         self.state = "running"
         payload = {
@@ -230,6 +313,9 @@ class OllamaApiCaller:
 
 
 class OpenAiCaller:
+    """
+    Class to interact with the OpenAI API using the `openai` Python package.
+    """
     def __init__(
         self,
         client: openai.OpenAI | openai.AzureOpenAI,
@@ -237,6 +323,15 @@ class OpenAiCaller:
         use_message_history: bool = False,
         message_history_cap: int = 5,
     ):
+        """
+        Initialize the OpenAiCaller class.
+
+        Args:
+            client (openai.OpenAI | openai.AzureOpenAI): The OpenAI client object.
+            model (str): The OpenAI model to be used.
+            use_message_history (bool, optional): Whether or not to use message history. Defaults to False.
+            message_history_cap (int, optional): Amount of messages from history to use, sliding window. Defaults to 5.
+        """
         self.client = client
         self.model = model
         self.busy = False
@@ -247,6 +342,16 @@ class OpenAiCaller:
         self.message_history_cap = message_history_cap
 
     def chat(self, message: str, user: str | None) -> str:
+        """
+        Send a chat message to the OpenAI API and get a response.
+
+        Args:
+            message (str): The message to be sent to the OpenAI API.
+            user (str | None): The user who sent the message.
+
+        Returns:
+            str: The response from the OpenAI API.
+        """
         self.busy = True
         self.state = "running"
         response = self.client.chat.completions.create(
@@ -277,7 +382,19 @@ class OpenAiCaller:
 
 
 class ChatbotEffect(BaseEffect):
-    def __init__(self, screen: Screen, buffer, back_buffer, background: str = " "):
+    """
+    A class to create a chatbot effect.
+    """
+    def __init__(self, screen: Screen, buffer: Buffer, back_buffer: Buffer, background: str = " "):
+        """
+        Initialize the ChatbotEffect class.
+
+        Args:
+            screen (Screen): Our instance of the terminal window
+            buffer (Buffer): Effect buffer to push updates to.
+            back_buffer (Buffer): The buffer to push the effect updates to.
+            background (str, optional): Character or string to use for the background. Defaults to " ".
+        """
         super(ChatbotEffect, self).__init__(buffer, background)
         self.back_buffer = back_buffer
         self.screen = screen
@@ -350,6 +467,16 @@ class ChatbotEffect(BaseEffect):
         self.avatar_placed = False
 
     def __expand_list(self, original_list: list[int|str], n: int, mul: int = 1):
+        """
+        Expands a list by adding `n` elements to the end of it, each multiplied by `mul`.
+
+        Args:
+            original_list (list[int | str]): The list to be expanded.
+            n (int): The number of elements to add to the end of the list.
+            mul (int, optional): The multiplier for each added element. Defaults to 1.
+        Returns:
+            _type_: _description_
+        """
         l = []
         for val in original_list:
             for _ in range(mul):
@@ -367,6 +494,20 @@ class ChatbotEffect(BaseEffect):
         use_message_history: bool = False,
         message_history_cap: int = 5,
     ):
+        """
+        Sets the properties for the chatbot.
+
+        Args:
+            interface (str | None): The interface type, e.g., "OpenAI" or "Azure OpenAI".
+            model (str): The name of the AI model to use.
+            user (str | None, optional): The name of the user. Defaults to None.
+            client (openai.OpenAI | openai.AzureOpenAI | None, optional): The client to use. Defaults to None.
+            use_message_history (bool, optional): Whether or not to use message history. Defaults to False.
+            message_history_cap (int, optional): How many messages from history to use, sliding window. Defaults to 5.
+
+        Raises:
+            Exception: If the interface is not recognized, an exception will be raised.
+        """
         if interface:
             self.interface = interface
         if user:
@@ -391,14 +532,33 @@ class ChatbotEffect(BaseEffect):
             )
 
     def set_second_effect(self, effect: str):
+        """
+        Sets the second effect for the chatbot.
+
+        Args:
+            effect (str): The effect to use
+        """
         self.second_effect = effect
 
     def set_chatbot_print_halt(self, halt: int):
+        """
+        Sets the chatbot print halt value to control how often it prints messages.
+
+        Args:
+            halt (int): (frame_number % halt == 0)
+        """
         self.chatbot_print_halt = halt
 
     def set_gradient_noise_halts(
         self, char_halt: int | None = None, color_halt: int | None = None
     ):
+        """
+        Sets the gradient noise halts for character and color shifts.
+
+        Args:
+            char_halt (int | None, optional): Sets the character halt for gradient noise. Defaults to None.
+            color_halt (int | None, optional): Sets the color halt for gradient noise. Defaults to None.
+        """
         if char_halt:
             self.gradient_noise_char_halt = char_halt
         if color_halt:
@@ -415,6 +575,19 @@ class ChatbotEffect(BaseEffect):
         user_avatar_color: int | str | None = None,
         user_avatar_text_color: int | str | None = None,
     ):
+        """
+        Sets the colors for the chatbot and user messages.
+
+        Args:
+            chatbot_text_color (int | str | None, optional): Color of chatbot output text. Defaults to None.
+            chatbot_background_color (int | str | None, optional): Background of chatbot output text. Defaults to None.
+            chatbot_avatar_color (int | str | None, optional): Text color of avatar logo. Defaults to None.
+            chatbot_avatar_text_color (int | str | None, optional): Background color of avatar logo. Defaults to None.
+            user_text_color (int | str | None, optional): Color of user text. Defaults to None.
+            user_background_color (int | str | None, optional): Background color of user text. Defaults to None.
+            user_avatar_color (int | str | None, optional): Text color of user avatar. Defaults to None.
+            user_avatar_text_color (int | str | None, optional): Background color of user avatar. Defaults to None.
+        """
         if chatbot_text_color:
             self.chatbot_text_color = chatbot_text_color
         if chatbot_background_color:
@@ -433,6 +606,12 @@ class ChatbotEffect(BaseEffect):
             self.user_avatar_text_color = user_avatar_text_color
 
     def set_avatar_properties(self, size: int):
+        """
+        Set avatar properties for user and chatbot.
+
+        Args:
+            size (int): Length of the avatars on left side of screen.
+        """
         self.avatar_size = size
         self.user_cursor_x_idx = self.avatar_size
         for ydx in range(self.screen.height):
@@ -442,24 +621,66 @@ class ChatbotEffect(BaseEffect):
             ]
 
     def set_chatbot_stats(self, show: bool = False):
+        """
+        Set chatbot stats on the right side of screen.
+
+        Args:
+            show (bool, optional): Whether or not to show chatbot stats. Defaults to False.
+        """
         self.show_stats = show
 
     def set_chatbot_blink_halt(self, halt: int):
+        """
+        Set chatbot blink and halt properties.
+
+        Args:
+            halt (int): (frame_number % halt == 0)
+        """
         self.blink_halt = halt
 
     def set_divider_flag(self, divider: bool, divider_character: str = "-"):
+        """
+        Set the divider flag and character for screen.
+
+        Args:
+            divider (bool): Whether or not to show the divider.
+            divider_character (str, optional): Character to use for the divider. Defaults to "-".
+        """
         self.divider = divider
         self.divider_character = divider_character
 
     def set_chatbot_cursor_colors(self, color_one: int | str, color_two: int | str):
+        """
+        Set the colors for chatbot cursor.
+
+        Args:
+            color_one (int | str): First color of cursor.
+            color_two (int | str): Second color of cursor.
+        """
         self.blink_color_one = color_one
         self.blink_color_two = color_two
 
     def set_chatbot_text_gradient(self, gradient: list[int|str], mul: int):
+        """
+        Set the text color for chatbot to use a gradient.
+
+        Args:
+            gradient (list[int | str]): Gradient color to use for chatbot loading.
+            mul (int): Multiplier for the gradient effect.
+        """
         self.gradient_text_color = gradient
         self.gradient_mul = mul
 
-    def __handle_keyboard_result(self, result):
+    def __handle_keyboard_result(self, result: int):
+        """
+        Handle the keyboard input and return a result.
+
+        Args:
+            result (int): Result from pressing down keyboard from win32 package.
+
+        Returns:
+            bool: Something . . . 
+        """
         if result:
             if result == -300:  # backspace
                 if self.user_cursor_x_idx == self.avatar_size:
@@ -533,6 +754,9 @@ class ChatbotEffect(BaseEffect):
                 return False
 
     def __scroll_up(self):
+        """
+        Scroll up the display by one line.
+        """
         first_key = min(self.all_keys.keys())
         last_key = max(self.all_keys.keys())
         if len(self.all_keys) == 0 or first_key == 0:
@@ -549,6 +773,9 @@ class ChatbotEffect(BaseEffect):
             self.current_bottom_y = self.current_bottom_y - 1
 
     def __scroll_down(self):
+        """
+        Scroll down the display by one line.
+        """
         last_key = max(self.all_keys.keys())
         self.all_keys[last_key + 1] = [
                     Key(" ", [ord(" ")], ord(" "), x=_, y=last_key + 1)
@@ -564,9 +791,18 @@ class ChatbotEffect(BaseEffect):
         self.all_keys = {i: self.all_keys[key] for i, key in enumerate(sorted(self.all_keys.keys()))}
 
     def scroll_keys(self, shift: int = 1):
+        """
+        Scroll the keys up or down by one line
+
+        Args:
+            shift (int, optional): How much to scroll. Defaults to 1.
+        """
         self.__scroll_down() if shift == 1 else self.__scroll_up()
 
     def place_all_keys(self):
+        """
+        Place all keys on to the buffer.
+        """
         for idx, vals in self.all_keys.items():
             if idx > self.current_bottom_y or idx < self.current_top_y:
                 continue
@@ -580,7 +816,13 @@ class ChatbotEffect(BaseEffect):
                 else:
                     self.buffer.put_char(jdx + displacement, idx - self.current_top_y, key.character)
 
-    def render_frame(self, frame_number):
+    def render_frame(self, frame_number: int):
+        """
+        Render the current state of the buffer to the terminal.
+
+        Args:
+            frame_number (int): The frame number to render.
+        """
         self.buffer.clear_buffer()
         if self.turn == 0:
             if not self.avatar_placed:

@@ -15,6 +15,8 @@ limitations under the License.
 """
 
 from .base_effect import BaseEffect
+from ..bruhutil.bruhffer import Buffer
+
 
 
 class StaticEffect(BaseEffect):
@@ -22,12 +24,22 @@ class StaticEffect(BaseEffect):
     Class for generating a static background.
     """
 
-    def __init__(self, buffer, background):
+    def __init__(self, buffer: Buffer, background: str):
+        """
+        Initializes the static effect with a buffer and a background string.
+
+        Args:
+            buffer (Buffer): Effect buffer to push updates to.
+            background (str): character or string to use as the background.
+        """
         super(StaticEffect, self).__init__(buffer, background)
 
-    def render_frame(self, frame_number):
+    def render_frame(self, frame_number: int):
         """
-        Renders the background to the screen
+        Renders the background to the screen.
+
+        Args:
+            frame_number (int): The current frame number. Not used in this effect, but required by the base class.
         """
         for y in range(self.buffer.height()):
             self.buffer.put_at(
