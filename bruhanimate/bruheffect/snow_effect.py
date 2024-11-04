@@ -22,17 +22,33 @@ from .base_effect import BaseEffect
 
 
 class SnowEffect(BaseEffect):
+    """
+    A class to represent a snow effect.
+    """
     def __init__(
         self,
         buffer: Buffer,
-        background,
-        img_start_x=None,
-        img_start_y=None,
-        img_width=None,
-        img_height=None,
-        collision=False,
-        show_info=False,
+        background: str,
+        img_start_x: int = None,
+        img_start_y: int = None,
+        img_width: int = None,
+        img_height: int = None,
+        collision: bool = False,
+        show_info: bool = False,
     ):
+        """
+        Initializes the SnowEffect class.
+
+        Args:
+            buffer (Buffer): Effect buffer to render changes to.
+            background (str): Character or string used for the background of the effect.
+            img_start_x (int, optional): Where the image starts on the x axis. Defaults to None.
+            img_start_y (int, optional): Where the image starts on the y axis. Defaults to None.
+            img_width (int, optional): The width of the image. Defaults to None.
+            img_height (int, optional): The height of the image. Defaults to None.
+            collision (bool, optional): Whether or not the effect should collide with the image. Defaults to False.
+            show_info (bool, optional): Whether or not to show snowflake information. Defaults to False.
+        """
         super(SnowEffect, self).__init__(buffer, background)
         self.image_present = (True if img_start_x and img_start_y and img_width and img_height else False)
         self.collision = collision
@@ -45,22 +61,26 @@ class SnowEffect(BaseEffect):
 
     def update_collision(
         self,
-        img_start_x,
-        img_start_y,
-        img_width,
-        img_height,
-        collision,
-        smart_transparent,
-        image_buffer=None,
+        img_start_x: int,
+        img_start_y: int,
+        img_width: int,
+        img_height: int,
+        collision: bool,
+        smart_transparent: bool,
+        image_buffer: Buffer = None,
     ):
         """
         Function to set whether or not to visually see the snow collide with the ground
         or images if they are present
-        :param img_start_x: where the image starts on the screen
-        :param img_start_y: where the image starts on the screen
-        :param img_width:   the width of the image
-        :param img_height:  the height of the image
-        :param collision:   update collision variable
+
+        Args:
+            img_start_x (int): Start of the image on the x axis.
+            img_start_y (int): Start of the image on the y axis.
+            img_width (int): Width of the image.
+            img_height (int): Height of the image.
+            collision (bool): Whether or not the effect should collide with the image.
+            smart_transparent (bool): not used . . .
+            image_buffer (Buffer, optional): The image buffer in order to find collisions. Defaults to None.
         """
         self.image_present = (
             True if img_start_x and img_start_y and img_width and img_height else False
@@ -79,25 +99,64 @@ class SnowEffect(BaseEffect):
             self.image_buffer = None
 
     def set_show_info(self, show_info: bool):
+        """
+        Function to set whether or not to display information about the snow effect
+
+        Args:
+            show_info (bool): Whether or not to display information about the snow effect
+        """
         self.show_info = show_info
 
     def generate_snowflake(self, x: int):
+        """
+        Generates a new snowflake at the given x position.
+
+        Args:
+            x (int): The x position to generate the snowflake at.
+        """
         snowflake_type = random.choice(list(SNOWFLAKE_TYPES.keys()))
         snowflake_char = bruhcolored(snowflake_type, SNOWFLAKE_COLORS[snowflake_type])
         self.flakes.append({"x": x, "y": 0, "type": snowflake_type, "colored": snowflake_char, "fall_delay": 0})
 
-    def can_stack(self, x, y):
+    def can_stack(self, x: int, y: int):
+        """
+        Checks if a snowflake can be stacked at the given position.
+
+        Args:
+            x (int): The x position to check.
+            y (int): The y position to check.
+
+        Returns:
+            bool: True if the snowflake can be stacked, False otherwise.
+        """
         if y >= self.buffer.height():
             return False
         return self.ground_flakes[y][x] >= 18
 
     def is_colliding(self, x: int, y: int):
+        """
+        Checks if a snowflake is colliding with the ground / snowflake at the given position.
+
+        Args:
+            x (int): The x position to check.
+            y (int): The y position to check.
+
+        Returns:
+            bool: True if the snowflake is colliding with the ground / snowflake, False otherwise.
+        """
         if self.image_present:
             if self.image_x_boundaries[0] < x < self.image_x_boundaries[1] and self.image_y_boundaries[0] < y < self.image_y_boundaries[1]:
                 return True
         return False
 
     def handle_snowflake_landing(self, x: int, y: int):
+        """
+        Handles the snowflake landing at the given position.
+
+        Args:
+            x (int): The x position where the snowflake is landing.
+            y (int): The y position where the snowflake is landing.
+        """
         self.ground_flakes[y][x] += 1
         weight = self.ground_flakes[y][x]
         for w, char in sorted(FLAKE_WEIGHT_CHARS.items(), reverse=True):
@@ -108,13 +167,18 @@ class SnowEffect(BaseEffect):
             self.ground_flakes[y - 1][x] += 1
 
     def add_info(self):
+        """
+        Adds information about the falling and grounded snowflakes.
+        """
         self.buffer.put_at(0, 0, f"Total Snow Flakes: {len(self.flakes)}")
         self.buffer.put_at(0, 1, f"Total Flakes on Ground: {sum([sum([1 for v in row if v > 0]) for row in self.ground_flakes])}")
 
-    def render_frame(self, frame_number):
+    def render_frame(self, frame_number: int):
         """
-        Function to render the next frame of the snow effect into it's buffer.
-        :param frame_number: The current frame number (used to determine the animation state).
+        Renders a single frame of the snow effect.
+
+        Args:
+            frame_number (int): The current frame number to render.
         """
 
         # generate a new row of snowflakes

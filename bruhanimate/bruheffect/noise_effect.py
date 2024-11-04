@@ -18,17 +18,24 @@ import random
 
 from bruhcolor import bruhcolored
 from .base_effect import BaseEffect
+from ..bruhutil import Buffer
 
 
 class NoiseEffect(BaseEffect):
     """
-    Class for generating noise.
-    :param intensity: randomness for the noise, higher the value the slower the effect (due to computation).
-                      Will be a value 1 - 999
-    :param color: whether or not ro color the noise
+    A noise effect that adds random pixels to the screen with a specified intensity.
     """
 
-    def __init__(self, buffer, background, intensity=200, color=False):
+    def __init__(self, buffer: Buffer, background: str, intensity: int = 200, color: bool = False):
+        """
+        Initializes the NoiseEffect class with a specified buffer, background color, noise intensity, and whether to use colors.
+
+        Args:
+            buffer (Buffer): Effect buffer to push updates tol.
+            background (str): Character or string for background.
+            intensity (int, optional): How offten the nosie should update. Defaults to 200.
+            color (bool, optional): Whether or not the effect should use color. Defaults to False.
+        """
         super(NoiseEffect, self).__init__(buffer, background)
 
         self.intensity = (
@@ -39,7 +46,7 @@ class NoiseEffect(BaseEffect):
         self.noise_length = len(self.noise)
         self.color = color
 
-    def update_intensity(self, intensity):
+    def update_intensity(self, intensity: int):
         """
         Function to update the intensity of the effect
         :param intensity: new intensity
@@ -48,18 +55,23 @@ class NoiseEffect(BaseEffect):
             intensity / 1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
         )
 
-    def update_color(self, color, characters):
+    def update_color(self, color: bool, characters: str):
         """
-        Function to enable / disable color for the effect
-        :param color: True / False
-        :param character: True / False to make characters visable
+        Function to update the color and character set for the noise.
+
+        Args:
+            color (bool): Whether or not the noise should use color.
+            characters (str): The set of characters that can be used for noise generation.
         """
         self.color = color
         self.characters = characters
 
-    def render_frame(self, frame_number):
+    def render_frame(self, frame_number: int):
         """
-        Function to render the next frame of the Noise effect
+        Function to render the frame with noise effect applied.
+
+        Args:
+            frame_number (int): The current frame number being rendered.
         """
         if self.color:
             for y in range(self.buffer.height()):

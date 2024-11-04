@@ -16,7 +16,7 @@ limitations under the License.
 
 import random
 
-from ..bruhutil import WIND_DIRECTIONS
+from ..bruhutil import WIND_DIRECTIONS, Buffer
 from .base_effect import BaseEffect
 
 
@@ -27,17 +27,32 @@ class RainEffect(BaseEffect):
 
     def __init__(
         self,
-        buffer,
-        background,
-        img_start_x=None,
-        img_start_y=None,
-        img_width=None,
-        img_height=None,
-        collision=False,
-        intensity=1,
-        swells=False,
-        wind_direction="none",
+        buffer: Buffer,
+        background: str,
+        img_start_x: int = None,
+        img_start_y: int = None,
+        img_width: int = None,
+        img_height: int = None,
+        collision: bool = False,
+        intensity: int = 1,
+        swells: bool = False,
+        wind_direction: str = "none",
     ):
+        """
+        Initialize the RainEffect class with given parameters.
+
+        Args:
+            buffer (Buffer): Effect buffer to push updates to.
+            background (str): Character or string to use for the background.
+            img_start_x (int, optional): Where the image starts on the x axis. Defaults to None.
+            img_start_y (int, optional): Where the image starts on the y axis. Defaults to None.
+            img_width (int, optional): The width of the image. Defaults to None.
+            img_height (int, optional): The height of the image. Defaults to None.
+            collision (bool, optional): Whether or not the effect should hit the image. Defaults to False.
+            intensity (int, optional): How intense should the rain be. Defaults to 1.
+            swells (bool, optional): Where or not to increase and deacrease the intensity automatically. Defaults to False.
+            wind_direction (str, optional): Which direction the rain should fall. Defaults to "none".
+        """
         super(RainEffect, self).__init__(buffer, background)
 
         self.image_present = (
@@ -58,17 +73,21 @@ class RainEffect(BaseEffect):
         }
         self._set_rain()
 
-    def update_multiplier(self, val):
+    def update_multiplier(self, val: int):
         """
-        Update the multiplier value that relates to shift amount
-        :param val: value to set the multiplier to
+        Update the multiplier value that relates to shift amount.
+
+        Args:
+            val (int): multiplier value
         """
         self.multiplier = val
 
-    def update_wind_direction(self, direction):
+    def update_wind_direction(self, direction: str):
         """
-        Update the direction of the rain
-        :param dircetion: direction for the rain to fall (east, west, none)
+        Update the direction of the rain.
+
+        Args:
+            direction (str): Direction the rain should fall.
         """
         if direction in WIND_DIRECTIONS:
             self.wind_direction = direction
@@ -76,7 +95,7 @@ class RainEffect(BaseEffect):
 
     def _set_rain(self):
         """
-        Function set the rain based on the intensity and wind direction
+        Set the rain based on intensity and wind direction.
         """
         self.rain = f"{' ' * (1000 - self.intensity)}"
         if self.intensity > 50:
@@ -87,10 +106,12 @@ class RainEffect(BaseEffect):
             self.rain += self.wind_mappings[self.wind_direction][0]
         self.rain_length = len(self.rain)
 
-    def update_intensity(self, intensity):
+    def update_intensity(self, intensity: int):
         """
-        Function to update the intensity of the rain
-        :param intensity: intentisy value
+        Function to update the intensity of the rain.
+
+        Args:
+            intensity (int): The intensity of the rain.
         """
         if self.swells:
             if self.intensity == 900:
@@ -104,24 +125,25 @@ class RainEffect(BaseEffect):
 
     def update_collision(
         self,
-        img_start_x,
-        img_start_y,
-        img_width,
-        img_height,
-        collision,
-        smart_transparent=False,
-        image_buffer=None,
+        img_start_x: int,
+        img_start_y: int,
+        img_width: int,
+        img_height: int,
+        collision: bool,
+        smart_transparent: bool = False,
+        image_buffer: Buffer = None,
     ):
         """
         Function to set whether or not to visually see the rain collide with the ground
-        or images if they are present
-        :param img_start_x: where the image starts on the screen
-        :param img_start_y: where the image starts on the screen
-        :param img_width:   the width of the image
-        :param img_height:  the height of the image
-        :param collision:   update collision variable
-        :param smart_transparent: update smart_transparent
-        :param image_buffer: the buffer that contains the image
+        or images if they are present.
+        Args:
+            img_start_x (int): Where the image starts on the screen.
+            img_start_y (int): Where the image starts on the screen.
+            img_width (int): The width of the image.
+            img_height (int): The height of the image.
+            collision (bool): Update collision variable.
+            smart_transparent (bool): Update smart_transparent. Defaults to False.
+            image_buffer (Buffer): The buffer that contains the image. Defaults to None.
         """
         self.image_present = (
             True if img_start_x and img_start_y and img_width and img_height else False
@@ -137,16 +159,21 @@ class RainEffect(BaseEffect):
         else:
             self.image_buffer = None
 
-    def update_swells(self, swells):
+    def update_swells(self, swells: bool):
         """
-        Function to set whether the intensity should evolve on it's own
-        :param swells: True / False
+        Function to update whether or not there are swells in the rain effect.
+
+        Args:
+            swells (bool): Whether or not there are swells in the rain effect.
         """
         self.swells = swells
 
-    def render_frame(self, frame_number):
+    def render_frame(self, frame_number: int):
         """
-        Function to render the next frame of the Rain Effect
+        Function to render the next frame of the Rain Effect.
+
+        Args:
+            frame_number (int): The current frame number to render.
         """
         if self.swells:
             self.update_intensity(None)

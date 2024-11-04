@@ -17,12 +17,23 @@ limitations under the License.
 import random
 
 from bruhcolor import bruhcolored
-from ..bruhutil import TWINKLE_COLORS
+from ..bruhutil import TWINKLE_COLORS, Buffer
 from .base_effect import BaseEffect
 
 
 class TWINKLE_SPEC:
-    def __init__(self, char, value):
+    """
+    A class to represent a single twinkle character with its color value.
+    """
+
+    def __init__(self, char: chr, value: int):
+        """
+        Initializes the twinkle character with its color value.
+
+        Args:
+            char (chr): Character to display.
+            value (int): Value assoicated with the color.
+        """
         self.char = char
         self.value = value
         self.fade = bruhcolored(self.char, TWINKLE_COLORS[self.value])
@@ -38,6 +49,9 @@ class TWINKLE_SPEC:
         return 1
 
     def next(self):
+        """
+        Updates the twinkle character's color value and returns it as a string.
+        """
         if self.value >= 23:
             self.mode = -1
         elif self.value <= 0:
@@ -49,17 +63,39 @@ class TWINKLE_SPEC:
         return self
 
     def copy(self):
+        """
+        Returns a copy of the current twinkle character with its color value.
+
+        Returns:
+            TWINKLE_SPEC: Copy of the current twinkle spec.
+        """
         new_TWINKLE_SPEC = TWINKLE_SPEC(self.char, self.value)
         new_TWINKLE_SPEC.mode = self.mode
         return new_TWINKLE_SPEC
 
 
 class TwinkleEffect(BaseEffect):
-    def __init__(self, buffer, background):
+    """
+    Class for the twinkle effect.
+    """
+    def __init__(self, buffer: Buffer, background: str):
+        """
+        Initializes the twinkle effect class.
+
+        Args:
+            buffer (Buffer): Effect buffer to push updates to.
+            background (str): Character or string to use as the background.
+        """
         super(TwinkleEffect, self).__init__(buffer, background)
         self.specs = []
 
-    def render_frame(self, frame_number):
+    def render_frame(self, frame_number: int):
+        """
+        Renders the next frame of the twinkle effect to the buffer.
+
+        Args:
+            frame_number (int): The current frame of the animation.
+        """
         if frame_number == 0:
             for y in range(self.buffer.height()):
                 for x in range(self.buffer.width()):
