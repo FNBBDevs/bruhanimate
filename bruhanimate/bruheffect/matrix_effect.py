@@ -19,24 +19,38 @@ import string
 
 from bruhcolor import bruhcolored
 from .base_effect import BaseEffect
+from ..bruhutil import Buffer
 
 
 class MatrixEffect(BaseEffect):
     """
-    Effect to mimic the cliche coding backgroud with falling random characters
+    Effect to mimic the cliche coding backgroud with falling random characters.
     """
 
     def __init__(
         self,
-        buffer,
-        background,
-        chracter_halt_range=(1, 2),
-        color_halt_range=(1, 2),
-        character_randomness_one=0.70,
-        character_randomness_two=0.60,
-        color_randomness=0.50,
-        gradient_length=1,
+        buffer: Buffer,
+        background: str,
+        chracter_halt_range: tuple[int] = (1, 2),
+        color_halt_range: tuple[int] = (1, 2),
+        character_randomness_one: float = 0.70,
+        character_randomness_two: float = 0.60,
+        color_randomness: float = 0.50,
+        gradient_length: int = 1,
     ):
+        """
+        Initialize the MatrixEffect class.
+
+        Args:
+            buffer (Buffer): Effect buffer to push changes to.
+            background (str): Character or string used for the background.
+            chracter_halt_range (tuple[int], optional): Halt range. Defaults to (1, 2).
+            color_halt_range (tuple[int], optional): Halt range. Defaults to (1, 2).
+            character_randomness_one (float, optional): Frequency to update a character. Defaults to 0.70.
+            character_randomness_two (float, optional): Frequency to update a character. Defaults to 0.60.
+            color_randomness (float, optional): Frequency to move the color gradient. Defaults to 0.50.
+            gradient_length (int, optional): Length of the color gradient. Defaults to 1.
+        """
         super(MatrixEffect, self).__init__(buffer, background)
         self.__character_choices = (
             string.ascii_letters + "1234567890!@#$%^&*()_+-=<>,.:\";'{}[]?/"
@@ -97,13 +111,24 @@ class MatrixEffect(BaseEffect):
 
     def set_matrix_properties(
         self,
-        chacter_halt_range=(1, 2),
-        color_halt_range=(1, 2),
-        character_randomness_one=0.70,
-        character_randomness_two=0.60,
-        color_randomness=0.50,
-        gradient_length=1,
+        chacter_halt_range: tuple[int] = (1, 2),
+        color_halt_range: tuple[int] = (1, 2),
+        character_randomness_one: float = 0.70,
+        character_randomness_two: float = 0.60,
+        color_randomness: float = 0.50,
+        gradient_length: int = 1,
     ):
+        """
+        Set the matrix properties for the MatrixEffect.
+
+        Args:
+            chracter_halt_range (tuple[int], optional): Halt range. Defaults to (1, 2).
+            color_halt_range (tuple[int], optional): Halt range. Defaults to (1, 2).
+            character_randomness_one (float, optional): Frequency to update a character. Defaults to 0.70.
+            character_randomness_two (float, optional): Frequency to update a character. Defaults to 0.60.
+            color_randomness (float, optional): Frequency to move the color gradient. Defaults to 0.50.
+            gradient_length (int, optional): Length of the color gradient. Defaults to 1.
+        """
         self.__character_randomness_one = character_randomness_one
         self.__character_randomness_two = character_randomness_two
         self.__color_randomness = color_randomness
@@ -126,7 +151,13 @@ class MatrixEffect(BaseEffect):
             for _ in range(self.buffer.height())
         ]
 
-    def set_matrix_gradient(self, gradient):
+    def set_matrix_gradient(self, gradient: list[int]):
+        """
+        Set the base gradient of the matrix. This will reset the current gradient and recreate it based on the new base gradient.
+
+        Args:
+            gradient (list[int]): List of colors.
+        """
         self.__base_gradient = gradient
         self.__gradient = [
             color
@@ -135,9 +166,18 @@ class MatrixEffect(BaseEffect):
         ]
 
     def get_gradient(self):
+        """
+        Get the current gradient.
+
+        Returns:
+            list[int]: The current gradient.
+        """
         return self.__base_gradient
 
     def __initialize_buffer(self):
+        """
+        Initialize the buffer with characters and colors based on the current settings.
+        """
         for y in range(self.buffer.height()):
             for x in range(self.buffer.width()):
                 self.__buffer_characters[y][x] = random.choice(self.__character_choices)
@@ -151,9 +191,12 @@ class MatrixEffect(BaseEffect):
                     ).colored,
                 )
 
-    def render_frame(self, frame_number):
+    def render_frame(self, frame_number: int):
         """
-        Renders the next frame for the Matrix effect into the effect buffer
+        Render a single frame of the matrix effect.
+
+        Args:
+            frame_number (int): The current frame number.
         """
         if frame_number == 0:
             self.__initialize_buffer()

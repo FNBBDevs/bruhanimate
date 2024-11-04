@@ -17,7 +17,7 @@ limitations under the License.
 import random
 
 from bruhcolor import bruhcolored
-from ..bruhutil import LIFE_COLORS, LIFE_SCALES
+from ..bruhutil import LIFE_COLORS, LIFE_SCALES, Buffer
 from .base_effect import BaseEffect
 
 
@@ -28,13 +28,24 @@ class GameOfLifeEffect(BaseEffect):
 
     def __init__(
         self,
-        buffer,
-        background,
-        decay=False,
-        color=False,
-        color_type=None,
-        scale="random",
+        buffer: Buffer,
+        background: str,
+        decay: bool = False,
+        color: bool = False,
+        color_type: str = None,
+        scale: str = "random",
     ):
+        """
+        Initialize the Game of Life effect with a buffer and background color.
+
+        Args:
+            buffer (Buffer): Effect buffer to push updates to.
+            background (str): Character of string to use as the background.
+            decay (bool, optional): Whether or not cells should decay. Defaults to False.
+            color (bool, optional): Whether or not the decay should use color. Defaults to False.
+            color_type (str, optional): Type of color scale to use. Defaults to None.
+            scale (str, optional): Type of gray scale to use. Defaults to "random".
+        """
         super(GameOfLifeEffect, self).__init__(buffer, background)
         self.decay = decay
         self.scale = scale
@@ -59,7 +70,7 @@ class GameOfLifeEffect(BaseEffect):
 
     def _set_attributes(self):
         """
-        Function to set the attributes of the effect
+        Function to set the attributes of the effect.
         """
         self.grey_scale = (
             LIFE_SCALES[random.choice(list(LIFE_SCALES.keys()))]
@@ -71,11 +82,14 @@ class GameOfLifeEffect(BaseEffect):
         self.DEAD = 0
         self.mappings = {i: self.grey_scale[i] for i in range(len(self.grey_scale))}
 
-    def update_decay(self, decay, color_type="GREYSCALE", scale="random"):
+    def update_decay(self, decay: bool, color_type: str = "GREYSCALE", scale: str = "random"):
         """
-        Function to enable to decay and select the color map
-        :param decay: True / False
-        :param color_type: color map for the effect
+        Function to enable the decay and select the color map.
+
+        Args:
+            decay (bool): Whether or not the cell should decay
+            color_type (str, optional): Type of color to use. Defaults to "GREYSCALE".
+            scale (str, optional): Type of scale to use. Defaults to "random".
         """
         self.decay = decay
         self.scale = scale
@@ -83,13 +97,23 @@ class GameOfLifeEffect(BaseEffect):
             self.color_type = color_type
         self._set_attributes()
 
-    def update_rules(self, life_rule, death_rule):
+    def update_rules(self, life_rule: list[int], death_rule: list[int]):
+        """
+        Function to update the rules for life and death.
+
+        Args:
+            life_rule (list[int]): Lower and upper bound for number of neighbors that lead to life.
+            death_rule (list[int]): Lower and upper bound for number of neighbors that lead to death.
+        """
         self.rules["life"] = life_rule
         self.rules["death"] = death_rule
 
-    def render_frame(self, frame_number):
+    def render_frame(self, frame_number: int):
         """
-        Function to render the next frame of the GOL effect
+        Function to render the next frame of the GOL effect.
+
+        Args:
+            frame_number (int): The current frame number to render.
         """
         if frame_number == 0:  # INITIALIZE THE GAME
             for y in range(self.buffer.height()):
