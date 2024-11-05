@@ -14,29 +14,41 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from ..bruhrenderer import CenterRenderer
-from ..bruhutil import Screen, text_to_image, get_image
+import os
+os.system(" ")
 
-def fireworks(screen: Screen):
+from bruhanimate.bruhutil import Screen, bruhimage, Buffer
+from bruhanimate.bruhrenderer import CenterRenderer
+from bruhanimate.bruheffect import TwinkleEffect
+
+
+def show(screen):
+    image = bruhimage.text_to_image("HAPPY NEW YEAR!", font="js_cursive")
+
     renderer = CenterRenderer(
         screen=screen,
-        img=text_to_image("FIREWORKS!"),
+        img=image,
         frames=float("inf"),
         frame_time=0.05,
         effect_type="firework",
         background=" ",
-        transparent=False
+        transparent=True
     )
 
-    renderer.effect.set_firework_rate(firework_rate=0.1)
+    second_effect = TwinkleEffect(buffer=Buffer(screen.height, screen.width), background=" ")
+    second_effect.set_density(0.01)
+
+    renderer.effect.set_second_effect(second_effect)
+    renderer.effect.set_firework_rate(0.05)
+    renderer.effect.set_firework_type("random")
     renderer.effect.set_firework_color_enabled(True)
     renderer.effect.set_firework_color_type("twotone")
-    renderer.effect.set_firework_type("random")
-    
-    renderer.run()
+    renderer.run(end_message=True)
+
 
 def run():
-    Screen.show(fireworks)
+    Screen.show(show)
+
 
 if __name__ == "__main__":
     run()
