@@ -87,34 +87,46 @@
 <span class="sd">limitations under the License.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">..bruhrenderer</span> <span class="kn">import</span> <span class="n">CenterRenderer</span>
-<span class="kn">from</span> <span class="nn">..bruhutil</span> <span class="kn">import</span> <span class="n">Screen</span><span class="p">,</span> <span class="n">text_to_image</span><span class="p">,</span> <span class="n">get_image</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="fireworks">
-<a class="viewcode-back" href="../../../bruhanimate.demos.html#bruhanimate.demos.firework_demo.fireworks">[docs]</a>
-<span class="k">def</span> <span class="nf">fireworks</span><span class="p">(</span><span class="n">screen</span><span class="p">:</span> <span class="n">Screen</span><span class="p">):</span>
+<span class="kn">from</span> <span class="nn">bruhanimate.bruhutil</span> <span class="kn">import</span> <span class="n">Screen</span><span class="p">,</span> <span class="n">bruhimage</span><span class="p">,</span> <span class="n">Buffer</span>
+<span class="kn">from</span> <span class="nn">bruhanimate.bruhrenderer</span> <span class="kn">import</span> <span class="n">CenterRenderer</span>
+<span class="kn">from</span> <span class="nn">bruhanimate.bruheffect</span> <span class="kn">import</span> <span class="n">TwinkleEffect</span>
+
+
+<div class="viewcode-block" id="show">
+<a class="viewcode-back" href="../../../bruhanimate.demos.html#bruhanimate.demos.firework_demo.show">[docs]</a>
+<span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">screen</span><span class="p">):</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">bruhimage</span><span class="o">.</span><span class="n">text_to_image</span><span class="p">(</span><span class="s2">&quot;HAPPY NEW YEAR!&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="s2">&quot;js_cursive&quot;</span><span class="p">)</span>
+
     <span class="n">renderer</span> <span class="o">=</span> <span class="n">CenterRenderer</span><span class="p">(</span>
         <span class="n">screen</span><span class="o">=</span><span class="n">screen</span><span class="p">,</span>
-        <span class="n">img</span><span class="o">=</span><span class="n">text_to_image</span><span class="p">(</span><span class="s2">&quot;FIREWORKS!&quot;</span><span class="p">),</span>
+        <span class="n">img</span><span class="o">=</span><span class="n">image</span><span class="p">,</span>
         <span class="n">frames</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
         <span class="n">frame_time</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
         <span class="n">effect_type</span><span class="o">=</span><span class="s2">&quot;firework&quot;</span><span class="p">,</span>
         <span class="n">background</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span>
-        <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">transparent</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
 
-    <span class="n">renderer</span><span class="o">.</span><span class="n">effect</span><span class="o">.</span><span class="n">set_firework_rate</span><span class="p">(</span><span class="n">firework_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">second_effect</span> <span class="o">=</span> <span class="n">TwinkleEffect</span><span class="p">(</span><span class="n">buffer</span><span class="o">=</span><span class="n">Buffer</span><span class="p">(</span><span class="n">screen</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">screen</span><span class="o">.</span><span class="n">width</span><span class="p">),</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+    <span class="n">second_effect</span><span class="o">.</span><span class="n">set_density</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+
+    <span class="n">renderer</span><span class="o">.</span><span class="n">effect</span><span class="o">.</span><span class="n">set_second_effect</span><span class="p">(</span><span class="n">second_effect</span><span class="p">)</span>
+    <span class="n">renderer</span><span class="o">.</span><span class="n">effect</span><span class="o">.</span><span class="n">set_firework_rate</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="n">renderer</span><span class="o">.</span><span class="n">effect</span><span class="o">.</span><span class="n">set_firework_type</span><span class="p">(</span><span class="s2">&quot;random&quot;</span><span class="p">)</span>
     <span class="n">renderer</span><span class="o">.</span><span class="n">effect</span><span class="o">.</span><span class="n">set_firework_color_enabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">renderer</span><span class="o">.</span><span class="n">effect</span><span class="o">.</span><span class="n">set_firework_color_type</span><span class="p">(</span><span class="s2">&quot;twotone&quot;</span><span class="p">)</span>
-    <span class="n">renderer</span><span class="o">.</span><span class="n">effect</span><span class="o">.</span><span class="n">set_firework_type</span><span class="p">(</span><span class="s2">&quot;random&quot;</span><span class="p">)</span>
-    
-    <span class="n">renderer</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+    <span class="n">renderer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">end_message</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="run">
 <a class="viewcode-back" href="../../../bruhanimate.demos.html#bruhanimate.demos.firework_demo.run">[docs]</a>
 <span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
-    <span class="n">Screen</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">fireworks</span><span class="p">)</span></div>
+    <span class="n">Screen</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">show</span><span class="p">)</span></div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
