@@ -88,6 +88,17 @@ class TwinkleEffect(BaseEffect):
         """
         super(TwinkleEffect, self).__init__(buffer, background)
         self.specs = []
+        self.density = 0.05
+    
+    def set_density(self, density: float):
+        """
+        Sets the density of the twinkle effect, which determines how many characters will be affected by the effect.
+
+        Args:
+            density (float): Density value between 0 and 1, where 0 means no characters are affected and 1 means all characters are affected.
+        """
+        if isinstance(density, float) and 0 <= density <= 1:
+            self.density = density
 
     def render_frame(self, frame_number: int):
         """
@@ -99,7 +110,7 @@ class TwinkleEffect(BaseEffect):
         if frame_number == 0:
             for y in range(self.buffer.height()):
                 for x in range(self.buffer.width()):
-                    if random.random() < 0.05:
+                    if random.random() < self.density:
                         new_TWINKLE_SPEC = TWINKLE_SPEC(".", random.randint(0, 23))
                         self.buffer.put_char(x, y, new_TWINKLE_SPEC)
                         self.specs.append((x, y))

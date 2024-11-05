@@ -204,6 +204,10 @@ def text_to_image(
 
     img = img_flat.splitlines()
 
+    largest_row = max([len(row) for row in img])
+    for idx in range(len(img)):
+        img[idx] += " " * (largest_row - len(img[idx]))
+
     if padding_top_bottom > 0:
         empty_line = " " * len(img[0])
         img = ([empty_line] * padding_top_bottom + img + [empty_line] * padding_top_bottom)
