@@ -282,6 +282,10 @@
 
     <span class="n">img</span> <span class="o">=</span> <span class="n">img_flat</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
 
+    <span class="n">largest_row</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">img</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="p">)):</span>
+        <span class="n">img</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">largest_row</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
+
     <span class="k">if</span> <span class="n">padding_top_bottom</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">empty_line</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">img</span> <span class="o">=</span> <span class="p">([</span><span class="n">empty_line</span><span class="p">]</span> <span class="o">*</span> <span class="n">padding_top_bottom</span> <span class="o">+</span> <span class="n">img</span> <span class="o">+</span> <span class="p">[</span><span class="n">empty_line</span><span class="p">]</span> <span class="o">*</span> <span class="n">padding_top_bottom</span><span class="p">)</span>
