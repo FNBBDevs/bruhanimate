@@ -25,15 +25,16 @@ from ..bruhutil.bruhtypes import (
     valid_firework_types,
     FireworkColorType,
     valid_firework_color_types,
-    two_tone_colors,
+    two_tone_colors
 )
 
 
 class Particle:
     """
-    Class representing a particle in a firework.
+    Class representing a particle in a firework with optional trail effects.
     """
-    def __init__(self, x: int, y: int, dx: float, dy: float, width: int, height: int, symbol: chr = "*", life: int = None):
+    def __init__(self, x: int, y: int, dx: float, dy: float, width: int, height: int, 
+                 symbol: chr = "*", life: int = None, trail_length: int = 0):
         """
         Initialize a particle with the given parameters.
 
@@ -44,40 +45,78 @@ class Particle:
             dy (float): The vertical velocity of the particle.
             width (int): The width of the canvas or screen.
             height (int): The height of the canvas or screen.
-            symbol (chr, optional): The character that will be deplayed to the screen. Defaults to "*".
+            symbol (chr, optional): The character that will be displayed to the screen. Defaults to "*".
             life (int, optional): How long this particle can live for (frames). Defaults to None.
+            trail_length (int, optional): Length of the particle's trail. 0 means no trail. Defaults to 0.
         """
         self.x = x
         self.y = y
-        self.previous_x = x
-        self.previous_y = y
         self.dx = dx
         self.dy = dy
         self.width = width
         self.height = height
-        self.life = life if life else random.randint(8, 15)  # Random lifespan for particle
+        self.life = life if life else random.randint(8, 15)
         self.symbol = symbol
+        
+        # Trail-related attributes
+        self.trail_length = trail_length
+        self.trail = []  # Stores previous positions
+        self.trail_symbols = ['·', '⋅', '∙', '°']  # Different symbols for trail fade effect
+        
+        # Initialize previous position (maintain backward compatibility)
+        self.previous_x = x
+        self.previous_y = y
 
     def update(self):
         """
-        Function to update a particle and it's parameters each frame.
+        Function to update a particle and its parameters each frame.
         """
+        # Store current position for trail if enabled
+        if self.trail_length > 0:
+            self.trail.append((self.x, self.y, self.symbol))
+            # Keep trail at specified length
+            if len(self.trail) > self.trail_length:
+                self.trail.pop(0)
+
+        # Update previous position (for backward compatibility)
         self.previous_x = self.x
         self.previous_y = self.y
+        
+        # Update current position
         self.x += self.dx
         self.y += self.dy
         self.dy += 0.05
         self.life -= 1
 
-        # This is what flickers the particles, like a firework
+        # Flicker effect
         if random.random() > 0.5:
             self.symbol = "*" if self.symbol == "." else "."
+
+    def get_display_points(self):
+        """
+        Returns all points that should be displayed, including trails if enabled.
+        
+        Returns:
+            list: List of tuples (x, y, symbol) for all points to display
+        """
+        points = [(self.x, self.y, self.symbol)]
+        
+        if self.trail_length > 0:
+            # Add trail points with fading symbols
+            trail_len = len(self.trail)
+            for i, (trail_x, trail_y, _) in enumerate(reversed(self.trail)):
+                # Adjust the fade effect based on trail position
+                fade_factor = min(i * len(self.trail_symbols) // trail_len, len(self.trail_symbols) - 1)
+                symbol_index = len(self.trail_symbols) - fade_factor - 1
+                points.append((trail_x, trail_y, self.trail_symbols[symbol_index]))
+        
+        return points
+
 
     def is_alive(self):
         """
         Whether or not the particle is still alive. A Particle is alive if it has life left and is within bounds.
         """
-        # Particle is alive if it has life left and is within bounds
         return (
             self.life > 0
             and 0 <= int(self.x) < self.width
@@ -255,7 +294,35 @@ class Firework:
             self.matrix_explosion()
         elif self.explosion_type == "portal":
             self.portal_explosion()
-        
+        elif self.explosion_type == "fractal":
+            self.fractal_tree_explosion()
+        elif self.explosion_type == "tessellation":
+            self.tessellation_explosion()
+        elif self.explosion_type == "quantum":
+            self.quantum_explosion()
+        elif self.explosion_type == "mandelbrot":
+            self.mandelbrot_explosion()
+        elif self.explosion_type == "hypercube":
+            self.hypercube_explosion()
+        elif self.explosion_type == "chaos":
+            self.chaos_theory_explosion()
+        elif self.explosion_type == "timewarp":
+            self.time_warp_explosion()
+        elif self.explosion_type == "interdimensional":
+            self.interdimensional_portal_explosion()
+        elif self.explosion_type == "blackhole":
+            self.black_hole_singularity()
+        elif self.explosion_type == "mtheory":
+            self.m_theory_explosion()
+        elif self.explosion_type == "realitywarp":
+            self.reality_warping_tessellation()
+        elif self.explosion_type == "noneuclidean":
+            self.non_euclidean_explosion()
+        elif self.explosion_type == "cosmicstring":
+            self.cosmic_string_explosion()
+        elif self.explosion_type == "fancytrailburst":
+            self.fancy_trail_burst_explosion()
+
     def circular_explosion(self):
         """
         Creates a circular explosion effect.
@@ -827,6 +894,455 @@ class Firework:
                                         self.width, self.height,
                                         symbol=symbol, life=10))
 
+    def fractal_tree_explosion(self):
+        """
+        Creates a fractal tree pattern that branches out recursively
+        """
+        def add_branch(x, y, angle, depth, speed):
+            if depth <= 0:
+                return
+            
+            dx = math.cos(angle) * speed
+            dy = math.sin(angle) * speed
+            self.particles.append(Particle(x, y, dx, dy, self.width, self.height))
+            
+            # Branch angles and reduced speed for sub-branches
+            new_speed = speed * 0.7
+            add_branch(x, y, angle - 0.5, depth - 1, new_speed)  # Left branch
+            add_branch(x, y, angle + 0.5, depth - 1, new_speed)  # Right branch
+        
+        # Create initial branches
+        for angle in range(0, 360, 45):
+            add_branch(self.x, self.y, math.radians(angle), 4, 1.2)
+
+    def tessellation_explosion(self):
+        """
+        Creates an Islamic geometric pattern-inspired explosion
+        """
+        num_layers = 3
+        points_per_layer = 8
+        
+        for layer in range(num_layers):
+            radius = 0.8 + layer * 0.4
+            # Create regular polygon vertices
+            for i in range(points_per_layer):
+                base_angle = (2 * math.pi * i / points_per_layer) + (layer * math.pi / points_per_layer)
+                
+                # Main point
+                dx = math.cos(base_angle) * radius
+                dy = math.sin(base_angle) * radius
+                self.particles.append(Particle(self.x, self.y, dx, dy, self.width, self.height))
+                
+                # Connect to adjacent points with intermediate particles
+                connect_angle = base_angle + (math.pi / points_per_layer)
+                steps = 3
+                for step in range(steps):
+                    t = step / steps
+                    dx = math.cos(base_angle + t * (math.pi / points_per_layer)) * radius
+                    dy = math.sin(base_angle + t * (math.pi / points_per_layer)) * radius
+                    self.particles.append(Particle(self.x, self.y, dx * 0.8, dy * 0.8, self.width, self.height))
+
+    def quantum_explosion(self):
+        """
+        Creates a quantum probability cloud-like pattern with orbital shells
+        """
+        shells = 4
+        electrons_per_shell = 8
+        
+        for shell in range(shells):
+            radius = 0.5 + shell * 0.3
+            for electron in range(electrons_per_shell):
+                # Base orbital motion
+                angle = (2 * math.pi * electron / electrons_per_shell)
+                
+                # Add quantum uncertainty
+                for uncertainty in range(3):
+                    uncertain_radius = radius + random.uniform(-0.1, 0.1)
+                    uncertain_angle = angle + random.uniform(-0.2, 0.2)
+                    
+                    dx = math.cos(uncertain_angle) * uncertain_radius
+                    dy = math.sin(uncertain_angle) * uncertain_radius
+                    
+                    # Add some orbital velocity
+                    orbital_dx = -dy * 0.3
+                    orbital_dy = dx * 0.3
+                    
+                    self.particles.append(Particle(self.x, self.y, 
+                                                dx + orbital_dx, 
+                                                dy + orbital_dy, 
+                                                self.width, self.height))
+
+    def mandelbrot_explosion(self):
+        """
+        Creates an explosion pattern inspired by the Mandelbrot set
+        """
+        points = 40
+        max_iterations = 3
+        
+        for i in range(points):
+            angle = (2 * math.pi * i / points)
+            # Generate points along cardioid and main bulb shapes
+            for iteration in range(max_iterations):
+                # Cardioid
+                t = angle + iteration * math.pi / 6
+                r = 0.5 * (1 - math.cos(t))
+                x = r * math.cos(t)
+                y = r * math.sin(t)
+                
+                # Transform to velocity
+                speed = 1.0 - (iteration * 0.2)
+                dx = x * speed
+                dy = y * speed
+                
+                self.particles.append(Particle(self.x, self.y, dx, dy, self.width, self.height))
+                
+                # Main bulb
+                r2 = 0.25 * math.sqrt(abs(math.cos(2 * t)))
+                x2 = r2 * math.cos(t)
+                y2 = r2 * math.sin(t)
+                self.particles.append(Particle(self.x, self.y, x2 * speed, y2 * speed, self.width, self.height))
+
+    def hypercube_explosion(self):
+        """
+        Creates a 4D hypercube projection explosion pattern
+        """
+        # Generate 4D hypercube vertices
+        def rotate4d(point, angle):
+            x, y, z, w = point
+            # Rotate in xw plane
+            xr = x * math.cos(angle) - w * math.sin(angle)
+            wr = x * math.sin(angle) + w * math.cos(angle)
+            return (xr, y, z, wr)
+        
+        vertices = []
+        for x in [-1, 1]:
+            for y in [-1, 1]:
+                for z in [-1, 1]:
+                    for w in [-1, 1]:
+                        vertices.append((x*0.5, y*0.5, z*0.5, w*0.5))
+        
+        # Project and create particles
+        for angle in range(0, 360, 30):
+            rad = math.radians(angle)
+            for vertex in vertices:
+                # Rotate in 4D
+                rotated = rotate4d(vertex, rad)
+                # Project to 2D
+                factor = 1 / (2 - rotated[3])  # Perspective projection
+                x = rotated[0] * factor
+                y = rotated[1] * factor
+                
+                speed = random.uniform(0.8, 1.2)
+                self.particles.append(Particle(self.x, self.y, x * speed, y * speed, self.width, self.height))
+
+    def chaos_theory_explosion(self):
+        """
+        A completely chaotic explosion that uses strange attractors and randomness
+        """
+        num_particles = 50
+        for _ in range(num_particles):
+            # Create chaotic initial conditions
+            angle = random.uniform(0, math.tau)  # tau = 2π
+            speed = random.uniform(0.2, 2.0)
+            
+            # Add some Lorenz attractor-inspired chaos
+            x_offset = math.sin(angle * 3) * math.cos(angle * 2)
+            y_offset = math.cos(angle * 4) * math.sin(angle * 5)
+            
+            dx = (math.cos(angle) + x_offset) * speed
+            dy = (math.sin(angle) + y_offset) * speed
+            
+            # Add multiple particles with slightly varying trajectories
+            for i in range(3):
+                chaos_dx = dx + random.uniform(-0.3, 0.3) * (i + 1)
+                chaos_dy = dy + random.uniform(-0.3, 0.3) * (i + 1)
+                self.particles.append(Particle(self.x, self.y, chaos_dx, chaos_dy, self.width, self.height))
+
+    def time_warp_explosion(self):
+        """
+        Creates particles that appear to move through time differently
+        """
+        num_timelines = 20
+        for timeline in range(num_timelines):
+            # Create a base particle trajectory
+            angle = random.uniform(0, math.tau)
+            speed = random.uniform(0.5, 1.5)
+            
+            # Time dilation factor
+            time_factor = random.uniform(0.1, 2.0)
+            
+            # Create particles moving at different "time speeds"
+            dx = math.cos(angle) * speed * time_factor
+            dy = math.sin(angle) * speed * time_factor
+            
+            # Add temporal echo particles
+            num_echoes = 5
+            for echo in range(num_echoes):
+                echo_factor = math.sin(timeline + echo / num_echoes * math.pi)
+                echo_dx = dx * echo_factor
+                echo_dy = dy * echo_factor
+                
+                # Add some spacetime distortion
+                distortion = math.sin(timeline * 0.1) * 0.5
+                echo_dx += distortion * random.uniform(-1, 1)
+                echo_dy += distortion * random.uniform(-1, 1)
+                
+                self.particles.append(Particle(self.x, self.y, echo_dx, echo_dy, self.width, self.height))
+
+    def interdimensional_portal_explosion(self):
+        """
+        Creates a swirling portal effect that seems to connect different dimensions
+        """
+        num_dimensions = 5  # Number of "dimensional layers"
+        particles_per_dimension = 20
+        
+        for dimension in range(num_dimensions):
+            dimension_offset = dimension * math.pi / num_dimensions
+            
+            for i in range(particles_per_dimension):
+                # Create spiral pattern for each dimension
+                angle = (i / particles_per_dimension * math.tau) + dimension_offset
+                radius = 0.1 + dimension * 0.3
+                
+                # Add interdimensional drift
+                drift_x = math.sin(angle * 3) * 0.5
+                drift_y = math.cos(angle * 2) * 0.5
+                
+                # Calculate base velocities
+                dx = (math.cos(angle) * radius + drift_x)
+                dy = (math.sin(angle) * radius + drift_y)
+                
+                # Add some dimensional instability
+                instability = random.uniform(-0.2, 0.2)
+                dx += instability * math.sin(dimension_offset)
+                dy += instability * math.cos(dimension_offset)
+                
+                # Create particles with dimensional effects
+                for _ in range(3):
+                    # Add quantum tunneling effect
+                    tunnel_dx = dx + random.gauss(0, 0.1) * (dimension + 1)
+                    tunnel_dy = dy + random.gauss(0, 0.1) * (dimension + 1)
+                    
+                    self.particles.append(Particle(self.x, self.y, tunnel_dx, tunnel_dy, self.width, self.height))
+
+    def black_hole_singularity(self):
+        """
+        Creates a black hole effect that warps space around it and emits Hawking radiation
+        """
+        event_horizon_radius = 0.5
+        num_particles = 60
+        
+        # Create infalling particles
+        for i in range(num_particles):
+            angle = random.uniform(0, math.tau)
+            distance = random.uniform(0.1, 2.0)
+            
+            # Calculate gravitational effects
+            gravitational_strength = 1 / (distance + 0.1)  # Prevent division by zero
+            
+            # Spiral motion towards center
+            dx = math.cos(angle) * distance * gravitational_strength
+            dy = math.sin(angle) * distance * gravitational_strength
+            
+            # Add relativistic frame dragging effect
+            frame_drag = math.atan2(dy, dx) * 0.3
+            dx += math.cos(frame_drag)
+            dy += math.sin(frame_drag)
+            
+            # Hawking radiation (particles that escape)
+            if random.random() < 0.2:  # 20% chance of radiation
+                radiation_speed = random.uniform(1.5, 2.0)
+                self.particles.append(Particle(self.x, self.y, dx * radiation_speed, dy * radiation_speed, self.width, self.height))
+            
+            # Infalling particles
+            self.particles.append(Particle(self.x, self.y, -dx * 0.5, -dy * 0.5, self.width, self.height))
+
+    def m_theory_explosion(self):
+        """
+        Creates patterns inspired by 11-dimensional M-theory with membrane interactions
+        """
+        dimensions = 11  # M-theory's 11 dimensions
+        particles_per_dim = 8
+        
+        for d in range(dimensions):
+            phase = d * math.tau / dimensions
+            
+            # Create brane-like structures in higher dimensions
+            for i in range(particles_per_dim):
+                # Complex dimensional mapping
+                angle1 = i * math.tau / particles_per_dim + phase
+                angle2 = angle1 * math.pi / 2
+                
+                # Project from higher dimensions
+                for j in range(3):  # Create multiple projections
+                    # Use hyperbolic functions for exotic spatial effects
+                    dx = math.sinh(angle1) * math.cosh(angle2) * (0.5 + j * 0.2)
+                    dy = math.cosh(angle1) * math.sinh(angle2) * (0.5 + j * 0.2)
+                    
+                    # Add quantum fluctuations
+                    dx += random.gauss(0, 0.1) * math.sin(d)
+                    dy += random.gauss(0, 0.1) * math.cos(d)
+                    
+                    self.particles.append(Particle(self.x, self.y, dx, dy, self.width, self.height))
+
+    def reality_warping_tessellation(self):
+        """
+        Creates a pattern that seems to fold and unfold reality itself
+        """
+        def create_tessellation_point(angle, radius, iteration):
+            # Create golden ratio-based spiral
+            golden_ratio = 1.618033988749895
+            spiral_angle = angle * golden_ratio
+            
+            # Calculate base position with reality-warping effects
+            x = math.cos(spiral_angle) * radius * math.sin(iteration * 0.1)
+            y = math.sin(spiral_angle) * radius * math.cos(iteration * 0.1)
+            
+            # Add reality distortion
+            distortion = math.sin(iteration * 0.3) * 0.5
+            x += distortion * math.cos(spiral_angle * 2)
+            y += distortion * math.sin(spiral_angle * 3)
+            
+            return x, y
+
+        layers = 5
+        points_per_layer = 12
+        
+        for layer in range(layers):
+            radius = 0.3 + layer * 0.3
+            for i in range(points_per_layer):
+                angle = i * math.tau / points_per_layer
+                
+                # Create multiple folded reality versions
+                for fold in range(3):
+                    x1, y1 = create_tessellation_point(angle, radius, layer + fold)
+                    x2, y2 = create_tessellation_point(angle + 0.1, radius, layer + fold)
+                    
+                    # Create particles that follow the folds
+                    speed = random.uniform(0.5, 1.5)
+                    self.particles.append(Particle(self.x, self.y, x1 * speed, y1 * speed, self.width, self.height))
+                    self.particles.append(Particle(self.x, self.y, x2 * speed, y2 * speed, self.width, self.height))
+
+    def non_euclidean_explosion(self):
+        """
+        Creates patterns that follow non-Euclidean geometry rules
+        """
+        def hyperbolic_transform(x, y, curvature):
+            # Apply hyperbolic transformation
+            r = math.sqrt(x*x + y*y)
+            if r == 0: return x, y
+            
+            # Poincaré disk model transformation
+            factor = (2.0 / (1.0 + curvature * r * r))
+            return x * factor, y * factor
+
+        base_particles = 40
+        
+        for i in range(base_particles):
+            angle = random.uniform(0, math.tau)
+            radius = random.uniform(0.1, 1.0)
+            
+            # Create base movement
+            x = math.cos(angle) * radius
+            y = math.sin(angle) * radius
+            
+            # Apply various non-Euclidean transformations
+            for curvature in [0.5, 1.0, 1.5]:  # Different space curvatures
+                # Transform coordinates
+                dx, dy = hyperbolic_transform(x, y, curvature)
+                
+                # Add Möbius transformation
+                complex_z = complex(dx, dy)
+                mobius_z = (complex_z + 0.2) / (1 - 0.3 * complex_z)
+                
+                # Convert back to real coordinates with scaling
+                final_dx = mobius_z.real * 0.5
+                final_dy = mobius_z.imag * 0.5
+                
+                # Add some quantum uncertainty to the geometry
+                for _ in range(2):
+                    uncertainty_dx = final_dx + random.gauss(0, 0.1)
+                    uncertainty_dy = final_dy + random.gauss(0, 0.1)
+                    self.particles.append(Particle(self.x, self.y, uncertainty_dx, uncertainty_dy, self.width, self.height))
+
+    def cosmic_string_explosion(self):
+        """
+        Creates patterns based on theoretical cosmic strings and topological defects
+        """
+        num_strings = 8
+        points_per_string = 15
+        
+        for string in range(num_strings):
+            # Create a base cosmic string
+            string_angle = string * math.tau / num_strings
+            string_tension = random.uniform(0.5, 1.5)
+            
+            for point in range(points_per_string):
+                # Calculate string oscillation
+                t = point / points_per_string
+                wave = math.sin(t * math.pi * 2 + string_angle)
+                
+                # Add string vibration modes
+                for mode in range(3):
+                    mode_angle = string_angle + wave * 0.3 * (mode + 1)
+                    mode_radius = 0.3 + mode * 0.2
+                    
+                    # Calculate base velocities with string tension
+                    dx = math.cos(mode_angle) * mode_radius * string_tension
+                    dy = math.sin(mode_angle) * mode_radius * string_tension
+                    
+                    # Add quantum fluctuations along the string
+                    fluctuation = random.gauss(0, 0.1)
+                    dx += fluctuation * math.sin(mode_angle)
+                    dy += fluctuation * math.cos(mode_angle)
+                    
+                    # Create particles with varying energies
+                    for energy in range(2):
+                        energy_factor = 1.0 + energy * 0.5
+                        self.particles.append(Particle(self.x, self.y, 
+                                                    dx * energy_factor,
+                                                    dy * energy_factor,
+                                                    self.width, self.height))
+
+    def fancy_trail_burst_explosion(self):
+        """
+        Creates a more complex explosion with varying trail lengths and spiral motion
+        """
+        num_particles = random.randint(8, 20)
+        
+        for i in range(num_particles):
+            # Calculate angle for even distribution
+            angle = (i / num_particles) * math.tau
+            
+            # Create two layers of particles
+            for layer in range(2):
+                # Base velocity with spiral component
+                speed = random.uniform(0.6, 1.0) * (layer + 1)
+                spiral_factor = 0.2  # Controls how much spiral motion
+                
+                dx = math.cos(angle) * speed + math.sin(angle) * spiral_factor
+                dy = math.sin(angle) * speed - math.cos(angle) * spiral_factor
+                
+                # Vary trail length based on position in the explosion
+                trail_length = int(random.randint(2, 5) * (layer + 1) * (1 + math.sin(angle)))
+                
+                # Choose different symbols for each layer
+                symbol = '★' if layer == 0 else '✦'
+                
+                particle = Particle(
+                    x=self.x,
+                    y=self.y,
+                    dx=dx,
+                    dy=dy,
+                    width=self.width,
+                    height=self.height,
+                    symbol=symbol,
+                    trail_length=trail_length,
+                    life=50  # Longer life to see the spiral motion
+                )
+                
+                self.particles.append(particle)
+
     def is_active(self):
         """
         Returns True if the portal is active (emitting particles), False otherwise.
@@ -882,6 +1398,8 @@ class Firework:
                 buffer.put_char(int(self.previous_x), int(self.previous_y), val=" ")
 
             for particle in self.particles:
+                for x, y, symbol in particle.get_display_points():
+                    buffer.put_char(int(x), int(y), symbol)
                 px, py = int(particle.x), int(particle.y)
                 if 0 <= px < self.width and 0 <= py < self.height:
                     if self.color_enabled:
@@ -891,7 +1409,8 @@ class Firework:
                         buffer.put_char(px, py, val=particle.symbol)
                     buffer.put_char(int(particle.previous_x), int(particle.previous_y), val=" ")
             for particle in self.clear_particles:
-                buffer.put_char(int(particle.previous_x), int(particle.previous_y), val=" ")
+                    buffer.put_char(int(particle.previous_x), int(particle.previous_y), val=" ")
+            
 
 
 class FireworkEffect(BaseEffect):
@@ -914,6 +1433,7 @@ class FireworkEffect(BaseEffect):
         self.fireworks: list[Firework] = []
         self.firework_rate: float = 0.05
         self.allowed_firework_types = valid_firework_types
+        self.second_effect = None
 
     def set_firework_type(self, firework_type: FireworkType):
         """
@@ -950,6 +1470,10 @@ class FireworkEffect(BaseEffect):
         if len(allowed_firework_types) > 0:
             self.allowed_firework_types = allowed_firework_types
 
+    def set_second_effect(self, second_effect: any):
+        if isinstance(second_effect, BaseEffect):
+            self.second_effect = second_effect
+
     def render_frame(self, frame_number):
         """
         Renders the background to the screen
@@ -966,6 +1490,13 @@ class FireworkEffect(BaseEffect):
                     allowed_firework_types=self.allowed_firework_types
                 )
             )
+
+        if self.second_effect is not None:
+            try:
+                self.second_effect.render_frame(frame_number=frame_number)
+                self.buffer.sync_with(self.second_effect.buffer)
+            except Exception:
+                pass
 
         for firework in self.fireworks:
             firework.update()
