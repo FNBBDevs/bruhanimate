@@ -16,6 +16,16 @@ root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, root_dir)
 sys.path.insert(0, os.path.join(root_dir, 'bruhanimate'))
 
+from unittest.mock import MagicMock
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+        return MagicMock()
+
+MOCK_MODULES = ['pyaudio']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
 project = 'bruhanimate'
 copyright = '2024, Ethan Christensen'
 author = 'Ethan Christensen'
