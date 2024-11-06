@@ -14,50 +14,83 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-def push_init():
-    init_contents = None
-    new_line = None
+import toml
+from typing import Tuple
 
-    with open("bruhanimate/__init__.py", "r") as file:
-        init_contents = file.readlines()
-        
-    for idx, line in enumerate(init_contents):
+def increment_version(version: str) -> str:
+    """Increment the patch version number."""
+    major, minor, patch = map(int, version.split("."))
+    return f"{major}.{minor}.{patch + 1}"
+
+def read_file(file_path: str) -> Tuple[list, bool]:
+    """Read the contents of a file."""
+    try:
+        with open(file_path, "r") as file:
+            return file.readlines(), True
+    except FileNotFoundError:
+        print(f"Error: {file_path} not found.")
+        return [], False
+    except IOError as e:
+        print(f"IOError for {file_path}: {e}")
+        return [], False
+
+def write_file(file_path: str, contents: list) -> bool:
+    """Write contents to a file."""
+    try:
+        with open(file_path, "w") as file:
+            file.writelines(contents)
+        return True
+    except IOError as e:
+        print(f"IOError for {file_path}: {e}")
+        return False
+
+def update_version_string(version_line: str) -> Tuple[str, str]:
+    """Extract and update the version in a version line."""
+    old_version = version_line.split("=")[1].strip().strip('"')
+    new_version = increment_version(old_version)
+    return old_version, new_version
+
+def update_init_file() -> None:
+    """Update the version in the __init__.py file."""
+    init_path = "bruhanimate/__init__.py"
+    contents, success = read_file(init_path)
+    if not success:
+        return
+
+    for idx, line in enumerate(contents):
         if line.startswith("__version__"):
-            version_raw = line.split("=")[1].strip()[1:-1].split(".")
-            a, b, c = (int(v) for v in version_raw)
-            old_version = f"{a}.{b}.{c}"
-            new_version = f"{a}.{b}.{c+1}"
-            print(f"__init__.py: {old_version} --> {new_version}")
-            new_line = f"__version__ = \"{new_version}\"\n"
-            init_contents[idx] = new_line
-            break
+            old_version, new_version = update_version_string(line)
+            contents[idx] = f'__version__ = "{new_version}"\n'
+            print(f"Updated __init__.py: {old_version} --> {new_version}")
+            if write_file(init_path, contents):
+                break
 
-    with open("bruhanimate/__init__.py", "w") as file:
-        file.writelines(init_contents)
+def update_pyproject_file() -> None:
+    """Update the version in the pyproject.toml file."""
+    pyproject_path = "pyproject.toml"
+    try:
+        with open(pyproject_path, "r") as file:
+            pyproject_data = toml.load(file)
+    except (FileNotFoundError, toml.TomlDecodeError) as e:
+        print(f"Error reading {pyproject_path}: {e}")
+        return
 
-def push_setup():
-    setup_contents = None
-    new_line = None
+    old_version = pyproject_data['tool']['poetry'].get('version')
+    if old_version:
+        new_version = increment_version(old_version)
+        pyproject_data['tool']['poetry']['version'] = new_version
+        print(f"Updated pyproject.toml: {old_version} --> {new_version}")
 
-    with open("setup.py", "r") as file:
-        setup_contents = file.readlines()
-        
-    for idx, line in enumerate(setup_contents):
-        if line.startswith("VERSION"):
-            
-            version_raw = line.split("=")[1].strip()[1:-1].split(".")
-            a, b, c = (int(v) for v in version_raw)
-            old_version = f"{a}.{b}.{c}"
-            new_version = f"{a}.{b}.{c+1}"
-            print(f"setup.py: {old_version} --> {new_version}")
-            new_line = f"VERSION = \"{new_version}\"\n"
-            setup_contents[idx] = new_line
-            break
+        try:
+            with open(pyproject_path, "w") as file:
+                toml.dump(pyproject_data, file)
+        except IOError as e:
+            print(f"Error writing {pyproject_path}: {e}")
 
-    with open("setup.py", "w") as file:
-        file.writelines(setup_contents)
-
+def main() -> None:
+    """Main function to update version numbers."""
+    update_init_file()
+    update_pyproject_file()
 
 if __name__ == "__main__":
-    push_init()
-    push_setup()
+    main()
