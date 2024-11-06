@@ -1415,7 +1415,54 @@ class Firework:
 
 class FireworkEffect(BaseEffect):
     """
-    Class for generating fireworks
+    A spectacular fireworks display effect that can create various types of firework patterns.
+    
+    This class provides a highly customizable fireworks display with support for different
+    explosion patterns, colors, and special effects. It can render traditional circular bursts,
+    as well as exotic patterns like fractals, quantum effects, and interdimensional portals.
+
+    Example Usage::
+
+        from bruhanimate import Buffer
+        from bruhanimate.bruheffect import FireworkEffect
+
+        # Create a basic fireworks display
+        buffer = Buffer(width=80, height=24)
+        fireworks = FireworkEffect(buffer=buffer, background=" ")
+        
+        # Configure the fireworks
+        fireworks.set_firework_type("circular")
+        fireworks.set_firework_rate(0.1)
+        fireworks.set_firework_color_enabled(True)
+        fireworks.set_firework_color_type("rainbow")
+
+        # Render frames in your animation loop
+        for frame in range(100):
+            fireworks.render_frame(frame)
+            buffer.display()
+
+    Advanced Example::
+
+        # Create a mixed fireworks display with specific types
+        fireworks.set_firework_type("random")
+        fireworks.set_allowed_firework_types([
+            "circular", "starburst", "butterfly", 
+            "quantum", "galaxy"
+        ])
+
+    Warning:
+        - High firework rates (>0.3) may impact performance on slower systems
+        - Some exotic firework types may be CPU intensive
+        - Color support requires a terminal that supports ANSI color codes
+
+    Note:
+        The firework patterns are designed to work best in terminals with aspect
+        ratios close to 1:2 (height:width). Some patterns may appear distorted
+        in terminals with very different aspect ratios.
+
+    See Also:
+        - :class:`BaseEffect`: The parent class for all effects
+        - :class:`Buffer`: The buffer class used for rendering
     """
 
     def __init__(self, buffer: Buffer, background: str):
@@ -1437,20 +1484,81 @@ class FireworkEffect(BaseEffect):
 
     def set_firework_type(self, firework_type: FireworkType):
         """
-        Function to set the firework type of the effect
+        Set the type of firework explosions to be created.
+
+        Args:
+            firework_type (FireworkType): The type of firework to create. Can be one of:
+                - "circular": Traditional circular burst
+                - "starburst": Radiating star pattern
+                - "butterfly": Elegant butterfly pattern
+                - "quantum": Quantum probability cloud
+                ... and many more
+
+        Example::
+
+            fireworks.set_firework_type("butterfly")
+            # Or use random for variety
+            fireworks.set_firework_type("random")
+
+        Warning:
+            Some exotic firework types (like "quantum", "hypercube", etc.) may be
+            more CPU intensive than traditional patterns.
+
+        Note:
+            When using "random" type, the actual patterns used will be limited to
+            those specified in allowed_firework_types.
         """
         if firework_type in valid_firework_types or firework_type == "random":
             self.firework_type = firework_type
 
     def set_firework_color_enabled(self, color_enabled: bool):
         """
-        Function to set whether or not fireworks should have color
+        Set how frequently new fireworks should be launched.
+
+        Args:
+            firework_rate (float): Probability (0.0 to 1.0) of launching a new firework
+                each frame. Higher values mean more frequent launches.
+
+        Example::
+
+            # Sparse fireworks
+            fireworks.set_firework_rate(0.05)  # 5% chance per frame
+            
+            # Dense show
+            fireworks.set_firework_rate(0.3)   # 30% chance per frame
+
+        Warning:
+            - Values >0.3 may cause performance issues on slower systems
+            - Values >0.5 may create very dense/cluttered displays
+            - Values ≤0.0 will prevent any fireworks from launching
+
+        Note:
+            The actual visual density will depend on your frame rate. Adjust this
+            value based on how frequently you call render_frame().
         """
         self.color_enabled = color_enabled
 
     def set_firework_color_type(self, firework_color_type: FireworkColorType):
         """
-        Function to set the firework color type of the effect
+        Enable or disable colored fireworks.
+
+        Args:
+            color_enabled (bool): Whether fireworks should be rendered in color.
+
+        Example::
+
+            # Enable colorful display
+            fireworks.set_firework_color_enabled(True)
+            fireworks.set_firework_color_type("rainbow")
+
+        Warning:
+            - Colors require a terminal that supports ANSI color codes
+            - Some terminals may display colors differently
+            - Windows command prompt has limited color support
+
+        Note:
+            Even when enabled, colors will only be visible if a color type
+            is set via set_firework_color_type().
         """
         if firework_color_type in valid_firework_color_types:
             self.firework_color_type = firework_color_type
@@ -1464,7 +1572,33 @@ class FireworkEffect(BaseEffect):
 
     def set_allowed_firework_types(self, allowed_firework_types):
         """
-        Function to set the chosen firework types of the effect
+        Specify which firework types can be used when type is set to "random".
+
+        Args:
+            allowed_firework_types (List[str]): List of firework type names to allow.
+                Must be valid types from valid_firework_types.
+
+        Example::
+
+            # Create a show with only geometric patterns
+            fireworks.set_allowed_firework_types([
+                "circular", "ring", "diamond", "star"
+            ])
+            
+            # Create a show with exotic effects
+            fireworks.set_allowed_firework_types([
+                "quantum", "hypercube", "galaxy",
+                "interdimensional", "cosmic_string"
+            ])
+
+        Warning:
+            - An empty list or list with no valid types will revert to all types
+            - Invalid type names will be silently ignored
+            - Some combinations of types may create visually jarring transitions
+
+        Note:
+            This setting only affects fireworks when type is set to "random".
+            For consistent displays, choose types with similar visual characteristics.
         """
         allowed_firework_types = [ft for ft in allowed_firework_types if ft in valid_firework_types]
         if len(allowed_firework_types) > 0:
