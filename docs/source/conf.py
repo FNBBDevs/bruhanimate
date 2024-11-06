@@ -79,7 +79,7 @@ pygments_style = "emacs"
 pygments_dark_style = "github-dark"
 
 html_theme_options = {
-    "announcement": "<em>Important:</em> Klim is a b*tch! 💦",
+     "announcement": "<em>Important:</em> Bruh is better than cringe 💥",
 }
 
 intersphinx_mapping = {
