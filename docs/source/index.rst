@@ -1,17 +1,15 @@
-.. bruhanimate documentation master file, created by
-   sphinx-quickstart on Sun Nov  3 15:19:21 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-bruhanimate documentation
+Bruhanimate Package
 =========================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
-
+Bruhanimate is a Python package for creating animated videos with a focus on simplicity and ease of use.
+It is a custom built package that is designed to be easy to use and understand. Similarly, it is designed to be extensible,
+allowing for easy addition of new features and effects.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Bruhanimate Contents:
 
+   bruheffect/index
+   bruhrenderer/index
+   bruhutil/index
+   demos/index

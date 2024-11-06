@@ -4,3 +4,5 @@ pyfiglet
 numpy
 openai
 requests
+sphinx==8.1.3
+furo==2024.8.6
