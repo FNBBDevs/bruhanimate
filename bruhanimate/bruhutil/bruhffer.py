@@ -220,7 +220,6 @@ class Buffer:
                 if in_buf.buffer[y][x] is not None:
                     self.buffer[y][x] = in_buf.buffer[y][x]
 
-    @property
     def height(self):
         """
         Get the height of the buffer.
@@ -229,7 +228,6 @@ class Buffer:
         """
         return self._height
 
-    @property
     def width(self):
         """
         Get the width of the buffer.
