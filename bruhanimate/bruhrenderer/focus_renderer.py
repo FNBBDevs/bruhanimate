@@ -70,7 +70,8 @@ class FocusRenderer(BaseRenderer):
 
     def _set_img_attributes(self):
         """
-        Set the attributes of the img
+        Sets attributes for the image, such as its height and width,
+        and initializes boards to track character positions.
         """
         self.img_height = len(self.img)
         self.img_width = len(self.img[0])
@@ -78,6 +79,8 @@ class FocusRenderer(BaseRenderer):
         self.img_x_start = (self.width - len(self.img[0])) // 2
         self.current_img_x = self.img_x_start
         self.current_img_y = self.img_y_start
+        
+        # Initialize start board with characters at random positions
         self.start_board = [
             [
                 [
@@ -90,6 +93,8 @@ class FocusRenderer(BaseRenderer):
             ]
             for y in range(self.img_height)
         ]
+        
+        # Initialize current board with characters at start positions
         self.current_board = [
             [
                 [
@@ -102,6 +107,8 @@ class FocusRenderer(BaseRenderer):
             ]
             for y in range(self.img_height)
         ]
+        
+        # Initialize end board with characters at target positions
         self.end_board = [
             [
                 [self.img_x_start + x, self.img_y_start + y, self.img[y][x], (x, y)]
@@ -109,6 +116,8 @@ class FocusRenderer(BaseRenderer):
             ]
             for y in range(self.img_height)
         ]
+        
+        # Initialize direction board to track character movement
         self.direction_board = [
             [
                 [
@@ -128,10 +137,19 @@ class FocusRenderer(BaseRenderer):
             for y in range(self.img_height)
         ]
 
-    def update_reverse(self, reverse, start_reverse):
+    def update_reverse(self, reverse: bool, start_reverse: int) -> None:
         """
-        Function to update whether or not to reverse the Focus
-        :param reverse: True / False
+        Updates the state of reverse and start_reverse attributes.
+
+        Args:
+
+            reverse (bool): Whether to enable or disable reverse.
+            start_reverse (int): The frame number at which to start the reverse.
+
+        Raises:
+
+            Exception: If reverse is enabled but start_reverse is not provided,
+                or if start_reverse is less than the current start_frame.
         """
         self.reverse = reverse
         self.start_reverse = start_reverse
@@ -142,15 +160,28 @@ class FocusRenderer(BaseRenderer):
 
     def update_start_frame(self, frame_number):
         """
-        Updates the frame at which the Focus Effect should start
-        :param frame_number: Frame to start
+        Updates the state of the start frame attribute.
+
+        Args:
+
+            frame_number (int): The new start frame number.
+
+        Returns:
+            None
         """
         self.start_frame = frame_number
 
     def solved(self, end_state):
         """
-        Function that determines if the image has been moved back to its
-        original shape
+        Checks whether the current board is in a desired state.
+
+        Args:
+
+            end_state (str): The desired state to check against. Can be "end",
+                "start", or any other value for custom checks.
+
+        Returns:
+            bool: Whether the current board matches the desired state.
         """
         b1 = self.current_board
         b2 = self.end_board
@@ -172,11 +203,18 @@ class FocusRenderer(BaseRenderer):
                         return False
             return True
         else:
-            raise Exception(f"unkown solved board state for FocusRenderer: {end_state}")
+            raise Exception(f"unknown solved board state for FocusRenderer: {end_state}")
 
     def render_img_frame(self, frame_number):
         """
-        Renders the next image frame into the image buffer
+        Renders the image on the screen based on the current frame number.
+
+        Args:
+
+            frame_number (int): The current frame number.
+
+        Returns:
+            None
         """
         if self.reverse and frame_number >= self.start_reverse:
             if not self.solved(end_state="start"):

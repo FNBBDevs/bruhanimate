@@ -23,7 +23,7 @@ def sleep(s):
     time.sleep(s)
 
 
-VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma", "gol", "rain", "matrix", "drawlines", "snow", "twinkle", "audio", "chat"]
+VALID_EFFECTS = ["static", "offset", "noise", "stars", "plasma", "gol", "rain", "matrix", "drawlines", "snow", "twinkle", "audio", "chat", "firework", "fire"]
 
 HORIZONTAL = "horizontal"
 

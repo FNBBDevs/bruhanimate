@@ -28,7 +28,8 @@ from .bruheffect import (
     TWINKLE_SPEC,
     FireworkEffect,
     Firework,
-    Particle
+    Particle,
+    FireEffect
 )
 
 
@@ -79,10 +80,11 @@ from .demos import (
     static_demo,
     chatbot_demo,
     firework_demo,
+    fire_demo
 )
 
 
-__version__ = "0.2.87"
+__version__ = "0.2.89"
 __valid_demos__ = [
     "static_demo",
     "offset_demo",
@@ -97,7 +99,8 @@ __valid_demos__ = [
     "twinkle_demo",
     "noise_demo",
     "holiday",
-    "firework_demo"
+    "firework_demo",
+    "fire_demo"
 ]
 
 if sys.platform == "win32":
@@ -173,6 +176,8 @@ if sys.platform == "win32":
         "TwinkleEffect",
         "TWINKLE_SPEC",
         "firework_demo",
+        "fire_demo",
+        "FireEffect"
     ]
 else:
     __all__ = [
@@ -244,5 +249,7 @@ else:
         "TwinkleEffect",
         "TWINKLE_SPEC",
         "firework_demo",
+        "fire_demo",
+        "FireEffect"
     ]
 

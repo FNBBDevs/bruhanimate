@@ -44,14 +44,28 @@ class EffectRenderer(BaseRenderer):
 
     def render_effect_frame(self, frame_number: int):
         """
-        We only need to render the effect, so we just call the effects render
-        frame method to update the effect buffer
+        Renders a single frame of the effect.
+
+        Args:
+            frame_number (int): The current frame number.
+
+        Returns:
+            None
         """
         self.effect.render_frame(frame_number)
 
     def run(self, end_message: bool = True):
         """
-        Generate the next effect frame and sync it with the back / front buffer
+        Runs the effect renderer.
+
+        Args:
+            end_message (bool): Whether to render an exit message at the end. Defaults to True.
+
+        Returns:
+            None
+
+        Raises:
+            ScreenResizedError: If the screen is resized during rendering.
         """
         try:
             if self.frames == INF:

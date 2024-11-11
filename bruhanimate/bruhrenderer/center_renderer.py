@@ -51,14 +51,13 @@ class CenterRenderer(BaseRenderer):
         self.current_img_x = self.img_x_start
         self.current_img_y = self.img_y_start
         self.none_fill_char = None
-
     def render_img_frame(self, frame_number):
         """
-        Renders out the image to the center of the screen,
-        if there is no image passed into the renderer then
-        the background is rendered on it's own
-        """
+        Renders the image at its center position in each frame.
 
+        Args:
+            frame_number (int): The current frame number.
+        """
         # Image is only rendered once, on frame 0
         if frame_number == 0:
             if self.smart_transparent:
