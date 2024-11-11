@@ -37,6 +37,10 @@ Key Modules and Purposes:
   
   Emulates Conway's Game of Life, offering a classic cellular automaton effect for use in simulations or educational projects.
 
+- **julia_effect**
+
+  Creates julia fractals to the screen from: https://en.wikipedia.org/wiki/Julia_set.
+
 - **matrix_effect**
   
   Recreates the iconic "Matrix" digital rain effect, perfect for adding a cyberpunk aesthetic to any project.
@@ -86,6 +90,7 @@ Explore these modules to discover the diverse effects you can achieve with the `
    fire_effect
    firework_effect
    game_of_life_effect
+   julia_effect
    matrix_effect
    noise_effect
    offset_effect
