@@ -32,6 +32,10 @@ Key Modules and Purposes:
 
   Offers a collection of festive effects suitable for holiday seasons, enhancing projects with themes of celebration and joy.
 
+- **julia_demo**
+
+  Offers a demo on how to use the JuliaEffect.
+
 - **line_demo**
 
   Demonstrates the creation of line-based graphics, ideal for artistic visualizations and geometric explorations.
@@ -83,6 +87,7 @@ Explore these modules to discover the impressive demonstrations available with t
    firework_demo
    gol_demo
    holiday
+   julia_demo
    line_demo
    matrix_demo
    noise_demo
