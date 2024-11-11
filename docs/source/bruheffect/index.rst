@@ -27,6 +27,10 @@ Key Modules and Purposes:
   
   Focuses on rendering line-based visuals, ideal for creating stylized line art or dynamic geometries.
 
+- **fire_effect**
+
+  Simulates fire burning with the ability to tweak certain parameters to change how the fire burns.
+
 - **firework_effect**
   
   Simulates firework displays, offering colorful and explosive visualizations for celebratory animations.
@@ -81,6 +85,7 @@ Explore these modules to discover the diverse effects you can achieve with the `
    base_effect
    chatbot_effect
    draw_lines_effect
+   fire_effect
    firework_effect
    game_of_life_effect
    matrix_effect
