@@ -174,8 +174,14 @@ def get_image(name: Image = "hey") -> List[str]:
     """
     Retrieves one of the pre-defined ASCII art images based on the given name.
 
-    :param name: The name of the image to retrieve.
-    :return: A list of strings representing the ASCII art image.
+    Args:
+        name (Image): The name of the image to retrieve.
+
+    Returns:
+        List[str]: A list of strings representing the ASCII art image.
+
+    Raises:
+        InvalidImageError: If the image name is not known or registered.
     """
     if name not in image_mappings:
         raise InvalidImageError(f"Unknown / non-registered image: {name}")
@@ -191,11 +197,14 @@ def text_to_image(
     """
     Converts text into ASCII art using the specified font and padding.
 
-    :param text: The text to convert into ASCII art.
-    :param font: The font to use for the ASCII art.
-    :param padding_top_bottom: Number of empty lines to add above and below the ASCII art.
-    :param padding_left_right: Number of spaces to add on the left and right of each line.
-    :return: A list of strings representing the ASCII art with padding.
+    Args:
+        text (str): The text to convert into ASCII art.
+        font (Font): The font to use for the ASCII art.
+        padding_top_bottom (int): Number of empty lines to add above and below the ASCII art.
+        padding_left_right (int): Number of spaces to add on the left and right of each line.
+
+    Returns:
+        List[str]: A list of strings representing the ASCII art with padding.
     """
     try:
         img_flat = pyfiglet.Figlet(font).renderText(text)

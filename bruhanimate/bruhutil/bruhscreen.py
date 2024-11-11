@@ -158,11 +158,25 @@ if sys.platform == 'win32':
             self._map_all = False
 
         def close(self, restore=True):
+            """
+            Close the screen and restore the previous console buffer and input modes.
+
+            :param restore: Boolean flag to restore the original console buffer and input mode
+                            when closing the screen. Default is True.
+            """
             if restore:
                 self._old_out.SetConsoleActiveScreenBuffer()
                 self._stdin.SetConsoleMode(self._old_in)
 
         def print_at(self, text, x, y, width):
+            """
+            Print text at a specified position (x, y) on the console screen.
+
+            :param text: The text to print on the screen.
+            :param x: The x-coordinate where the text begins.
+            :param y: The y-coordinate where the text begins.
+            :param width: The width of the text to be displayed, used to update the cursor position.
+            """
             try:
                 if x != self._current_x or y != self._current_y:
                     self._stdout.SetConsoleCursorPosition(win32console.PyCOORDType(x, y))
@@ -173,6 +187,13 @@ if sys.platform == 'win32':
                 pass
         
         def print_center(self, text, y, width):
+            """
+            Print text centrally aligned horizontally at a given y-coordinate.
+
+            :param text: The text to print on the screen.
+            :param y: The y-coordinate where the text is to be centered.
+            :param width: The width of the text to be displayed, used to calculate and update the left padding and cursor position.
+            """
             try:
                 left_pad = (self.width - width) // 2
                 self._stdout.SetConsoleCursorPosition(win32console.PyCOORDType(left_pad, y))
@@ -183,6 +204,9 @@ if sys.platform == 'win32':
                 pass
         
         def clear(self):
+            """
+            Clear the console screen by filling the console buffer with spaces and resetting the cursor position.
+            """
             info = self._stdout.GetConsoleScreenBufferInfo()['Window']
             width = info.Right - info.Left + 1
             height = info.Bottom - info.Top + 1
@@ -195,6 +219,11 @@ if sys.platform == 'win32':
                 win32console.PyCOORDType(0, 0))
         
         def has_resized(self):
+            """
+            Determine if the console screen has been resized since the last check.
+
+            :return: Boolean indicating whether the screen has been resized.
+            """
             re_sized = False
             info = self._stdout.GetConsoleScreenBufferInfo()['Window']
             width = info.Right - info.Left + 1
@@ -204,30 +233,39 @@ if sys.platform == 'win32':
             return re_sized
 
         def set_title(self, title: str) -> None:
+            """
+            Set the console window title.
+
+            :param title: The title to set for the console window.
+            """
             win32console.SetConsoleTitle(title)
         
         def wait_for_input(self, timeout: int) -> None:
+            """
+            Wait for user input in the console with a specified timeout period.
+
+            :param timeout: The time in seconds to wait for user input before timing out.
+            :raises RuntimeError: If an unexpected return code is encountered during the wait.
+            """
             rc = win32event.WaitForSingleObject(self._stdin, int(timeout * 1000))
             if rc not in [0, 258]:
                 raise RuntimeError(rc)
 
         def get_event(self):
             """
-            Check for any event without waiting.
+            Check for any console input event without waiting and return the corresponding key code.
+
+            This method processes the input events in the console's event queue to find key press events.
+            It translates these key events into a keyboard event object and returns the appropriate key code.
+            Modifier states are not mapped in a cross-platform manner, but standard bindings for extended keys are considered.
+
+            :return: The translated key code for the key event if available, otherwise None.
             """
             # Look for a new event and consume it if there is one.
             while len(self._stdin.PeekConsoleInput(1)) > 0:
                 event = self._stdin.ReadConsoleInput(1)[0]
                 if event.EventType == win32console.KEY_EVENT:
-                    # Pasting unicode text appears to just generate key-up
-                    # events (as if you had pressed the Alt keys plus the
-                    # keypad code for the character), but the rest of the
-                    # console input simply doesn't
-                    # work with key up events - e.g. misses keyboard repeats.
-                    #
-                    # We therefore allow any key press (i.e. KeyDown) event and
-                    # _any_ event that appears to have popped up from nowhere
-                    # as long as the Alt key is present.
+                    # Handle key-down events and Alt key states for unicode pasting.
                     key_code = ord(event.Char)
                     if (event.KeyDown or
                             (key_code > 0 and key_code not in self._keys and
@@ -240,11 +278,7 @@ if sys.platform == 'win32':
                         if event.VirtualKeyCode in self._KEY_MAP:
                             key_code = self._KEY_MAP[event.VirtualKeyCode]
 
-                        # Sadly, we are limited to Linux terminal input and so
-                        # can't return modifier states in a cross-platform way.
-                        # If the user decided not to be cross-platform, so be
-                        # it, otherwise map some standard bindings for extended
-                        # keys.
+                        # Handle cross-platform key mapping or any special mappings.
                         if (self._map_all and
                                 event.VirtualKeyCode in self._EXTRA_KEY_MAP):
                             key_code = self._EXTRA_KEY_MAP[event.VirtualKeyCode]
@@ -257,25 +291,28 @@ if sys.platform == 'win32':
                         elif (event.VirtualKeyCode == win32con.VK_TAB):
                             key_code = 11
      
-
-                        # Don't return anything if we didn't have a valid
-                        # mapping.
+                        # Return the key code if a valid mapping exists.
                         if key_code:
                             return key_code
                     else:
-                        # Tidy up any key that was previously pressed.  At
-                        # start-up, we may be mid-key, so can't assume this must
-                        # always match up.
+                        # Remove any previously pressed key that is no longer down.
                         if key_code in self._keys:
                             self._keys.remove(key_code)
 
-            # If we get here, we've fully processed the event queue and found
-            # nothing interesting.
+            # Return None if no interesting event was found.
             return None
-
 
         @classmethod
         def open(cls):
+            """
+            Opens and initializes a new console screen buffer for the Screen class on a Windows platform.
+
+            This method creates a new console screen buffer, sets it as the active buffer, configures
+            input and output modes, and prepares the screen for rendering text. It disables the cursor
+            visibility and scroll settings to provide an optimized setup for terminal-based applications.
+
+            :return: An initialized Screen object with the configured console screen buffer.
+            """
             old_out = win32console.PyConsoleScreenBufferType(win32file.CreateFile("CONOUT$", win32file.GENERIC_READ | win32file.GENERIC_WRITE,
                                                                                     win32file.FILE_SHARE_WRITE, None, win32file.OPEN_ALWAYS, 0, None))
             try:
@@ -310,12 +347,21 @@ if sys.platform == 'win32':
             #new_mode &= ~win32console.ENABLE_PROCESSED_INPUT
             win_in.SetConsoleMode(new_mode)
 
-
             screen = Screen(win_out, win_in, old_out, in_mode)
             return screen
             
         @classmethod
         def show(cls, function, args=None):
+            """
+            Display the provided function's output on the terminal screen with optional arguments.
+
+            This method initializes the terminal screen, invokes the provided function, and passes
+            any additional arguments to it. After the function execution, the screen is closed to
+            restore the previous terminal settings.
+
+            :param function: A callable to be executed within the context of the screen.
+            :param args: An optional list of arguments to be passed to the function.
+            """
             screen = Screen.open()
             try:
                 if args:

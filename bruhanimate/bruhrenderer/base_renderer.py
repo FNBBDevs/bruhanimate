@@ -70,14 +70,33 @@ class BaseRenderer:
             "x_loc": 0,
             "y_loc": 1,
         }
-
-    def validate_effect_type(self, effect_type: EffectType):
-        """Validate the effect type against available effects."""
+    
+    def validate_effect_type(self, effect_type: EffectType) -> None:
+        """
+        Validates the provided effect type against a list of valid effect types.
+        
+        Args:
+            effect_type (EffectType): The effect type to be validated.
+            
+        Raises:
+            InvalidEffectTypeError: If the provided effect type is not valid.
+        """
         if effect_type not in valid_effect_types:
             raise InvalidEffectTypeError(f"'{effect_type}' is not a valid effect. Please choose from {valid_effect_types}")
 
-    def create_effect(self, effect_type: EffectType):
-        """Create an effect instance based on the specified type."""
+    def create_effect(self, effect_type: EffectType) -> object:
+        """
+        Creates an instance of the specified effect type.
+        
+        Args:
+            effect_type (EffectType): The type of effect to be created.
+            
+        Returns:
+            An instance of the specified effect type.
+            
+        Raises:
+            ValueError: If the provided effect type is not recognized.
+        """
         if effect_type == "static":
             return StaticEffect(self.create_buffer(), self.background)
         elif effect_type == "offset":
@@ -106,12 +125,30 @@ class BaseRenderer:
             return ChatbotEffect(self.screen, self.create_buffer(), self.create_buffer(), self.background)
         elif effect_type == "firework":
             return FireworkEffect(self.create_buffer(), self.background)
+        elif effect_type == "fire":
+            return FireEffect(self.create_buffer(), self.background)
 
     def create_buffer(self) -> Buffer:
+        """
+        Creates a new buffer with the specified height and width.
+        
+        Args:
+            
+        Returns:
+            A newly created buffer object.
+        """
         return Buffer(height=self.screen.height, width=self.screen.width)
 
-    def update_collision(self, collision):
-        """Update collision for specific effects."""
+    def update_collision(self, collision: bool):
+        """
+        Updates the effect's collision state.
+        
+        Args:
+            collision (bool): The new collision state.
+            
+        Returns:
+            None
+        """
         try:
             self.collision = collision
             self.effect.update_collision(
@@ -128,17 +165,35 @@ class BaseRenderer:
             self.effect.update_collision(None, None, None, None, collision, None)
 
     def update_smart_transparent(self, smart_transparent: bool):
-        """Enable/Disable the smart transparency effect."""
+        """
+        Updates the effect's smart transparent state.
+        
+        Args:
+            smart_transparent (bool): The new smart transparent state.
+            
+        Returns:
+            None
+        """
         self.smart_transparent = smart_transparent
         self.effect.smart_transparent = smart_transparent
 
     def push_front_to_screen(self):
-        """Pushes changes from front_buffer to the screen."""
+        """
+        Pushes the front buffer to the screen.
+        
+        Returns:
+            None
+        """
         for y, x, val in self.front_buffer.get_buffer_changes(self.back_buffer):
             self.screen.print_at(val, x, y, 1)
 
     def render_exit(self):
-        """Renders the exit prompt to the screen."""
+        """
+        Renders an exit message on the screen.
+        
+        Returns:
+            None
+        """
         if self.exit_messages['wipe']:
             self.back_buffer.clear_buffer()
         if self.exit_messages['centered']:
@@ -147,9 +202,17 @@ class BaseRenderer:
         else:
             self.back_buffer.put_at(self.exit_messages['x_loc'], self.exit_messages['y_loc'] - 1, self.exit_messages['msg1'], transparent=False)
             self.back_buffer.put_at(self.exit_messages['x_loc'], self.exit_messages['y_loc'], self.exit_messages['msg2'], transparent=False)
-
+    
     def run(self, end_message=True):
-        """Main loop for rendering frames."""
+        """
+        Runs the renderer for a specified number of frames or indefinitely.
+        
+        Args:
+            end_message (bool): Whether to render an exit message after finishing. Defaults to True.
+            
+        Returns:
+            None
+        """
         try:
             if self.frames != INF:
                 for frame in range(self.frames):
@@ -191,7 +254,19 @@ class BaseRenderer:
     def update_exit_stats(
         self, msg1=None, msg2=None, wipe=None, x_loc=None, y_loc=None, centered=False
     ):
-        """Set the exit messages for when the animation finishes."""
+        """
+        Updates the exit message statistics.
+        Args:
+            msg1 (str): The first line of the exit message. Defaults to None.
+            msg2 (str): The second line of the exit message. Defaults to None.
+            wipe (bool): Whether to clear the screen before rendering the exit message. Defaults to False.
+            x_loc (int): The x-coordinate of the exit message. Defaults to 0.
+            y_loc (int): The y-coordinate of the exit message. Defaults to 1.
+            centered (bool): Whether to center the exit message horizontally. Defaults to True.
+            
+        Returns:
+            None
+        """
         if msg1:
             self.exit_messages['msg1'] = msg1.replace("\n", "")
         if msg2:
@@ -204,4 +279,11 @@ class BaseRenderer:
 
     @abstractmethod
     def render_frame(self):
-        """To be defined by each renderer."""
+        """
+        Renders a single frame of the effect.
+        
+        Returns:
+            None
+        """
+        # To be defined by each renderer
+        pass

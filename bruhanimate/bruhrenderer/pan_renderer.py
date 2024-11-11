@@ -50,6 +50,18 @@ class PanRenderer(BaseRenderer):
             self._set_img_attributes()
 
     def validate_direction(self, direction: PanRendererDirection) -> PanRendererDirection:
+        """
+        Validates the given direction to ensure it is one of the valid pan renderer directions.
+
+        Args:
+            direction (PanRendererDirection): The direction to be validated.
+
+        Returns:
+            PanRendererDirection: The validated direction.
+
+        Raises:
+            InvalidPanRendererDirectionError: If the given direction is not a valid pan renderer direction.
+        """
         if direction not in valid_pan_renderer_directions:
             raise InvalidPanRendererDirectionError(
                 f"Invalid direction for PanRenderer. Please choose from {valid_pan_renderer_directions}"
@@ -57,7 +69,10 @@ class PanRenderer(BaseRenderer):
         return direction
 
     def _set_img_attributes(self) -> None:
-        """Sets the attributes for the image given it exists."""
+        """
+        Sets attributes related to the image, including whether to render it, its height and width,
+        and its initial position on the screen.
+        """
         self.render_image = True
         self.img_height = len(self.img)
         self.img_width = len(self.img[0])
@@ -70,11 +85,22 @@ class PanRenderer(BaseRenderer):
 
     @property
     def img_size(self) -> Tuple[int, int]:
-        """Return the current image dimensions."""
+        """
+        Gets the size of the image.
+        
+        Returns:
+            A tuple containing the height and width of the image. If the image is None or empty,
+            returns (0, 0).
+        """
         return len(self.img), len(self.img[0]) if self.img else (0, 0)
 
     def render_img_frame(self, frame_number: int) -> None:
-        """Renders out the next frame of the pan animation."""
+        """
+        Renders a single frame of the image.
+        
+        Args:
+            frame_number: The current frame number.
+        """
         if not self.loop and self.img_back > self.width + 1:
             return
 
@@ -84,79 +110,125 @@ class PanRenderer(BaseRenderer):
             self.render_vertical_frame(frame_number=frame_number)
 
     def _set_padding(self, padding_vals: Tuple[int, int]) -> None:
-        """Set the padding for the image [DEPRECATED FOR NOW]."""
+        """
+        Sets the image's padding based on the provided values.
+
+        Args:
+            padding_vals (Tuple[int, int]): A tuple containing two integers representing the left/right and top/bottom padding.
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: If the provided padding value is invalid or if no image has been set.
+        """
         if not self.img or len(padding_vals) != 2:
             return
-
         left_right, top_bottom = padding_vals
         self.padding = (left_right, top_bottom)
 
+        # Create a new image with the desired padding
         self.img = [" " * self.img_width for _ in range(top_bottom)]
         + [(" " * left_right) + line + (" " * left_right) for line in self.img]
         + [" " * self.img_width for _ in range(top_bottom)]
 
+        # Update the image attributes to reflect the new padding
         self._set_img_attributes()
 
     def render_horizontal_frame(self, frame_number):
         """
-        Renders the next image frame for a horizontal pan
+        Renders a horizontal frame of the image.
+
+        Args:
+            frame_number: The current frame number.
         """
         if self.shift_rate > 0:
-            if (
-                0 <= frame_number <= self.img_width // self.shift_rate + 1
-            ) or not self.loop:
-                for y in range(self.height):
-                    for x in range(self.width):
-                        if (
-                            x >= self.img_back
-                            and x < self.img_front
-                            and y >= self.img_top
-                            and y < self.img_bottom
-                        ):
-                            if (
-                                (y - self.img_top) >= 0
-                                and (y - self.img_bottom) < self.img_height
-                                and (x - self.img_back) >= 0
-                                and (x - self.img_back) < self.img_width
-                            ):
-                                if self.transparent:
-                                    if (
-                                        self.img[y - self.img_top][x - self.img_back]
-                                        == " "
-                                    ):
-                                        self.image_buffer.put_char(x, y, None)
-                                    else:
-                                        self.image_buffer.put_char(
-                                            x,
-                                            y,
-                                            self.img[y - self.img_top][
-                                                x - self.img_back
-                                            ],
-                                        )
-                                else:
-                                    self.image_buffer.put_char(
-                                        x,
-                                        y,
-                                        self.img[y - self.img_top][x - self.img_back],
-                                    )
-                        else:
-                            self.image_buffer.put_char(x, y, None)
-                if self.loop:
-                    if self.img_front >= self.width:
-                        self.img_front = 0
-                    else:
-                        self.img_front += self.shift_rate
-                    if self.img_back >= self.width:
-                        self.img_back = 0
-                    else:
-                        self.img_back += self.shift_rate
-                else:
-                    self.img_back += self.shift_rate
-                    self.img_front += self.shift_rate
-            else:
-                self.image_buffer.shift(-self.shift_rate)
-        else:
-            pass
+            # Calculate the number of frames to render
+            num_frames = (self.img_width // self.shift_rate) + 1
 
+            # Check if we're in loop mode or have reached the end of the image
+            if not self.loop or frame_number >= num_frames:
+                return
+
+            # Update the image position based on the shift rate and current frame number
+            new_img_back = -self.img_width - (frame_number * self.shift_rate)
+            new_img_front = (frame_number * self.shift_rate)
+
+            # Render each row of the image at its new position
+            for y in range(self.height):
+                for x in range(self.width):
+                    if (
+                        x >= new_img_back
+                        and x < new_img_front
+                        and y >= self.img_top
+                        and y < self.img_bottom
+                    ):
+                        # Check if we're within the bounds of the image
+                        if self.img_height > 0 and self.img_width > 0:
+                            img_row = self.img[y - self.img_top]
+
+                            # Check if each pixel in the row is within the bounds of the image
+                            for j, pixel in enumerate(img_row):
+                                if x - new_img_back >= j:
+                                    # Put the pixel into the screen buffer at its new position
+                                    if self.transparent:
+                                        if (
+                                            y == self.img_top + (self.img_height // 2)
+                                            and x - new_img_back == 0
+                                        ) or self.img[y - self.img_top][j] != " ":
+                                            self.image_buffer.put_char(x, y, pixel)
+                                    else:
+                                        self.image_buffer.put_char(x, y, pixel)
+
+            # Update the image buffer to reflect the updated position of the image
+            self.image_buffer.shift(self.shift_rate)
+
+        return
+    
     def render_vertical_frame(self, frame_number):
-        pass
+        """
+        Renders a vertical frame of the image.
+
+        Args:
+            frame_number: The current frame number.
+        """
+        if self.shift_rate > 0:
+            # Calculate the number of frames to render
+            num_frames = (self.img_height // self.shift_rate) + 1
+
+            # Check if we're in loop mode or have reached the end of the image
+            if not self.loop and frame_number >= num_frames:
+                return
+
+            # Update the image position based on the shift rate and current frame number
+            new_img_top = -self.img_height - (frame_number * self.shift_rate)
+            new_img_bottom = (frame_number * self.shift_rate)
+
+            # Render each column of the image at its new position
+            for x in range(self.width):
+                for y in range(self.height):
+                    if (
+                        y >= new_img_top
+                        and y < new_img_bottom
+                        and x >= self.img_back
+                        and x < self.img_front
+                    ):
+                        # Check if we're within the bounds of the image
+                        if self.img_height > 0 and self.img_width > 0:
+                            column_index = x - self.img_back
+
+                            # Check if each pixel in the column is within the bounds of the image
+                            img_column = [self.img[j][column_index] for j in range(self.img_height)]
+                            for i, pixel in enumerate(img_column):
+                                if y - new_img_top >= i:
+                                    # Put the pixel into the screen buffer at its new position
+                                    if self.transparent:
+                                        if self.img[i][column_index] != " ":
+                                            self.image_buffer.put_char(x, y, pixel)
+                                    else:
+                                        self.image_buffer.put_char(x, y, pixel)
+
+            # Update the image buffer to reflect the updated position of the image
+            self.image_buffer.shift_vertical(self.shift_rate)
+
+        return
