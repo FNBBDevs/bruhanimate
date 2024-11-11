@@ -14,6 +14,7 @@ from .rain_effect import RainEffect
 from .noise_effect import NoiseEffect
 from .firework_effect import FireworkEffect, Firework, Particle
 from .fire_effect import FireEffect
+from .julia_effect import JuliaEffect
 
 
 if sys.platform == "win32":
@@ -42,7 +43,8 @@ if sys.platform == "win32":
         "FireworkEffect",
         "Firework",
         "Particle",
-        "FireEffect"
+        "FireEffect",
+        "JuliaEffect"
     ]
 else:
     __all__ = [
@@ -68,5 +70,6 @@ else:
         "FireworkEffect",
         "Firework",
         "Particle",
-        "FireEffect"
+        "FireEffect",
+        "JuliaEffect"
     ]

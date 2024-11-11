@@ -29,7 +29,8 @@ from .bruheffect import (
     FireworkEffect,
     Firework,
     Particle,
-    FireEffect
+    FireEffect,
+    JuliaEffect
 )
 
 
@@ -80,11 +81,12 @@ from .demos import (
     static_demo,
     chatbot_demo,
     firework_demo,
-    fire_demo
+    fire_demo,
+    julia_demo,
 )
 
 
-__version__ = "0.2.89"
+__version__ = "0.2.90"
 __valid_demos__ = [
     "static_demo",
     "offset_demo",
@@ -100,7 +102,8 @@ __valid_demos__ = [
     "noise_demo",
     "holiday",
     "firework_demo",
-    "fire_demo"
+    "fire_demo",
+    "julia_demo"
 ]
 
 if sys.platform == "win32":
@@ -177,7 +180,9 @@ if sys.platform == "win32":
         "TWINKLE_SPEC",
         "firework_demo",
         "fire_demo",
-        "FireEffect"
+        "FireEffect",
+        "JuliaEffect",
+        "julia_demo"
     ]
 else:
     __all__ = [
@@ -223,7 +228,7 @@ else:
         "PanRenderer",
         "FocusRenderer",
         "BackgroundColorRenderer",
-        "images",
+        "bruhimage",
         "__version__",
         "__valid_demos__",
         "LIFE_COLORS",
@@ -236,12 +241,9 @@ else:
         "GREY_SCALES",
         "WIND_DIRECTIONS",
         "NOISE",
-        "FLAKES",
-        "FLAKE_COLORS",
-        "FLAKE_JUMPS",
-        "NEXT_FLAKE_MOVE",
+        "SNOWFLAKE_COLORS",
+        "SNOWFLAKE_TYPES",
         "FLAKE_WEIGHT_CHARS",
-        "FLAKE_FLIPS",
         "TWINKLE_COLORS",
         "VALID_INTERFACES",
         "get_image",
@@ -250,6 +252,8 @@ else:
         "TWINKLE_SPEC",
         "firework_demo",
         "fire_demo",
-        "FireEffect"
+        "FireEffect",
+        "JuliaEffect",
+        "julia_demo"
     ]
 

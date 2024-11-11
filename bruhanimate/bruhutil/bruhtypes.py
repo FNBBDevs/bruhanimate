@@ -587,6 +587,7 @@ EffectType = Literal[
     "chat",
     "firework",
     "fire",
+    "julia",
 ]
 valid_effect_types = {
     "static",
@@ -604,6 +605,7 @@ valid_effect_types = {
     "chat",
     "firework",
     "fire",
+    "julia",
 }
 PanRendererDirection = Literal["horizontal", "vertical"]
 valid_pan_renderer_directions = {"horizontal", "vertical"}
