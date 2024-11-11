@@ -127,6 +127,8 @@ class BaseRenderer:
             return FireworkEffect(self.create_buffer(), self.background)
         elif effect_type == "fire":
             return FireEffect(self.create_buffer(), self.background)
+        elif effect_type == "julia":
+            return JuliaEffect(self.create_buffer(), self.background)
 
     def create_buffer(self) -> Buffer:
         """
