@@ -58,6 +58,7 @@ class SnowEffect(BaseEffect):
         self.ground_flakes = [[0 for _ in range(buffer.width())] for _ in range(buffer.height())]
         self.image_flakes = [None for _ in range(self.buffer.width())]
         self.smart_transparent = False
+        self.snow_intensity = 0.01
 
     def update_collision(
         self,
@@ -106,6 +107,17 @@ class SnowEffect(BaseEffect):
             show_info (bool): Whether or not to display information about the snow effect
         """
         self.show_info = show_info
+
+    def set_snow_intensity(self, intensity: float):
+        """
+        Sets the value to compare random.random() against to determine
+        if a snowflake should be created.
+
+        Args:
+            intensity (float): The value to check random.random() against
+        """
+        if 0.01 <= intensity <= 1.0:
+            self.snow_intensity = intensity
 
     def generate_snowflake(self, x: int):
         """
