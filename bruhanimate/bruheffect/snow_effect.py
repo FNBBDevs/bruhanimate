@@ -195,7 +195,7 @@ class SnowEffect(BaseEffect):
 
         # generate a new row of snowflakes
         for idx in range(self.buffer.width()):
-            if random.random() < 0.01:
+            if random.random() < self.snow_intensity:
                 self.generate_snowflake(idx)
     
         # update the positions of all flakes
