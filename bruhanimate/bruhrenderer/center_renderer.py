@@ -51,6 +51,7 @@ class CenterRenderer(BaseRenderer):
         self.current_img_x = self.img_x_start
         self.current_img_y = self.img_y_start
         self.none_fill_char = None
+        
     def render_img_frame(self, frame_number):
         """
         Renders the image at its center position in each frame.

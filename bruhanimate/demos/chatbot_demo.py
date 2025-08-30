@@ -37,7 +37,7 @@ def chatbot(screen: Screen, openai_api_key: str, name: str):
         api_key=openai_api_key
     )
     renderer.effect.set_chatbot_properties(
-        interface="openai", model="gpt-3.5-turbo", user=name, client=client
+        interface="openai", model="gpt-4o-mini", user=name, client=client
     )
     renderer.effect.set_avatar_properties(size=10)
     renderer.effect.set_chatbot_user_colors(

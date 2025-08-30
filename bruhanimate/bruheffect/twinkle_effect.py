@@ -78,7 +78,10 @@ class TwinkleEffect(BaseEffect):
     """
     Class for the twinkle effect.
     """
-    def __init__(self, buffer: Buffer, background: str):
+
+    def __init__(
+        self, buffer: Buffer, background: str, twinkle_chars: list[str] = ["."]
+    ):
         """
         Initializes the twinkle effect class.
 
@@ -87,9 +90,11 @@ class TwinkleEffect(BaseEffect):
             background (str): Character or string to use as the background.
         """
         super(TwinkleEffect, self).__init__(buffer, background)
-        self.specs = []
         self.density = 0.05
-    
+        self.twinkle_chars = twinkle_chars
+        self.specs = []
+        self._set_specs()
+
     def set_density(self, density: float):
         """
         Sets the density of the twinkle effect, which determines how many characters will be affected by the effect.
@@ -99,6 +104,34 @@ class TwinkleEffect(BaseEffect):
         """
         if isinstance(density, float) and 0 <= density <= 1:
             self.density = density
+            self._set_specs()
+
+    def set_twinkle_chars(self, twinkle_chars: list[str]):
+        """
+        Sets the characters to be used in the twinkle effect.
+
+        Args:
+            twinkle_chars (list[str]): List of characters to use for the twinkle effect.
+        """
+        if isinstance(twinkle_chars, list):
+            self.twinkle_chars = twinkle_chars
+            self._set_specs()
+    
+    def _set_specs(self):
+        """
+        Sets the specs for the twinkle effect.
+        This method is called to initialize the specs for the twinkle effect.
+        """
+        self.specs = []
+        self.buffer.clear_buffer()
+        for y in range(self.buffer.height()):
+            for x in range(self.buffer.width()):
+                if random.random() < self.density:
+                    new_TWINKLE_SPEC = TWINKLE_SPEC(
+                        random.choice(self.twinkle_chars), random.randint(0, 23)
+                    )
+                    self.buffer.put_char(x, y, new_TWINKLE_SPEC)
+                    self.specs.append((x, y))
 
     def render_frame(self, frame_number: int):
         """
@@ -107,15 +140,7 @@ class TwinkleEffect(BaseEffect):
         Args:
             frame_number (int): The current frame of the animation.
         """
-        if frame_number == 0:
-            for y in range(self.buffer.height()):
-                for x in range(self.buffer.width()):
-                    if random.random() < self.density:
-                        new_TWINKLE_SPEC = TWINKLE_SPEC(".", random.randint(0, 23))
-                        self.buffer.put_char(x, y, new_TWINKLE_SPEC)
-                        self.specs.append((x, y))
-        else:
-            for x, y in self.specs:
-                spec = self.buffer.get_char(x, y)
-                self.buffer.put_char(x, y, spec.next().copy())
-                del spec
+        for x, y in self.specs:
+            spec = self.buffer.get_char(x, y)
+            self.buffer.put_char(x, y, spec.next().copy())
+            del spec

@@ -15,17 +15,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+
 class Buffer:
     """
     Class for creating and managing a buffer
     """
+
     def __init__(self, height, width):
         self._height = height
         self._width = width
         self._center = self._width // 2
-        self._line = line = [u" " for _ in range(self._width)]
-        self.buffer = [self._line[:] for _ in range(self._height)]
-    
+        self._empty_line = [" " for _ in range(self._width)]
+        self.buffer = [self._empty_line[:] for _ in range(self._height)]
+
     def get_buffer_changes(self, in_buf):
         """
         Compare this buffer with the given buffer and yield differences.
@@ -39,7 +41,7 @@ class Buffer:
                                   differs.
         """
         if self._height != in_buf.height() or self._width != in_buf.width():
-            return None
+            raise ValueError("Buffer dimensions must match")
 
         for y in range(self._height):
             for x in range(self._width):
@@ -63,12 +65,12 @@ class Buffer:
         height = h if h else self._height
         line = [val for _ in range(width)]
 
-        if x == 0 and y == 0 and not w and not y:
+        if x == 0 and y == 0 and not w and not h:
             self.buffer = [line[:] for _ in range(height)]
         else:
             for i in range(y, y + height):
-                self.buffer[i][x:x + width] = line[:]
-        
+                self.buffer[i][x : x + width] = line[:]
+
         return self
 
     def get_char(self, x, y):
@@ -81,11 +83,10 @@ class Buffer:
         Returns:
             str or None: The character at the specified location, or None if out of bounds.
         """
-        try:
+        if 0 <= y < self._height and 0 <= x < self._width:
             return self.buffer[y][x]
-        except Exception:
-            return None
-    
+        return None
+
     def put_char(self, x, y, val, transparent=False):
         """
         Place a character at the specified location.
@@ -100,7 +101,7 @@ class Buffer:
             if self.buffer[y][x] != val:
                 if transparent and val != " ":
                     self.buffer[y][x] = val
-                else:
+                elif not transparent:
                     self.buffer[y][x] = val
 
     def put_at(self, x, y, text, transparent=False):
@@ -116,17 +117,17 @@ class Buffer:
         if x < 0:
             text = text[-x:]
             x = 0
-        
+
         if x + len(text) > self._width:
-            text = text[:self._width-x]
-        
+            text = text[: self._width - x]
+
         if not transparent:
             for i, c in enumerate(text):
-                self.put_char(x+i, y, c)
+                self.put_char(x + i, y, c)
         else:
             for i, c in enumerate(text):
                 if c != " ":
-                    self.put_char(x+i, y, c)
+                    self.put_char(x + i, y, c)
 
     def put_at_center(self, y, text, transparent=False):
         """
@@ -140,12 +141,12 @@ class Buffer:
         if not transparent:
             x = self._center - len(text) // 2
             for i, c in enumerate(text):
-                self.put_char(x+i, y, c)
+                self.put_char(x + i, y, c)
         else:
             x = self._center - len(text) // 2
             for i, c in enumerate(text):
                 if c != " ":
-                    self.put_char(x+i, y, c)
+                    self.put_char(x + i, y, c)
 
     def scroll(self, shift):
         """
@@ -166,7 +167,7 @@ class Buffer:
                 self.buffer[y] = self.buffer[y + shift]
             for y in range(0, -shift):
                 self.buffer[y] = self._line[:]
-    
+
     def shift_line(self, y, shift):
         """
         Shift the specified line to the right by a given amount.
@@ -197,7 +198,7 @@ class Buffer:
         Returns:
             list: A list containing the specified segment of the row.
         """
-        return self.buffer[y][x:x+width]
+        return self.buffer[y][x : x + width]
 
     def sync_with(self, in_buf):
         """

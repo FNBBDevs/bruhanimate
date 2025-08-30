@@ -21,13 +21,14 @@ from ..bruheffect import *
 from ..bruhutil.utils import sleep
 from ..bruhutil.bruhffer import Buffer
 from ..bruhutil.bruhscreen import Screen
-from ..bruhutil.bruherrors import InvalidEffectTypeError
+from ..bruhutil.bruherrors import InvalidEffectTypeError, ScreenResizedError
 from ..bruhutil.bruhtypes import EffectType, valid_effect_types
 
 
 HORIZONTAL = "h"
 VERTICAL = "v"
 INF = float("inf")
+
 
 class BaseRenderer:
     """
@@ -45,7 +46,7 @@ class BaseRenderer:
         collision: bool = False,
     ):
         self.validate_effect_type(effect_type)
-        
+
         self.screen = screen
         self.frames = frames
         self.frame_time = frame_time
@@ -59,8 +60,13 @@ class BaseRenderer:
 
         self.effect = self.create_effect(effect_type)
         self.image_buffer = self.create_buffer().clear_buffer(val=None)
-        self.back_buffer = self.create_buffer()
-        self.front_buffer = self.create_buffer()
+
+        self.buffer_a = self.create_buffer()
+        self.buffer_b = self.create_buffer()
+        self.current_buffer = self.buffer_a
+        self.display_buffer = self.buffer_b
+
+        self.last_displayed = self.create_buffer()
 
         self.exit_messages = {
             "msg1": " Frames Are Done ",
@@ -70,30 +76,96 @@ class BaseRenderer:
             "x_loc": 0,
             "y_loc": 1,
         }
-    
+
+    def swap_buffers(self):
+        """
+        Swaps the front and back buffers - the core of double buffering.
+        This makes the completed back buffer visible and gives us a new back buffer to draw to.
+
+        Returns:
+            None
+        """
+        # Atomic buffer swap
+        self.current_buffer, self.display_buffer = (
+            self.display_buffer,
+            self.current_buffer,
+        )
+
+    def present_frame(self):
+        """
+        Presents the current display buffer to the screen.
+        Only updates screen positions that have actually changed for efficiency.
+
+        Returns:
+            None
+        """
+        # Only update screen positions where the display buffer differs from what was last shown
+        for y, x, val in self.last_displayed.get_buffer_changes(self.display_buffer):
+            self.screen.print_at(val, x, y, 1)
+
+        # Track what we just displayed
+        self.last_displayed.sync_with(self.display_buffer)
+
+    def clear_back_buffer(self):
+        """
+        Clears the back buffer (current drawing buffer) for the next frame.
+
+        Returns:
+            None
+        """
+        self.current_buffer.clear_buffer(val=self.background)
+
+    def render_to_back_buffer(self, frame: int):
+        """
+        Renders the current frame to the back buffer.
+        This is where all drawing operations happen before presentation.
+
+        Args:
+            frame (int): The current frame number.
+
+        Returns:
+            None
+        """
+        # Clear the back buffer
+        self.clear_back_buffer()
+
+        # Render the effect to its own buffer
+        self.effect.render_frame(frame)
+
+        # Composite the effect buffer onto the back buffer
+        self.current_buffer.sync_with(self.effect.buffer)
+
+        # Render the image frame if needed
+        self.render_img_frame(frame)
+
+        # Overlay the image buffer on top (respecting transparency)
+        self.current_buffer.sync_over_top(self.image_buffer)
+
     def validate_effect_type(self, effect_type: EffectType) -> None:
         """
         Validates the provided effect type against a list of valid effect types.
-        
+
         Args:
             effect_type (EffectType): The effect type to be validated.
-            
+
         Raises:
             InvalidEffectTypeError: If the provided effect type is not valid.
         """
         if effect_type not in valid_effect_types:
-            raise InvalidEffectTypeError(f"'{effect_type}' is not a valid effect. Please choose from {valid_effect_types}")
+            raise InvalidEffectTypeError(
+                f"'{effect_type}' is not a valid effect. Please choose from {valid_effect_types}"
+            )
 
     def create_effect(self, effect_type: EffectType) -> object:
         """
         Creates an instance of the specified effect type.
-        
+
         Args:
             effect_type (EffectType): The type of effect to be created.
-            
+
         Returns:
             An instance of the specified effect type.
-            
+
         Raises:
             ValueError: If the provided effect type is not recognized.
         """
@@ -122,7 +194,9 @@ class BaseRenderer:
         elif effect_type == "audio":
             return AudioEffect(self.create_buffer(), self.background)
         elif effect_type == "chat":
-            return ChatbotEffect(self.screen, self.create_buffer(), self.create_buffer(), self.background)
+            return ChatbotEffect(
+                self.screen, self.create_buffer(), self.create_buffer(), self.background
+            )
         elif effect_type == "firework":
             return FireworkEffect(self.create_buffer(), self.background)
         elif effect_type == "fire":
@@ -133,9 +207,9 @@ class BaseRenderer:
     def create_buffer(self) -> Buffer:
         """
         Creates a new buffer with the specified height and width.
-        
+
         Args:
-            
+
         Returns:
             A newly created buffer object.
         """
@@ -144,10 +218,10 @@ class BaseRenderer:
     def update_collision(self, collision: bool):
         """
         Updates the effect's collision state.
-        
+
         Args:
             collision (bool): The new collision state.
-            
+
         Returns:
             None
         """
@@ -169,89 +243,47 @@ class BaseRenderer:
     def update_smart_transparent(self, smart_transparent: bool):
         """
         Updates the effect's smart transparent state.
-        
+
         Args:
             smart_transparent (bool): The new smart transparent state.
-            
+
         Returns:
             None
         """
         self.smart_transparent = smart_transparent
         self.effect.smart_transparent = smart_transparent
 
-    def push_front_to_screen(self):
+    def render_exit_to_back_buffer(self):
         """
-        Pushes the front buffer to the screen.
-        
-        Returns:
-            None
-        """
-        for y, x, val in self.front_buffer.get_buffer_changes(self.back_buffer):
-            self.screen.print_at(val, x, y, 1)
+        Renders the exit message to the back buffer following double buffering principles.
 
-    def render_exit(self):
-        """
-        Renders an exit message on the screen.
-        
         Returns:
             None
         """
-        if self.exit_messages['wipe']:
-            self.back_buffer.clear_buffer()
-        if self.exit_messages['centered']:
-            self.back_buffer.put_at_center(self.height // 2 - 1, self.exit_messages['msg1'])
-            self.back_buffer.put_at_center(self.height // 2, self.exit_messages['msg2'])
+        if self.exit_messages["wipe"]:
+            self.current_buffer.clear_buffer()
         else:
-            self.back_buffer.put_at(self.exit_messages['x_loc'], self.exit_messages['y_loc'] - 1, self.exit_messages['msg1'], transparent=False)
-            self.back_buffer.put_at(self.exit_messages['x_loc'], self.exit_messages['y_loc'], self.exit_messages['msg2'], transparent=False)
-    
-    def run(self, end_message=True):
-        """
-        Runs the renderer for a specified number of frames or indefinitely.
-        
-        Args:
-            end_message (bool): Whether to render an exit message after finishing. Defaults to True.
-            
-        Returns:
-            None
-        """
-        try:
-            if self.frames != INF:
-                for frame in range(self.frames):
-                    if self.screen.has_resized():
-                        raise Exception("The screen was resized.")
-                    sleep(self.frame_time)
-                    self.render_img_frame(frame)
-                    self.effect.render_frame(frame)
-                    self.back_buffer.sync_with(self.effect.buffer)
-                    self.back_buffer.sync_over_top(self.image_buffer)
-                    self.push_front_to_screen()
-                    self.front_buffer.sync_with(self.back_buffer)
-            else:
-                frame = 0
-                while True:
-                    if self.screen.has_resized():
-                        raise Exception("The screen was resized.")
-                    sleep(self.frame_time)
-                    self.render_img_frame(frame)
-                    self.effect.render_frame(frame)
-                    self.back_buffer.sync_with(self.effect.buffer)
-                    self.back_buffer.sync_over_top(self.image_buffer)
-                    self.push_front_to_screen()
-                    self.front_buffer.sync_with(self.back_buffer)
-                    frame += 1
+            self.current_buffer.sync_with(self.display_buffer)
 
-            if end_message:
-                self.render_exit()
-                self.push_front_to_screen()
-                if sys.platform == 'win32':
-                    input()
-        except KeyboardInterrupt:
-            if end_message:
-                self.render_exit()
-                self.push_front_to_screen()
-                if sys.platform == 'win32':
-                    input()
+        if self.exit_messages["centered"]:
+            center_y1 = self.height // 2 - 1
+            center_y2 = self.height // 2
+
+            self.current_buffer.put_at_center(center_y1, self.exit_messages["msg1"])
+            self.current_buffer.put_at_center(center_y2, self.exit_messages["msg2"])
+        else:
+            self.current_buffer.put_at(
+                self.exit_messages["x_loc"],
+                self.exit_messages["y_loc"] - 1,
+                self.exit_messages["msg1"],
+                transparent=False,
+            )
+            self.current_buffer.put_at(
+                self.exit_messages["x_loc"],
+                self.exit_messages["y_loc"],
+                self.exit_messages["msg2"],
+                transparent=False,
+            )
 
     def update_exit_stats(
         self, msg1=None, msg2=None, wipe=None, x_loc=None, y_loc=None, centered=False
@@ -265,25 +297,84 @@ class BaseRenderer:
             x_loc (int): The x-coordinate of the exit message. Defaults to 0.
             y_loc (int): The y-coordinate of the exit message. Defaults to 1.
             centered (bool): Whether to center the exit message horizontally. Defaults to True.
-            
+
         Returns:
             None
         """
         if msg1:
-            self.exit_messages['msg1'] = msg1.replace("\n", "")
+            self.exit_messages["msg1"] = msg1.replace("\n", "")
         if msg2:
-            self.exit_messages['msg2'] = msg2.replace("\n", "")
+            self.exit_messages["msg2"] = msg2.replace("\n", "")
         if wipe is not None:
-            self.exit_messages['wipe'] = wipe
+            self.exit_messages["wipe"] = wipe
         if x_loc is not None and y_loc is not None:
-            self.exit_messages['x_loc'], self.exit_messages['y_loc'] = x_loc, y_loc
-        self.exit_messages['centered'] = centered
+            self.exit_messages["x_loc"], self.exit_messages["y_loc"] = x_loc, y_loc
+        self.exit_messages["centered"] = centered
+
+    def run(self, end_message=True):
+        """
+        Runs the renderer using proper double buffering.
+
+        Args:
+            end_message (bool): Whether to render an exit message after finishing. Defaults to True.
+
+        Returns:
+            None
+        """
+        try:
+            # Initialize both buffers
+            self.clear_back_buffer()
+            self.display_buffer.clear_buffer(val=self.background)
+
+            if self.frames != INF:
+                for frame in range(self.frames):
+                    if self.screen.has_resized():
+                        raise ScreenResizedError("The screen was resized.")
+
+                    # Render complete frame to back buffer
+                    self.render_to_back_buffer(frame)
+
+                    # Swap buffers (atomic operation)
+                    self.swap_buffers()
+
+                    # Present the now-front buffer to screen
+                    self.present_frame()
+
+                    # Wait for next frame
+                    sleep(self.frame_time)
+            else:
+                frame = 0
+                while True:
+                    if self.screen.has_resized():
+                        raise ScreenResizedError("The screen was resized.")
+
+                    # Render complete frame to back buffer
+                    self.render_to_back_buffer(frame)
+
+                    # Swap buffers (atomic operation)
+                    self.swap_buffers()
+
+                    # Present the now-front buffer to screen
+                    self.present_frame()
+
+                    # Wait for next frame
+                    sleep(self.frame_time)
+                    frame += 1
+        except KeyboardInterrupt:
+            pass
+
+        if end_message:
+            self.render_exit_to_back_buffer()
+            self.swap_buffers()
+            self.present_frame()
+            if sys.platform == "win32":
+                input()
 
     @abstractmethod
     def render_frame(self):
         """
         Renders a single frame of the effect.
-        
+
         Returns:
             None
         """

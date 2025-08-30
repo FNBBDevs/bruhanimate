@@ -5,7 +5,6 @@ if sys.platform == "win32":
     from .bruheffect import AudioEffect
     from .demos import audio_demo
 
-
 from .bruheffect import (
     BaseEffect,
     StaticEffect,
@@ -54,7 +53,7 @@ from .bruhutil import (
     FLAKE_WEIGHT_CHARS,
     TWINKLE_COLORS,
     VALID_INTERFACES,
-    SNOWFLAKE_TYPES
+    SNOWFLAKE_TYPES,
 )
 
 from .bruhrenderer import (
@@ -63,7 +62,7 @@ from .bruhrenderer import (
     CenterRenderer,
     PanRenderer,
     FocusRenderer,
-    BackgroundColorRenderer,
+    BackgroundColorRenderer
 )
 
 from .demos import (
@@ -182,7 +181,7 @@ if sys.platform == "win32":
         "fire_demo",
         "FireEffect",
         "JuliaEffect",
-        "julia_demo"
+        "julia_demo",
     ]
 else:
     __all__ = [
@@ -254,6 +253,6 @@ else:
         "fire_demo",
         "FireEffect",
         "JuliaEffect",
-        "julia_demo"
+        "julia_demo",
     ]
 

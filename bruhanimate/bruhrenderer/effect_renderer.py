@@ -14,10 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import sys
 from .base_renderer import BaseRenderer
-from ..bruhutil import Screen, INF, sleep
-from ..bruhutil.bruherrors import ScreenResizedError
+from ..bruhutil import Screen
 from ..bruhutil.bruhtypes import EffectType
 
 
@@ -27,7 +25,6 @@ class EffectRenderer(BaseRenderer):
     """
 
     def __init__(
-
         self,
         screen: Screen,
         frames: int = 100,
@@ -42,9 +39,23 @@ class EffectRenderer(BaseRenderer):
 
         self.background = self.effect.background
 
+    def render_img_frame(self, frame_number: int):
+        """
+        No-op implementation since EffectRenderer doesn't render images.
+        
+        Args:
+            frame_number (int): The current frame number.
+            
+        Returns:
+            None
+        """
+        pass  # EffectRenderer doesn't need to render images
+
     def render_effect_frame(self, frame_number: int):
         """
         Renders a single frame of the effect.
+        This method is kept for backwards compatibility but isn't needed 
+        since the base renderer handles effect rendering automatically.
 
         Args:
             frame_number (int): The current frame number.
@@ -53,49 +64,3 @@ class EffectRenderer(BaseRenderer):
             None
         """
         self.effect.render_frame(frame_number)
-
-    def run(self, end_message: bool = True):
-        """
-        Runs the effect renderer.
-
-        Args:
-            end_message (bool): Whether to render an exit message at the end. Defaults to True.
-
-        Returns:
-            None
-
-        Raises:
-            ScreenResizedError: If the screen is resized during rendering.
-        """
-        try:
-            if self.frames == INF:
-                frame = 0
-                while True:
-                    if self.screen.has_resized(): raise ScreenResizedError("An error was encounter. The Screen was resized.")
-                    sleep(self.frame_time)
-                    self.render_effect_frame(frame)
-                    self.back_buffer.sync_with(self.effect.buffer)
-                    self.push_front_to_screen()
-                    self.front_buffer.sync_with(self.back_buffer)
-                    frame += 1
-            else:
-                for frame in range(self.frames):
-                    if self.screen.has_resized(): raise ScreenResizedError("An error was encounter. The Screen was resized.")
-                    sleep(self.frame_time)
-                    self.render_effect_frame(frame)
-                    self.back_buffer.sync_with(self.effect.buffer)
-                    self.push_front_to_screen()
-                    self.front_buffer.sync_with(self.back_buffer)
-            if end_message:
-                self.render_exit()
-                self.push_front_to_screen()
-            if sys.platform == 'win32': input()
-        except KeyboardInterrupt:
-            if end_message:
-                self.render_exit()
-                self.push_front_to_screen()
-            if sys.platform == 'win32': input()
-
-        if end_message:
-            self.render_exit()
-            self.push_front_to_screen()
