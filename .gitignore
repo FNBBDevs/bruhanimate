@@ -1,31 +1,3 @@
-Skip to content
-Search or jump to…
-Pull requests
-Issues
-Codespaces
-Marketplace
-Explore
- 
-@ethanlchristensen 
-termcolor
-/
-termcolor
-Public
-Code
-Issues
-3
-Pull requests
-Actions
-Security
-Insights
-termcolor/.gitignore
-@hugovk
-hugovk Add .gitgnore from https://github.com/github/gitignore/
-Latest commit 94cbc4a on Sep 6, 2020
- History
- 1 contributor
-138 lines (112 sloc)  1.99 KB
-
 #testing
 /testing.py
 /video.py
@@ -168,20 +140,6 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-Footer
-© 2022 GitHub, Inc.
-Footer navigation
-Terms
-Privacy
-Security
-Status
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
-termcolor/.gitignore at main · termcolor/termcolor
 
 testing.*
 pyproject.toml
