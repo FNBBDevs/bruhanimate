@@ -34,8 +34,7 @@ class FireEffect(BaseEffect):
         Initializes the enhanced fire effect with a buffer and a background string.
         """
         super(FireEffect, self).__init__(buffer, background)
-        # --- IMPROVEMENT: Use fuller, more substantial characters for a more visible flame.
-        self.ascii_chars = " ░▒▓██████" # Repeating the full block gives it more weight at high intensity
+        self.ascii_chars = " ░▒▓██████"
         self.color_map = [232, 160, 196, 202, 208, 214, 220, 226, 231, 15]
 
         self.previous_data = np.zeros(
@@ -43,13 +42,11 @@ class FireEffect(BaseEffect):
         )
         self.current_data = np.zeros_like(self.previous_data)
 
-        # --- IMPROVEMENT: Reduced cooling to allow flames to grow taller.
         # Values are closer to 1.0, so heat is retained longer as it rises.
         self.height_cooling_map = np.linspace(0.98, 0.92, buffer.height())[:, np.newaxis]
 
         self.fire_intensity = 0.2
         self.swell = False
-        # --- IMPROVEMENT: Increased swell delta for a more pronounced effect.
         self.swell_delta = 0.02
         self.swell_halt = 1
         self.use_char_color = False
@@ -170,7 +167,6 @@ class FireEffect(BaseEffect):
         right = np.roll(self.previous_data, 1, axis=1)
         up = np.roll(self.previous_data, -1, axis=0)
 
-        # --- IMPROVEMENT: Increased horizontal spread for a rounder, fuller flame.
         # The left and right weights are now higher, making the fire spread outwards more.
         # The divisor is the sum of the new weights (1.8 + 1.2 + 1.2 = 4.2)
         base_values = (up * 1.8 + left * 1.2 + right * 1.2) / 4.2
