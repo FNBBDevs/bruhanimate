@@ -1,0 +1,32 @@
+[build-system]
+requires = [ "poetry-core",]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "bruhanimate"
+version = "0.2.95"
+description = "ASCII Termnial Animation Package"
+authors = [ "ethanlchristensen <ethanlchristensen@outlook.com>",]
+license = "Apache License"
+readme = "README.md"
+homepage = "https://github.com/ethanlchristensen/bruhanimate"
+repository = "https://github.com/ethanlchristensen/bruhanimate"
+keywords = [ "python", "terminal", "terminal-animation", "bruhanimate",]
+classifiers = [ "Development Status :: 4 - Beta", "Intended Audience :: Developers", "Programming Language :: Python :: 3", "Operating System :: Unix", "Operating System :: Microsoft :: Windows",]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+future = "*"
+bruhcolor = "*"
+pyfiglet = "*"
+numpy = "*"
+openai = "*"
+requests = "*"
+
+[tool.poetry.dependencies.pywin32]
+version = "^311"
+markers = "sys_platform == 'win32'"
+
+[tool.poetry.dependencies.pyaudio]
+version = "^0.2.14"
+markers = "sys_platform == 'win32'"
