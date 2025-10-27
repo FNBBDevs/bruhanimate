@@ -142,6 +142,8 @@ dmypy.json
 cython_debug/
 
 testing.*
-pyproject.toml
+poetry.lock
 
 docs/build/
+publish.ps1
+push_version.py
