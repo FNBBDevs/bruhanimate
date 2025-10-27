@@ -8,7 +8,7 @@ permissions:
 
 # Environment configuration
 env:
-  PYTHON_VERSION: '3.x'
+  PYTHON_VERSION: '3.13'
 
 # Configure GitHub Pages
 concurrency:
@@ -33,24 +33,28 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.x'
+        python-version: '3.13'
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        poetry install --with docs
         # Create empty mock module for pyaudio
         mkdir -p mock_modules
         echo "class PyAudio: pass" > mock_modules/pyaudio.py
         echo "class Stream: pass" >> mock_modules/pyaudio.py
-        PYTHONPATH=$PYTHONPATH:./mock_modules
 
     - name: Build documentation
-      env:
-        PYTHONPATH: ./mock_modules:$PYTHONPATH
       run: |
         cd docs
-        sphinx-build -M html source build -v
+        poetry run sphinx-build -M html source build -v
+      env:
+        PYTHONPATH: ../mock_modules:$PYTHONPATH
 
     - name: Setup Pages
       uses: actions/configure-pages@v4
