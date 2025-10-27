@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import sys
 import toml
 from typing import Tuple
 
@@ -94,3 +95,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    sys.exit(0)
