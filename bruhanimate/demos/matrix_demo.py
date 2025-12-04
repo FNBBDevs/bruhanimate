@@ -15,10 +15,11 @@ limitations under the License.
 """
 
 import os
+
 os.system(" ")
 
-from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import CenterRenderer
+from ..bruhutil import Screen, bruhimage
 
 
 def matrix(screen):
@@ -31,7 +32,7 @@ def matrix(screen):
         background=" ",
         transparent=False,
     )
-    
+
     renderer.effect.set_matrix_properties((1, 25), (1, 10), 0.5, 0.5, 0.5, 10)
 
     renderer.run()

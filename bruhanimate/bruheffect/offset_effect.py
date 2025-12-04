@@ -15,9 +15,8 @@ limitations under the License.
 """
 
 from ..bruhutil import VALID_DIRECTIONS
-from .base_effect import BaseEffect
 from ..bruhutil.bruhffer import Buffer
-
+from .base_effect import BaseEffect
 
 
 class OffsetEffect(BaseEffect):
@@ -64,4 +63,3 @@ class OffsetEffect(BaseEffect):
                 self.buffer.put_at(0, y, row[::-1])
             else:
                 self.buffer.put_at(0, y, row)
-

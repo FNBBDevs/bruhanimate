@@ -109,22 +109,22 @@ GREY_SCALES = [" .,:ilwW", " .,:ilwW%@", " .:;rsA23hHG#9&@"]
 
 WIND_DIRECTIONS = ["east", "west", "none"]
 
-NOISE = "!@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
+NOISE = "!@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
 
 SNOWFLAKE_TYPES = {
     ".": {"speed": 5},
-    ".": {"speed": 4},
+    ",": {"speed": 4},
     "+": {"speed": 3},
-    "+": {"speed": 2},
-    "*": {"speed": 1},
+    "*": {"speed": 2},
+    "x": {"speed": 1},
 }
 
 SNOWFLAKE_COLORS = {
     ".": 31,
-    ".": 31,
+    ",": 31,
     "+": 69,
-    "+": 69,
-    "*": 255,
+    "*": 69,
+    "x": 255,
 }
 
 FLAKE_WEIGHT_CHARS = {1: ",", 4: ";", 7: "*", 12: "@", 18: "#"}

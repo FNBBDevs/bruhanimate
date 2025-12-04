@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from .base_renderer import BaseRenderer
 from ..bruhutil import Screen
 from ..bruhutil.bruhtypes import EffectType
+from .base_renderer import BaseRenderer
 
 
 class CenterRenderer(BaseRenderer):
@@ -34,7 +34,7 @@ class CenterRenderer(BaseRenderer):
         effect_type: EffectType = "static",
         background: str = " ",
         transparent: bool = False,
-        collision: bool = False
+        collision: bool = False,
     ):
         super(CenterRenderer, self).__init__(
             screen, frames, frame_time, effect_type, background, transparent, collision
@@ -51,7 +51,7 @@ class CenterRenderer(BaseRenderer):
         self.current_img_x = self.img_x_start
         self.current_img_y = self.img_y_start
         self.none_fill_char = None
-        
+
     def render_img_frame(self, frame_number):
         """
         Renders the image at its center position in each frame.

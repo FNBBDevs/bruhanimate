@@ -14,11 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import List, Tuple, Optional
-from .base_renderer import BaseRenderer
+from typing import List, Tuple
+
 from ..bruhutil import Screen
-from ..bruhutil.bruhtypes import EffectType, PanRendererDirection, valid_pan_renderer_directions
 from ..bruhutil.bruherrors import InvalidPanRendererDirectionError
+from ..bruhutil.bruhtypes import (
+    EffectType,
+    PanRendererDirection,
+    valid_pan_renderer_directions,
+)
+from .base_renderer import BaseRenderer
 
 
 class PanRenderer(BaseRenderer):
@@ -41,7 +46,9 @@ class PanRenderer(BaseRenderer):
         shift_rate: int = 1,
         loop: bool = False,
     ) -> None:
-        super().__init__(screen, frames, frame_time, effect_type, background, transparent, collision)
+        super().__init__(
+            screen, frames, frame_time, effect_type, background, transparent, collision
+        )
         self.direction = self.validate_direction(direction)
         self.img = img
         self.shift_rate = max(1, int(shift_rate))
@@ -49,7 +56,9 @@ class PanRenderer(BaseRenderer):
         if self.img:
             self._set_img_attributes()
 
-    def validate_direction(self, direction: PanRendererDirection) -> PanRendererDirection:
+    def validate_direction(
+        self, direction: PanRendererDirection
+    ) -> PanRendererDirection:
         """
         Validates the given direction to ensure it is one of the valid pan renderer directions.
 
@@ -87,7 +96,7 @@ class PanRenderer(BaseRenderer):
     def img_size(self) -> Tuple[int, int]:
         """
         Gets the size of the image.
-        
+
         Returns:
             A tuple containing the height and width of the image. If the image is None or empty,
             returns (0, 0).
@@ -97,7 +106,7 @@ class PanRenderer(BaseRenderer):
     def render_img_frame(self, frame_number: int) -> None:
         """
         Renders a single frame of the image.
-        
+
         Args:
             frame_number: The current frame number.
         """
@@ -129,8 +138,8 @@ class PanRenderer(BaseRenderer):
 
         # Create a new image with the desired padding
         self.img = [" " * self.img_width for _ in range(top_bottom)]
-        + [(" " * left_right) + line + (" " * left_right) for line in self.img]
-        + [" " * self.img_width for _ in range(top_bottom)]
+        +[(" " * left_right) + line + (" " * left_right) for line in self.img]
+        +[" " * self.img_width for _ in range(top_bottom)]
 
         # Update the image attributes to reflect the new padding
         self._set_img_attributes()
@@ -152,7 +161,7 @@ class PanRenderer(BaseRenderer):
 
             # Update the image position based on the shift rate and current frame number
             new_img_back = -self.img_width - (frame_number * self.shift_rate)
-            new_img_front = (frame_number * self.shift_rate)
+            new_img_front = frame_number * self.shift_rate
 
             # Render each row of the image at its new position
             for y in range(self.height):
@@ -184,7 +193,7 @@ class PanRenderer(BaseRenderer):
             self.image_buffer.shift(self.shift_rate)
 
         return
-    
+
     def render_vertical_frame(self, frame_number):
         """
         Renders a vertical frame of the image.
@@ -202,7 +211,7 @@ class PanRenderer(BaseRenderer):
 
             # Update the image position based on the shift rate and current frame number
             new_img_top = -self.img_height - (frame_number * self.shift_rate)
-            new_img_bottom = (frame_number * self.shift_rate)
+            new_img_bottom = frame_number * self.shift_rate
 
             # Render each column of the image at its new position
             for x in range(self.width):
@@ -218,7 +227,10 @@ class PanRenderer(BaseRenderer):
                             column_index = x - self.img_back
 
                             # Check if each pixel in the column is within the bounds of the image
-                            img_column = [self.img[j][column_index] for j in range(self.img_height)]
+                            img_column = [
+                                self.img[j][column_index]
+                                for j in range(self.img_height)
+                            ]
                             for i, pixel in enumerate(img_column):
                                 if y - new_img_top >= i:
                                     # Put the pixel into the screen buffer at its new position

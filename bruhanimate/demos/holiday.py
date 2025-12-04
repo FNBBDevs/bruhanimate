@@ -15,10 +15,11 @@ limitations under the License.
 """
 
 import os
+
 os.system(" ")
 
-from ..bruhutil import Screen, get_image
 from ..bruhrenderer import CenterRenderer
+from ..bruhutil import Screen, get_image
 
 
 def holiday(screen):

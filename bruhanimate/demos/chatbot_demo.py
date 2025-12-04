@@ -15,12 +15,14 @@ limitations under the License.
 """
 
 import os
+
 import openai
+
 os.system(" ")
 
-from ..bruhutil import Buffer, Screen
-from ..bruhrenderer import EffectRenderer
 from ..bruheffect import TwinkleEffect
+from ..bruhrenderer import EffectRenderer
+from ..bruhutil import Buffer, Screen
 
 
 def chatbot(screen: Screen, openai_api_key: str, name: str):
@@ -33,9 +35,7 @@ def chatbot(screen: Screen, openai_api_key: str, name: str):
         transparent=False,
     )
     renderer.effect.set_chatbot_print_halt(1)
-    client = openai.OpenAI(
-        api_key=openai_api_key
-    )
+    client = openai.OpenAI(api_key=openai_api_key)
     renderer.effect.set_chatbot_properties(
         interface="openai", model="gpt-4o-mini", user=name, client=client
     )
@@ -48,7 +48,7 @@ def chatbot(screen: Screen, openai_api_key: str, name: str):
         user_text_color=255,
         user_background_color=None,
         user_avatar_color=255,
-        user_avatar_text_color=232
+        user_avatar_text_color=232,
     )
     renderer.effect.set_gradient_noise_halts(char_halt=1, color_halt=1)
     renderer.effect.set_chatbot_blink_halt(20)
@@ -60,8 +60,16 @@ def chatbot(screen: Screen, openai_api_key: str, name: str):
     renderer.effect.set_second_effect(chat_effect)
     renderer.run()
 
+
 def run(openai_api_key: str, name: str = "User"):
-    Screen.show(chatbot, args=(openai_api_key, name,))
+    Screen.show(
+        chatbot,
+        args=(
+            openai_api_key,
+            name,
+        ),
+    )
+
 
 if __name__ == "__main__":
     run()

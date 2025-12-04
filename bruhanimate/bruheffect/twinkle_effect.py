@@ -17,6 +17,7 @@ limitations under the License.
 import random
 
 from bruhcolor import bruhcolored
+
 from ..bruhutil import TWINKLE_COLORS, Buffer
 from .base_effect import BaseEffect
 
@@ -116,7 +117,7 @@ class TwinkleEffect(BaseEffect):
         if isinstance(twinkle_chars, list):
             self.twinkle_chars = twinkle_chars
             self._set_specs()
-    
+
     def _set_specs(self):
         """
         Sets the specs for the twinkle effect.

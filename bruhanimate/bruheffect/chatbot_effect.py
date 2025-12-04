@@ -17,13 +17,14 @@ limitations under the License.
 import json
 import math
 import random
-import requests
-import openai
 import string
-
 from threading import Thread
+
+import openai
+import requests
 from bruhcolor import bruhcolored
-from ..bruhutil import Screen, Buffer
+
+from ..bruhutil import Buffer, Screen
 from .base_effect import BaseEffect
 
 
@@ -31,7 +32,10 @@ class Key:
     """
     A class representing a key on the keyboard with its position and value.
     """
-    def __init__(self, character: str, representation: list[str], value: int, x: int, y: int):
+
+    def __init__(
+        self, character: str, representation: list[str], value: int, x: int, y: int
+    ):
         """
         Initializes a Key object with the given parameters.
 
@@ -59,7 +63,16 @@ class GradientNoise:
     """
     A class representing a noise effect with a color gradient.
     """
-    def __init__(self, x: int, y: int, length: int, char_halt: int = 1, color_halt: int = 1, gradient_length: int = 1):
+
+    def __init__(
+        self,
+        x: int,
+        y: int,
+        length: int,
+        char_halt: int = 1,
+        color_halt: int = 1,
+        gradient_length: int = 1,
+    ):
         """
         Initializes a GradientNoise object with the given parameters.
 
@@ -194,6 +207,7 @@ class Loading:
     """
     A class to handle the loading animation.
     """
+
     def __init__(self, animate_part: GradientNoise):
         self.animate_part = animate_part
 
@@ -208,6 +222,7 @@ class StringStreamer:
     """
     A class to handle the string streamer animation.
     """
+
     def __init__(self, x: int, y: int, text: str, start_frame: int, halt: int = 1):
         """
         Initialize the StringStreamer class.
@@ -247,6 +262,7 @@ class OllamaApiCaller:
     """
     A class to interact with the Ollama API.
     """
+
     def __init__(
         self,
         model: str,
@@ -291,8 +307,7 @@ class OllamaApiCaller:
             "messages": (
                 [{"role": "user", "content": message}]
                 if not self.message_history
-                else self.message_history
-                + [{"role": "user", "content": message}]
+                else self.message_history + [{"role": "user", "content": message}]
             ),
             "stream": False,
         }
@@ -316,6 +331,7 @@ class OpenAiCaller:
     """
     Class to interact with the OpenAI API using the `openai` Python package.
     """
+
     def __init__(
         self,
         client: openai.OpenAI | openai.AzureOpenAI,
@@ -359,8 +375,7 @@ class OpenAiCaller:
             messages=(
                 [{"role": "user", "content": message}]
                 if not self.message_history
-                else self.message_history
-                + [{"role": "user", "content": message}]
+                else self.message_history + [{"role": "user", "content": message}]
             ),
             max_tokens=500,
             temperature=0.5,
@@ -385,7 +400,10 @@ class ChatbotEffect(BaseEffect):
     """
     A class to create a chatbot effect.
     """
-    def __init__(self, screen: Screen, buffer: Buffer, back_buffer: Buffer, background: str = " "):
+
+    def __init__(
+        self, screen: Screen, buffer: Buffer, back_buffer: Buffer, background: str = " "
+    ):
         """
         Initialize the ChatbotEffect class.
 
@@ -466,7 +484,7 @@ class ChatbotEffect(BaseEffect):
         self.view_y_bottom = self.screen.height - 1
         self.avatar_placed = False
 
-    def __expand_list(self, original_list: list[int|str], n: int, mul: int = 1):
+    def __expand_list(self, original_list: list[int | str], n: int, mul: int = 1):
         """
         Expands a list by adding `n` elements to the end of it, each multiplied by `mul`.
 
@@ -660,7 +678,7 @@ class ChatbotEffect(BaseEffect):
         self.blink_color_one = color_one
         self.blink_color_two = color_two
 
-    def set_chatbot_text_gradient(self, gradient: list[int|str], mul: int):
+    def set_chatbot_text_gradient(self, gradient: list[int | str], mul: int):
         """
         Set the text color for chatbot to use a gradient.
 
@@ -679,7 +697,7 @@ class ChatbotEffect(BaseEffect):
             result (int): Result from pressing down keyboard from win32 package.
 
         Returns:
-            bool: Something . . . 
+            bool: Something . . .
         """
         if result:
             if result == -300:  # backspace
@@ -726,11 +744,11 @@ class ChatbotEffect(BaseEffect):
                     )
                 )
                 return False
-            elif result == -204: # arrow up
+            elif result == -204:  # arrow up
                 if self.current_top_y != 0:
                     self.current_top_y -= 1
                     self.current_bottom_y -= 1
-            elif result == -206: # arrow down
+            elif result == -206:  # arrow down
                 if self.current_bottom_y < (len(self.all_keys) - 1):
                     self.current_top_y += 1
                     self.current_bottom_y += 1
@@ -764,9 +782,9 @@ class ChatbotEffect(BaseEffect):
         for key in range(first_key, last_key):
             self.all_keys[key] = self.all_keys[key + 1]
         self.all_keys[last_key] = [
-                    Key(" ", [ord(" ")], ord(" "), x=_, y=last_key)
-                    for _ in range(self.avatar_size)
-                ]
+            Key(" ", [ord(" ")], ord(" "), x=_, y=last_key)
+            for _ in range(self.avatar_size)
+        ]
 
         if self.current_top_y > 0:
             self.current_top_y = self.current_top_y - 1
@@ -778,9 +796,9 @@ class ChatbotEffect(BaseEffect):
         """
         last_key = max(self.all_keys.keys())
         self.all_keys[last_key + 1] = [
-                    Key(" ", [ord(" ")], ord(" "), x=_, y=last_key + 1)
-                    for _ in range(self.avatar_size)
-                ]
+            Key(" ", [ord(" ")], ord(" "), x=_, y=last_key + 1)
+            for _ in range(self.avatar_size)
+        ]
         # if len(self.all_keys) >= 100:
         #     first_key = min(self.all_keys.keys())
         #     del self.all_keys[first_key]
@@ -788,7 +806,9 @@ class ChatbotEffect(BaseEffect):
         # else:
         self.current_top_y = self.current_top_y + 1
         self.current_bottom_y = self.current_bottom_y + 1
-        self.all_keys = {i: self.all_keys[key] for i, key in enumerate(sorted(self.all_keys.keys()))}
+        self.all_keys = {
+            i: self.all_keys[key] for i, key in enumerate(sorted(self.all_keys.keys()))
+        }
 
     def scroll_keys(self, shift: int = 1):
         """
@@ -810,11 +830,15 @@ class ChatbotEffect(BaseEffect):
             for jdx, key in enumerate(vals):
                 if len(key.representation) > 1:
                     for val in key.representation:
-                        self.buffer.put_char(jdx + displacement, idx - self.current_top_y, chr(val))
+                        self.buffer.put_char(
+                            jdx + displacement, idx - self.current_top_y, chr(val)
+                        )
                         displacement += 1
                     displacement -= 1
                 else:
-                    self.buffer.put_char(jdx + displacement, idx - self.current_top_y, key.character)
+                    self.buffer.put_char(
+                        jdx + displacement, idx - self.current_top_y, key.character
+                    )
 
     def render_frame(self, frame_number: int):
         """
@@ -915,7 +939,9 @@ class ChatbotEffect(BaseEffect):
                 self.chatbot.state = "printing"
                 if self.chatbot_text_color == "gradient":
                     self.gradient_idx = 1
-                    self.gradient_text_color_for_message = self.__expand_list(self.gradient_text_color, len(self.last_chatbot_response), 3)
+                    self.gradient_text_color_for_message = self.__expand_list(
+                        self.gradient_text_color, len(self.last_chatbot_response), 3
+                    )
             elif self.chatbot.state == "printing":
                 # print out the characters!
                 if not self.avatar_placed:
@@ -933,7 +959,9 @@ class ChatbotEffect(BaseEffect):
                         )
                     for i in range(len(self.model), self.avatar_size - 1):
                         self.all_keys[self.chat_y_turn_start_idx][i] = Key(
-                            bruhcolored(" ", on_color=self.chatbot_avatar_color).colored,
+                            bruhcolored(
+                                " ", on_color=self.chatbot_avatar_color
+                            ).colored,
                             [ord(" ")],
                             ord(" "),
                             None,
@@ -941,7 +969,9 @@ class ChatbotEffect(BaseEffect):
                         )
                     self.avatar_placed = True
                 if frame_number & self.chatbot_print_halt == 0:
-                    if self.total_processed_chatbot_words == len(self.last_chatbot_response_words):
+                    if self.total_processed_chatbot_words == len(
+                        self.last_chatbot_response_words
+                    ):
                         self.chatbot.state = "done"
                         self.current_chatbot_response_words_idx = 0
                         self.total_processed_chatbot_words = 0
@@ -973,7 +1003,11 @@ class ChatbotEffect(BaseEffect):
                                 Key(
                                     character=bruhcolored(
                                         text=character,
-                                        color=self.chatbot_text_color if self.chatbot_text_color != "gradient" else self.gradient_text_color_for_message[self.gradient_idx - 1],
+                                        color=self.chatbot_text_color
+                                        if self.chatbot_text_color != "gradient"
+                                        else self.gradient_text_color_for_message[
+                                            self.gradient_idx - 1
+                                        ],
                                         on_color=self.chatbot_background_color,
                                     ).colored,
                                     representation=[ord(character)],

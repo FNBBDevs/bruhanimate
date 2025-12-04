@@ -15,30 +15,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
 import signal
-
 import sys
+
 ENABLE_EXTENDED_FLAGS = 0x0080
 ENABLE_QUICK_EDIT_MODE = 0x0040
 
-if sys.platform == 'win32':
-    import win32con
-    import win32event # -->. for keyboard events
-
-    import win32console
-    import win32file
+if sys.platform == "win32":
     import pywintypes
+    import win32con
+    import win32console
+    import win32event  # -->. for keyboard events
+    import win32file
 
     class Screen:
         """
         Class for creating and managing a terminal screen in a WINDOWS OS terminal
         """
+
         # Standard extended key codes.
         KEY_ESCAPE = -1
         KEY_F1 = -2
@@ -102,7 +99,7 @@ if sys.platform == 'win32':
         KEY_MENU = -602
 
         def __init__(self, stdout, stdin, old_out, old_in):
-            info = stdout.GetConsoleScreenBufferInfo()['Window']
+            info = stdout.GetConsoleScreenBufferInfo()["Window"]
             self.width = info.Right - info.Left + 1
             self.height = info.Bottom - info.Top + 1
             self._stdout = stdout
@@ -152,7 +149,7 @@ if sys.platform == 'win32':
                 win32con.VK_PRIOR: Screen.KEY_PAGE_UP,
                 win32con.VK_NEXT: Screen.KEY_PAGE_DOWN,
                 win32con.VK_BACK: Screen.KEY_BACK,
-                win32con.VK_TAB: Screen.KEY_TAB
+                win32con.VK_TAB: Screen.KEY_TAB,
             }
             self._keys = set()
             self._map_all = False
@@ -179,13 +176,15 @@ if sys.platform == 'win32':
             """
             try:
                 if x != self._current_x or y != self._current_y:
-                    self._stdout.SetConsoleCursorPosition(win32console.PyCOORDType(x, y))
+                    self._stdout.SetConsoleCursorPosition(
+                        win32console.PyCOORDType(x, y)
+                    )
                 self._stdout.WriteConsole(str(text))
                 self._current_x = x + width
                 self._current_y = y
             except pywintypes.error:
                 pass
-        
+
         def print_center(self, text, y, width):
             """
             Print text centrally aligned horizontally at a given y-coordinate.
@@ -196,28 +195,31 @@ if sys.platform == 'win32':
             """
             try:
                 left_pad = (self.width - width) // 2
-                self._stdout.SetConsoleCursorPosition(win32console.PyCOORDType(left_pad, y))
+                self._stdout.SetConsoleCursorPosition(
+                    win32console.PyCOORDType(left_pad, y)
+                )
                 self._stdout.WriteConsole(str(text))
                 self._current_x = left_pad + width
                 self._current_y = y
             except pywintypes.error:
                 pass
-        
+
         def clear(self):
             """
             Clear the console screen by filling the console buffer with spaces and resetting the cursor position.
             """
-            info = self._stdout.GetConsoleScreenBufferInfo()['Window']
+            info = self._stdout.GetConsoleScreenBufferInfo()["Window"]
             width = info.Right - info.Left + 1
             height = info.Bottom - info.Top + 1
             box_size = width * height
             self._stdout.FillConsoleOutputAttribute(
-                0, box_size, win32console.PyCOORDType(0, 0))
+                0, box_size, win32console.PyCOORDType(0, 0)
+            )
             self._stdout.FillConsoleOutputCharacter(
-                " ", box_size, win32console.PyCOORDType(0, 0))
-            self._stdout.SetConsoleCursorPosition(
-                win32console.PyCOORDType(0, 0))
-        
+                " ", box_size, win32console.PyCOORDType(0, 0)
+            )
+            self._stdout.SetConsoleCursorPosition(win32console.PyCOORDType(0, 0))
+
         def has_resized(self):
             """
             Determine if the console screen has been resized since the last check.
@@ -225,7 +227,7 @@ if sys.platform == 'win32':
             :return: Boolean indicating whether the screen has been resized.
             """
             re_sized = False
-            info = self._stdout.GetConsoleScreenBufferInfo()['Window']
+            info = self._stdout.GetConsoleScreenBufferInfo()["Window"]
             width = info.Right - info.Left + 1
             height = info.Bottom - info.Top + 1
             if width != self._last_width or height != self._last_height:
@@ -239,7 +241,7 @@ if sys.platform == 'win32':
             :param title: The title to set for the console window.
             """
             win32console.SetConsoleTitle(title)
-        
+
         def wait_for_input(self, timeout: int) -> None:
             """
             Wait for user input in the console with a specified timeout period.
@@ -267,9 +269,11 @@ if sys.platform == 'win32':
                 if event.EventType == win32console.KEY_EVENT:
                     # Handle key-down events and Alt key states for unicode pasting.
                     key_code = ord(event.Char)
-                    if (event.KeyDown or
-                            (key_code > 0 and key_code not in self._keys and
-                             event.VirtualKeyCode == win32con.VK_MENU)):
+                    if event.KeyDown or (
+                        key_code > 0
+                        and key_code not in self._keys
+                        and event.VirtualKeyCode == win32con.VK_MENU
+                    ):
                         # Record any keys that were pressed.
                         if event.KeyDown:
                             self._keys.add(key_code)
@@ -279,18 +283,21 @@ if sys.platform == 'win32':
                             key_code = self._KEY_MAP[event.VirtualKeyCode]
 
                         # Handle cross-platform key mapping or any special mappings.
-                        if (self._map_all and
-                                event.VirtualKeyCode in self._EXTRA_KEY_MAP):
+                        if (
+                            self._map_all
+                            and event.VirtualKeyCode in self._EXTRA_KEY_MAP
+                        ):
                             key_code = self._EXTRA_KEY_MAP[event.VirtualKeyCode]
-                        elif (event.VirtualKeyCode == win32con.VK_TAB and
-                                    event.ControlKeyState &
-                                    win32con.SHIFT_PRESSED):
-                                key_code = Screen.KEY_BACK_TAB
-                        elif (event.VirtualKeyCode == win32con.VK_RETURN):
+                        elif (
+                            event.VirtualKeyCode == win32con.VK_TAB
+                            and event.ControlKeyState & win32con.SHIFT_PRESSED
+                        ):
+                            key_code = Screen.KEY_BACK_TAB
+                        elif event.VirtualKeyCode == win32con.VK_RETURN:
                             key_code = 10
-                        elif (event.VirtualKeyCode == win32con.VK_TAB):
+                        elif event.VirtualKeyCode == win32con.VK_TAB:
                             key_code = 11
-     
+
                         # Return the key code if a valid mapping exists.
                         if key_code:
                             return key_code
@@ -313,43 +320,53 @@ if sys.platform == 'win32':
 
             :return: An initialized Screen object with the configured console screen buffer.
             """
-            old_out = win32console.PyConsoleScreenBufferType(win32file.CreateFile("CONOUT$", win32file.GENERIC_READ | win32file.GENERIC_WRITE,
-                                                                                    win32file.FILE_SHARE_WRITE, None, win32file.OPEN_ALWAYS, 0, None))
+            old_out = win32console.PyConsoleScreenBufferType(
+                win32file.CreateFile(
+                    "CONOUT$",
+                    win32file.GENERIC_READ | win32file.GENERIC_WRITE,
+                    win32file.FILE_SHARE_WRITE,
+                    None,
+                    win32file.OPEN_ALWAYS,
+                    0,
+                    None,
+                )
+            )
             try:
                 info = old_out.GetConsoleScreenBufferInfo()
             except pywintypes.error:
                 info = None
             win_out = win32console.CreateConsoleScreenBuffer()
             if info:
-                win_out.SetConsoleScreenBufferSize(info['Size'])
+                win_out.SetConsoleScreenBufferSize(info["Size"])
             else:
                 win_out.SetStdHandle(win32console.STD_OUTPUT_HANDLE)
             win_out.SetConsoleActiveScreenBuffer()
             win_in = win32console.PyConsoleScreenBufferType(
-                win32file.CreateFile("CONIN$",
-                                        win32file.GENERIC_READ | win32file.GENERIC_WRITE,
-                                        win32file.FILE_SHARE_READ,
-                                        None,
-                                        win32file.OPEN_ALWAYS,
-                                        0,
-                                        None))
+                win32file.CreateFile(
+                    "CONIN$",
+                    win32file.GENERIC_READ | win32file.GENERIC_WRITE,
+                    win32file.FILE_SHARE_READ,
+                    None,
+                    win32file.OPEN_ALWAYS,
+                    0,
+                    None,
+                )
+            )
             win_in.SetStdHandle(win32console.STD_INPUT_HANDLE)
             # Hide Cursor
             win_out.SetConsoleCursorInfo(1, 0)
             # Disable scroll
             out_mode = win_out.GetConsoleMode()
-            win_out.SetConsoleMode(
-                out_mode & ~ win32console.ENABLE_WRAP_AT_EOL_OUTPUT)
+            win_out.SetConsoleMode(out_mode & ~win32console.ENABLE_WRAP_AT_EOL_OUTPUT)
             in_mode = win_in.GetConsoleMode()
-            new_mode = (in_mode | win32console.ENABLE_MOUSE_INPUT |
-                            ENABLE_EXTENDED_FLAGS)
+            new_mode = in_mode | win32console.ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS
             new_mode &= ~ENABLE_QUICK_EDIT_MODE
-            #new_mode &= ~win32console.ENABLE_PROCESSED_INPUT
+            # new_mode &= ~win32console.ENABLE_PROCESSED_INPUT
             win_in.SetConsoleMode(new_mode)
 
             screen = Screen(win_out, win_in, old_out, in_mode)
             return screen
-            
+
         @classmethod
         def show(cls, function, args=None):
             """
@@ -373,23 +390,20 @@ if sys.platform == 'win32':
 
 else:
     import curses
-    import termios
-    import select
 
     class Screen:
         def __init__(self, window, height=None):
             self.screen = window
             self.screen.keypad(1)
             self.height = window.getmaxyx()[0]
-            self.width  = window.getmaxyx()[1]
+            self.width = window.getmaxyx()[1]
             curses.curs_set(0)
             self.screen.nodelay(1)
             self.signal_state = SignalState()
             self._re_sized = False
             self.signal_state.set(signal.SIGWINCH, self._resize_handler)
             self.signal_state.set(signal.SIGCONT, self._continue_handler)
-            curses.mousemask(curses.ALL_MOUSE_EVENTS |
-                                curses.REPORT_MOUSE_POSITION)
+            curses.mousemask(curses.ALL_MOUSE_EVENTS | curses.REPORT_MOUSE_POSITION)
             self._move_y_x = curses.tigetstr("cup")
             self._up_line = curses.tigetstr("ri").decode("utf-8")
             self._down_line = curses.tigetstr("ind").decode("utf-8")
@@ -410,12 +424,12 @@ else:
             self._bytes_to_return = b""
             self._cur_x = 0
             self._cur_y = 0
-        
+
         def _resize_handler(self, *_):
             curses.endwin()
             curses.initscr()
             self._re_sized = True
-        
+
         def _continue_handler(self, *_):
             self.force_update(full_refresh=True)
 
@@ -429,7 +443,7 @@ else:
                 curses.echo()
                 curses.nocbreak()
                 curses.endwin()
-        
+
         def clear(self):
             try:
                 sys.stdout.flush()
@@ -452,9 +466,9 @@ else:
                 sys.stdout.write(msg)
             except IOError:
                 pass
-        
+
         def print_at(self, text, x, y, width):
-            cursor = u""
+            cursor = ""
             if x != self._cur_x or y != self._cur_y:
                 cursor = curses.tparm(self._move_y_x, y, x).decode("utf-8")
             try:
@@ -464,7 +478,7 @@ else:
 
             self._cur_x = x + width
             self._cur_y = y
-        
+
         @classmethod
         def show(cls, function, args=None):
             os.system("clear")
@@ -478,20 +492,19 @@ else:
                 screen.close()
                 input()
                 os.system("clear")
-                
 
     class SignalState(object):
-            def __init__(self):
-                self._old_signal_states = []
+        def __init__(self):
+            self._old_signal_states = []
 
-            def set(self, signalnum, handler):
-                old_handler = signal.getsignal(signalnum)
-                if old_handler is None:
-                    old_handler = signal.SIG_DFL
-                self._old_signal_states.append((signalnum, old_handler))
+        def set(self, signalnum, handler):
+            old_handler = signal.getsignal(signalnum)
+            if old_handler is None:
+                old_handler = signal.SIG_DFL
+            self._old_signal_states.append((signalnum, old_handler))
+            signal.signal(signalnum, handler)
+
+        def restore(self):
+            for signalnum, handler in self._old_signal_states:
                 signal.signal(signalnum, handler)
-
-            def restore(self):
-                for signalnum, handler in self._old_signal_states:
-                    signal.signal(signalnum, handler)
-                self._old_signal_states = []
+            self._old_signal_states = []

@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from .base_renderer import BaseRenderer
 from ..bruhutil import Screen
 from ..bruhutil.bruhtypes import EffectType
+from .base_renderer import BaseRenderer
 
 
 class EffectRenderer(BaseRenderer):
@@ -42,10 +42,10 @@ class EffectRenderer(BaseRenderer):
     def render_img_frame(self, frame_number: int):
         """
         No-op implementation since EffectRenderer doesn't render images.
-        
+
         Args:
             frame_number (int): The current frame number.
-            
+
         Returns:
             None
         """
@@ -54,7 +54,7 @@ class EffectRenderer(BaseRenderer):
     def render_effect_frame(self, frame_number: int):
         """
         Renders a single frame of the effect.
-        This method is kept for backwards compatibility but isn't needed 
+        This method is kept for backwards compatibility but isn't needed
         since the base renderer handles effect rendering automatically.
 
         Args:

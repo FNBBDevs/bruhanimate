@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 from abc import abstractmethod
+
 from ..bruhutil.bruhffer import Buffer
 
 

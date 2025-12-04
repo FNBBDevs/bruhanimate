@@ -17,8 +17,9 @@ limitations under the License.
 import random
 
 from bruhcolor import bruhcolored
-from .base_effect import BaseEffect
+
 from ..bruhutil import Buffer
+from .base_effect import BaseEffect
 
 
 class NoiseEffect(BaseEffect):
@@ -26,7 +27,9 @@ class NoiseEffect(BaseEffect):
     A noise effect that adds random pixels to the screen with a specified intensity.
     """
 
-    def __init__(self, buffer: Buffer, background: str, intensity: int = 200, color: bool = False):
+    def __init__(
+        self, buffer: Buffer, background: str, intensity: int = 200, color: bool = False
+    ):
         """
         Initializes the NoiseEffect class with a specified buffer, background color, noise intensity, and whether to use colors.
 
@@ -42,7 +45,7 @@ class NoiseEffect(BaseEffect):
             intensity / 1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
         )
 
-        self.noise = " !@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
+        self.noise = " !@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
         self.noise_length = len(self.noise)
         self.color = color
 

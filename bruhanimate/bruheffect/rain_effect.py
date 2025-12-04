@@ -216,8 +216,8 @@ class RainEffect(BaseEffect):
                                 if self.image_buffer:
                                     if 0 <= y + 1 < self.buffer.height():
                                         if (
-                                            not self.image_buffer.buffer[y + 1][x]
-                                            in [" ", None]
+                                            self.image_buffer.buffer[y + 1][x]
+                                            not in [" ", None]
                                             and self.buffer.get_char(x, y)
                                             in self.wind_mappings[self.wind_direction][
                                                 2

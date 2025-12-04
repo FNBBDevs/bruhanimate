@@ -15,15 +15,32 @@ limitations under the License.
 """
 
 import sys
-from typing import Literal, TypeVar, Dict, Generic
 from abc import abstractmethod
-from ..bruheffect import *
-from ..bruhutil.utils import sleep
+
+from ..bruheffect import (
+    BaseEffect,
+    StaticEffect,
+    StarEffect,
+    ChatbotEffect,
+    DrawLinesEffect,
+    FireEffect,
+    FireworkEffect,
+    GameOfLifeEffect,
+    JuliaEffect,
+    MatrixEffect,
+    NoiseEffect,
+    OffsetEffect,
+    PlasmaEffect,
+    RainEffect,
+    SnowEffect,
+    TwinkleEffect,
+    WaterEffect
+)
+from ..bruhutil.bruherrors import InvalidEffectTypeError, ScreenResizedError
 from ..bruhutil.bruhffer import Buffer
 from ..bruhutil.bruhscreen import Screen
-from ..bruhutil.bruherrors import InvalidEffectTypeError, ScreenResizedError
 from ..bruhutil.bruhtypes import EffectType, valid_effect_types
-
+from ..bruhutil.utils import sleep
 
 HORIZONTAL = "h"
 VERTICAL = "v"
@@ -191,8 +208,6 @@ class BaseRenderer:
             return SnowEffect(self.create_buffer(), self.background)
         elif effect_type == "twinkle":
             return TwinkleEffect(self.create_buffer(), self.background)
-        elif effect_type == "audio":
-            return AudioEffect(self.create_buffer(), self.background)
         elif effect_type == "chat":
             return ChatbotEffect(
                 self.screen, self.create_buffer(), self.create_buffer(), self.background
@@ -203,6 +218,8 @@ class BaseRenderer:
             return FireEffect(self.create_buffer(), self.background)
         elif effect_type == "julia":
             return JuliaEffect(self.create_buffer(), self.background)
+        elif effect_type == "water":
+            return WaterEffect(self.create_buffer(), self.background)
 
     def create_buffer(self) -> Buffer:
         """

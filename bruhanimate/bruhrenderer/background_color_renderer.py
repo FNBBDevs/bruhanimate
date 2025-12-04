@@ -9,7 +9,7 @@ Example:
     Basic usage with a simple ASCII art image::
 
         from bruhanimate import Screen, BackgroundColorRenderer
-        
+
         def demo(screen):
             renderer = BackgroundColorRenderer(
                 screen=screen,
@@ -17,7 +17,7 @@ Example:
                 on_color_code=27  # Light blue background
             )
             renderer.run()
-        
+
         Screen.show(demo)
 
 Note:
@@ -25,18 +25,20 @@ Note:
     Common colors include:
 
     - 27: Light blue
-    
+
     - 196: Red
-    
+
     - 46: Green
-    
+
     - 226: Yellow
 """
 
 from typing import List
-from .base_renderer import BaseRenderer
+
 from bruhcolor import bruhcolored
+
 from ..bruhutil.bruhtypes import EffectType
+from .base_renderer import BaseRenderer
 
 
 class BackgroundColorRenderer(BaseRenderer):

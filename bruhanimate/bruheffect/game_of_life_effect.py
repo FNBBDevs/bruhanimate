@@ -17,6 +17,7 @@ limitations under the License.
 import random
 
 from bruhcolor import bruhcolored
+
 from ..bruhutil import LIFE_COLORS, LIFE_SCALES, Buffer
 from .base_effect import BaseEffect
 
@@ -75,14 +76,18 @@ class GameOfLifeEffect(BaseEffect):
         self.grey_scale = (
             LIFE_SCALES[random.choice(list(LIFE_SCALES.keys()))]
             if self.decay and self.scale == "random"
-            else LIFE_SCALES[self.scale] if self.decay else " o"
+            else LIFE_SCALES[self.scale]
+            if self.decay
+            else " o"
         )
         self.colors = [232, 231] if not self.decay else LIFE_COLORS[self.color_type]
         self.ALIVE = len(self.grey_scale) - 1
         self.DEAD = 0
         self.mappings = {i: self.grey_scale[i] for i in range(len(self.grey_scale))}
 
-    def update_decay(self, decay: bool, color_type: str = "GREYSCALE", scale: str = "random"):
+    def update_decay(
+        self, decay: bool, color_type: str = "GREYSCALE", scale: str = "random"
+    ):
         """
         Function to enable the decay and select the color map.
 

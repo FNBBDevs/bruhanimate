@@ -18,8 +18,9 @@ import random
 import string
 
 from bruhcolor import bruhcolored
-from .base_effect import BaseEffect
+
 from ..bruhutil import Buffer
+from .base_effect import BaseEffect
 
 
 class MatrixEffect(BaseEffect):

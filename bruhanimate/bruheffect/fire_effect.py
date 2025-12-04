@@ -14,13 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import random
 import math
-from bruhcolor import bruhcolored as bc
-from .base_effect import BaseEffect
-from ..bruhutil.bruhffer import Buffer
-from typing import List, Dict
+import random
+from typing import Dict, List
+
 import numpy as np
+from bruhcolor import bruhcolored as bc
+
+from ..bruhutil.bruhffer import Buffer
+from .base_effect import BaseEffect
 
 
 class FireEffect(BaseEffect):
@@ -43,7 +45,9 @@ class FireEffect(BaseEffect):
         self.current_data = np.zeros_like(self.previous_data)
 
         # Values are closer to 1.0, so heat is retained longer as it rises.
-        self.height_cooling_map = np.linspace(0.98, 0.92, buffer.height())[:, np.newaxis]
+        self.height_cooling_map = np.linspace(0.98, 0.92, buffer.height())[
+            :, np.newaxis
+        ]
 
         self.fire_intensity = 0.2
         self.swell = False
@@ -123,12 +127,10 @@ class FireEffect(BaseEffect):
         char_index = int(
             (intensity_variation / max_intensity) * (len(self.ascii_chars) - 1)
         )
-        char_index = min(
-            char_index, len(self.ascii_chars) - 1
-        )
-        
+        char_index = min(char_index, len(self.ascii_chars) - 1)
+
         if intensity_variation < 1:
-             return " "
+            return " "
 
         if self.ascii_chars[char_index] == " ":
             return " "
@@ -136,9 +138,7 @@ class FireEffect(BaseEffect):
         color_index = int(
             (intensity_variation / max_intensity) * (len(self.color_map) - 2)
         )
-        color_index = min(
-            color_index, len(self.color_map) - 2
-        )
+        color_index = min(color_index, len(self.color_map) - 2)
 
         if random.random() < 0.04 and intensity > max_intensity * 0.9:
             color_index = len(self.color_map) - 1
@@ -161,7 +161,7 @@ class FireEffect(BaseEffect):
         )
         wind_offset_x = int(wind_x * 2)
 
-        height, width = self.buffer.height(), self.buffer.width()
+        _height, _width = self.buffer.height(), self.buffer.width()
 
         left = np.roll(self.previous_data, -1, axis=1)
         right = np.roll(self.previous_data, 1, axis=1)
@@ -203,17 +203,17 @@ class FireEffect(BaseEffect):
                 spot["y"] = max(0, spot["y"] - int(spot["y_offset"]))
                 spot["x_offset"] += random.uniform(-0.3, 0.3)
                 spot["x"] += spot["x_offset"]
-                
+
                 x, y = int(spot["x"]), int(spot["y"])
-                
+
                 if 0 <= x < self.buffer.width() and 0 <= y < self.buffer.height():
                     self.current_data[y, x] = max(
                         self.current_data[y, x], 255 * spot["intensity"]
                     )
-                
+
                 spot["lifetime"] -= 1
                 if spot["y"] > 0:
-                     new_heat_spots.append(spot)
+                    new_heat_spots.append(spot)
         self.heat_spots = new_heat_spots
 
         self.previous_data, self.current_data = (
@@ -257,7 +257,7 @@ class FireEffect(BaseEffect):
 
         if self.swell and frame_number % self.swell_halt == 0:
             if self.fire_intensity >= 1.0:
-                self.swell_delta = -0.02 # Adjusted to match the new delta
+                self.swell_delta = -0.02  # Adjusted to match the new delta
             elif self.fire_intensity <= 0.1:
-                self.swell_delta = 0.02 # Adjusted to match the new delta
+                self.swell_delta = 0.02  # Adjusted to match the new delta
             self.fire_intensity += self.swell_delta

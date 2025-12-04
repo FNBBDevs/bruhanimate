@@ -17,8 +17,10 @@ limitations under the License.
 import random
 
 from bruhcolor import bruhcolored
+
 from ..bruhutil import LIFE_COLORS, Buffer
 from .noise_effect import NoiseEffect
+
 
 class StarEffect(NoiseEffect):
     """
@@ -37,7 +39,7 @@ class StarEffect(NoiseEffect):
         """
         super(StarEffect, self).__init__(buffer, background)
 
-        self.stars = f"{background*(100 // self.background_length)}.*+"
+        self.stars = f"{background * (100 // self.background_length)}.*+"
         self.stars_length = len(self.stars)
         self.color_type = color_type
 
@@ -59,7 +61,7 @@ class StarEffect(NoiseEffect):
         """
         self.background = background
         self.background_length = len(background)
-        self.stars = f"{background*(100 // self.background_length)}.*+"
+        self.stars = f"{background * (100 // self.background_length)}.*+"
         self.stars_length = len(self.stars)
 
     def render_frame(self, frame_number: int):
@@ -78,9 +80,7 @@ class StarEffect(NoiseEffect):
                         bruhcolored(
                             self.stars[random.randint(0, self.stars_length - 1)],
                             color=LIFE_COLORS[self.color_type][
-                                random.randint(
-                                    0, len(LIFE_COLORS[self.color_type]) - 1
-                                )
+                                random.randint(0, len(LIFE_COLORS[self.color_type]) - 1)
                             ],
                         ).colored,
                     )

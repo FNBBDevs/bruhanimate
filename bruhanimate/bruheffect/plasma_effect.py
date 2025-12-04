@@ -18,7 +18,8 @@ import math
 import random
 
 from bruhcolor import bruhcolored
-from ..bruhutil import PLASMA_COLORS, GREY_SCALES, Buffer
+
+from ..bruhutil import GREY_SCALES, PLASMA_COLORS, Buffer
 from .base_effect import BaseEffect
 
 
@@ -80,7 +81,9 @@ class PlasmaEffect(BaseEffect):
                 f"only 8, 10, and 16 are supported grey scale sizes, you provided {size}"
             )
 
-    def update_color_properties(self, color: bool, characters: bool = True, random_color: bool = False):
+    def update_color_properties(
+        self, color: bool, characters: bool = True, random_color: bool = False
+    ):
         """
         Function to update the color properties. random_color overrules other functions.
 
@@ -203,7 +206,7 @@ class PlasmaEffect(BaseEffect):
                 0, 0, f"COLORS: {' '.join([str(val) for val in self.colors])}"
             )
             for i in range(1, 5):
-                self.buffer.put_at(0, i, f"VAL {i}: {str(self.vals[i-1]):>3s} ")
+                self.buffer.put_at(0, i, f"VAL {i}: {str(self.vals[i - 1]):>3s} ")
 
     def func(self, x: int, y: int, a: int, b: int, n: int):
         """
@@ -222,7 +225,7 @@ class PlasmaEffect(BaseEffect):
         return math.sin(
             math.sqrt(
                 (x - self.buffer.width() * a) ** 2
-                + 4 * ((y - self.buffer.height() * b)) ** 2
+                + 4 * (y - self.buffer.height() * b) ** 2
             )
             * math.pi
             / n

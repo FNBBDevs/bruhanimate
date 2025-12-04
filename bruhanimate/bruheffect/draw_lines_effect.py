@@ -14,14 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from .base_effect import BaseEffect
 from ..bruhutil import Buffer
+from .base_effect import BaseEffect
 
 
 class Line:
     """
     A class representing a line segment.
     """
+
     def __init__(self, start_point: tuple[int], end_point: tuple[int]):
         """
         Initializes a Line object with the given start and end points.
@@ -59,7 +60,9 @@ class Line:
 
 
 class DrawLinesEffect(BaseEffect):
-    def __init__(self, buffer: Buffer, background: str, char: str = None, thin: bool = False):
+    def __init__(
+        self, buffer: Buffer, background: str, char: str = None, thin: bool = False
+    ):
         """
         Initializes the DrawLinesEffect class.
 

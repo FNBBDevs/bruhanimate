@@ -15,10 +15,11 @@ limitations under the License.
 """
 
 import os
+
 os.system(" ")
 
-from ..bruhutil import Screen
 from ..bruhrenderer import EffectRenderer
+from ..bruhutil import Screen
 
 
 def stars(screen):

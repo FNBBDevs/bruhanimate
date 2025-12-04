@@ -16,8 +16,9 @@ limitations under the License.
 
 import random
 from typing import List
-from .base_renderer import BaseRenderer
+
 from ..bruhutil.bruhtypes import EffectType
+from .base_renderer import BaseRenderer
 
 
 class FocusRenderer(BaseRenderer):
@@ -52,10 +53,10 @@ class FocusRenderer(BaseRenderer):
         self.start_reverse = start_reverse
         if self.start_reverse:
             self.frame_gap = start_reverse - start_frame
-        self.loop = True if loop == True and reverse == True else False
+        self.loop = True if loop and reverse else False
         self.loops = 1
 
-        if self.reverse and self.start_reverse == None:
+        if self.reverse and self.start_reverse is None:
             raise Exception(
                 "if reverse is enabled, and start_reverse frame must be provided"
             )
@@ -79,7 +80,7 @@ class FocusRenderer(BaseRenderer):
         self.img_x_start = (self.width - len(self.img[0])) // 2
         self.current_img_x = self.img_x_start
         self.current_img_y = self.img_y_start
-        
+
         # Initialize start board with characters at random positions
         self.start_board = [
             [
@@ -93,7 +94,7 @@ class FocusRenderer(BaseRenderer):
             ]
             for y in range(self.img_height)
         ]
-        
+
         # Initialize current board with characters at start positions
         self.current_board = [
             [
@@ -107,7 +108,7 @@ class FocusRenderer(BaseRenderer):
             ]
             for y in range(self.img_height)
         ]
-        
+
         # Initialize end board with characters at target positions
         self.end_board = [
             [
@@ -116,7 +117,7 @@ class FocusRenderer(BaseRenderer):
             ]
             for y in range(self.img_height)
         ]
-        
+
         # Initialize direction board to track character movement
         self.direction_board = [
             [
@@ -203,7 +204,9 @@ class FocusRenderer(BaseRenderer):
                         return False
             return True
         else:
-            raise Exception(f"unknown solved board state for FocusRenderer: {end_state}")
+            raise Exception(
+                f"unknown solved board state for FocusRenderer: {end_state}"
+            )
 
     def render_img_frame(self, frame_number):
         """
