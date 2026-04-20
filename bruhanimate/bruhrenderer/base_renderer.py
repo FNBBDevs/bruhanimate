@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import sys
+import time
 from abc import abstractmethod
 
 from ..bruheffect import (
@@ -112,16 +113,20 @@ class BaseRenderer:
         """
         Presents the current display buffer to the screen.
         Only updates screen positions that have actually changed for efficiency.
+        Uses frame batching to reduce I/O to one write per frame (Unix) or
+        one Win32 call per changed row-segment (Windows).
+        last_displayed is updated via pointer rotation instead of a full buffer copy.
 
         Returns:
             None
         """
-        # Only update screen positions where the display buffer differs from what was last shown
+        self.screen.begin_frame()
         for y, x, val in self.last_displayed.get_buffer_changes(self.display_buffer):
             self.screen.print_at(val, x, y, 1)
-
-        # Track what we just displayed
-        self.last_displayed.sync_with(self.display_buffer)
+        self.screen.flush_frame()
+        # Rotate pointers: last_displayed takes display_buffer's content (no copy),
+        # and current_buffer (the recyclable back buffer) gets the old last_displayed slot.
+        self.last_displayed, self.current_buffer = self.display_buffer, self.last_displayed
 
     def clear_back_buffer(self):
         """
@@ -345,37 +350,32 @@ class BaseRenderer:
 
             if self.frames != INF:
                 for frame in range(self.frames):
+                    frame_start = time.perf_counter()
                     if self.screen.has_resized():
                         raise ScreenResizedError("The screen was resized.")
 
-                    # Render complete frame to back buffer
                     self.render_to_back_buffer(frame)
-
-                    # Swap buffers (atomic operation)
                     self.swap_buffers()
-
-                    # Present the now-front buffer to screen
                     self.present_frame()
 
-                    # Wait for next frame
-                    sleep(self.frame_time)
+                    # Sleep only the remaining budget so total frame time ~ frame_time
+                    remaining = self.frame_time - (time.perf_counter() - frame_start)
+                    if remaining > 0:
+                        sleep(remaining)
             else:
                 frame = 0
                 while True:
+                    frame_start = time.perf_counter()
                     if self.screen.has_resized():
                         raise ScreenResizedError("The screen was resized.")
 
-                    # Render complete frame to back buffer
                     self.render_to_back_buffer(frame)
-
-                    # Swap buffers (atomic operation)
                     self.swap_buffers()
-
-                    # Present the now-front buffer to screen
                     self.present_frame()
 
-                    # Wait for next frame
-                    sleep(self.frame_time)
+                    remaining = self.frame_time - (time.perf_counter() - frame_start)
+                    if remaining > 0:
+                        sleep(remaining)
                     frame += 1
         except KeyboardInterrupt:
             pass

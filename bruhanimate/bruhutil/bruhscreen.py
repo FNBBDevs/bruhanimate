@@ -23,6 +23,7 @@ import sys
 
 ENABLE_EXTENDED_FLAGS = 0x0080
 ENABLE_QUICK_EDIT_MODE = 0x0040
+ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
 
 if sys.platform == "win32":
     import pywintypes
@@ -111,6 +112,8 @@ if sys.platform == "win32":
             self._old_in = old_in
             self._current_x = 0
             self._current_y = 0
+            self._buffering = False
+            self._frame_parts = []
             self._KEY_MAP = {
                 win32con.VK_ESCAPE: Screen.KEY_ESCAPE,
                 win32con.VK_F1: Screen.KEY_F1,
@@ -175,15 +178,45 @@ if sys.platform == "win32":
             :param width: The width of the text to be displayed, used to update the cursor position.
             """
             try:
-                if x != self._current_x or y != self._current_y:
-                    self._stdout.SetConsoleCursorPosition(
-                        win32console.PyCOORDType(x, y)
+                if self._buffering:
+                    cursor = (
+                        f"\x1b[{y + 1};{x + 1}H"
+                        if x != self._current_x or y != self._current_y
+                        else ""
                     )
-                self._stdout.WriteConsole(str(text))
-                self._current_x = x + width
-                self._current_y = y
+                    self._frame_parts.append(cursor + str(text))
+                    self._current_x = x + width
+                    self._current_y = y
+                else:
+                    if x != self._current_x or y != self._current_y:
+                        self._stdout.SetConsoleCursorPosition(
+                            win32console.PyCOORDType(x, y)
+                        )
+                    self._stdout.WriteConsole(str(text))
+                    self._current_x = x + width
+                    self._current_y = y
             except pywintypes.error:
                 pass
+
+        def begin_frame(self):
+            """Enter frame-batching mode; print_at() calls accumulate until flush_frame()."""
+            self._buffering = True
+            self._frame_parts = []
+
+        def flush_frame(self):
+            """
+            Flush accumulated frame as a single WriteConsole call.
+            ANSI cursor-positioning sequences replace SetConsoleCursorPosition,
+            reducing Win32 syscalls from O(changed_cells) to 1 per frame.
+            Requires ENABLE_VIRTUAL_TERMINAL_PROCESSING on the console output buffer.
+            """
+            if self._frame_parts:
+                try:
+                    self._stdout.WriteConsole("".join(self._frame_parts))
+                except pywintypes.error:
+                    pass
+                self._frame_parts = []
+            self._buffering = False
 
         def print_center(self, text, y, width):
             """
@@ -219,6 +252,8 @@ if sys.platform == "win32":
                 " ", box_size, win32console.PyCOORDType(0, 0)
             )
             self._stdout.SetConsoleCursorPosition(win32console.PyCOORDType(0, 0))
+            self._current_x = 0
+            self._current_y = 0
 
         def has_resized(self):
             """
@@ -355,9 +390,15 @@ if sys.platform == "win32":
             win_in.SetStdHandle(win32console.STD_INPUT_HANDLE)
             # Hide Cursor
             win_out.SetConsoleCursorInfo(1, 0)
-            # Disable scroll
+            # Disable scroll and enable ANSI/VT sequence processing
             out_mode = win_out.GetConsoleMode()
-            win_out.SetConsoleMode(out_mode & ~win32console.ENABLE_WRAP_AT_EOL_OUTPUT)
+            out_mode &= ~win32console.ENABLE_WRAP_AT_EOL_OUTPUT
+            out_mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING
+            try:
+                win_out.SetConsoleMode(out_mode)
+            except pywintypes.error:
+                # Older Windows without VT support — strip the VT flag and fall back
+                win_out.SetConsoleMode(out_mode & ~ENABLE_VIRTUAL_TERMINAL_PROCESSING)
             in_mode = win_in.GetConsoleMode()
             new_mode = in_mode | win32console.ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS
             new_mode &= ~ENABLE_QUICK_EDIT_MODE
@@ -424,6 +465,8 @@ else:
             self._bytes_to_return = b""
             self._cur_x = 0
             self._cur_y = 0
+            self._buffering = False
+            self._frame_parts = []
 
         def _resize_handler(self, *_):
             curses.endwin()
@@ -448,6 +491,8 @@ else:
             try:
                 sys.stdout.flush()
                 os.system("clear")
+                self._cur_x = 0
+                self._cur_y = 0
             except IOError:
                 pass
 
@@ -472,12 +517,35 @@ else:
             if x != self._cur_x or y != self._cur_y:
                 cursor = curses.tparm(self._move_y_x, y, x).decode("utf-8")
             try:
-                self._safe_write(cursor + str(text))
+                piece = cursor + str(text)
+                if self._buffering:
+                    self._frame_parts.append(piece)
+                else:
+                    self._safe_write(piece)
             except UnicodeEncodeError:
-                self._safe_write(cursor + "?" * len(text))
-
+                piece = cursor + "?" * len(str(text))
+                if self._buffering:
+                    self._frame_parts.append(piece)
+                else:
+                    self._safe_write(piece)
             self._cur_x = x + width
             self._cur_y = y
+
+        def begin_frame(self):
+            """Enter frame-batching mode; print_at() calls accumulate until flush_frame()."""
+            self._buffering = True
+            self._frame_parts = []
+
+        def flush_frame(self):
+            """
+            Flush accumulated frame output as a single sys.stdout.write() + flush().
+            Goes from O(cells_changed) write() calls to 1 write + 1 flush per frame.
+            """
+            if self._frame_parts:
+                self._safe_write("".join(self._frame_parts))
+                self._frame_parts = []
+            sys.stdout.flush()
+            self._buffering = False
 
         @classmethod
         def show(cls, function, args=None):
