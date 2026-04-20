@@ -20,9 +20,6 @@ from abc import abstractmethod
 
 from ..bruheffect import (
     BaseEffect,
-    StaticEffect,
-    StarEffect,
-    ChatbotEffect,
     DrawLinesEffect,
     FireEffect,
     FireworkEffect,
@@ -34,8 +31,10 @@ from ..bruheffect import (
     PlasmaEffect,
     RainEffect,
     SnowEffect,
+    StarEffect,
+    StaticEffect,
     TwinkleEffect,
-    WaterEffect
+    WaterEffect,
 )
 from ..bruhutil.bruherrors import InvalidEffectTypeError, ScreenResizedError
 from ..bruhutil.bruhffer import Buffer
@@ -43,8 +42,6 @@ from ..bruhutil.bruhscreen import Screen
 from ..bruhutil.bruhtypes import EffectType, valid_effect_types
 from ..bruhutil.utils import sleep
 
-HORIZONTAL = "h"
-VERTICAL = "v"
 INF = float("inf")
 
 
@@ -213,10 +210,6 @@ class BaseRenderer:
             return SnowEffect(self.create_buffer(), self.background)
         elif effect_type == "twinkle":
             return TwinkleEffect(self.create_buffer(), self.background)
-        elif effect_type == "chat":
-            return ChatbotEffect(
-                self.screen, self.create_buffer(), self.create_buffer(), self.background
-            )
         elif effect_type == "firework":
             return FireworkEffect(self.create_buffer(), self.background)
         elif effect_type == "fire":
@@ -228,9 +221,7 @@ class BaseRenderer:
 
     def create_buffer(self) -> Buffer:
         """
-        Creates a new buffer with the specified height and width.
-
-        Args:
+        Creates a new buffer matching the current screen dimensions.
 
         Returns:
             A newly created buffer object.
@@ -258,8 +249,7 @@ class BaseRenderer:
                 self.smart_transparent,
                 self.image_buffer,
             )
-        except Exception as e:
-            print(f"base_renderer: update_collision: warning: {e}")
+        except AttributeError:
             self.effect.update_collision(None, None, None, None, collision, None)
 
     def update_smart_transparent(self, smart_transparent: bool):
@@ -388,12 +378,11 @@ class BaseRenderer:
                 input()
 
     @abstractmethod
-    def render_frame(self):
+    def render_img_frame(self, frame_number: int):
         """
-        Renders a single frame of the effect.
+        Renders the image portion of a single frame into the image buffer.
 
-        Returns:
-            None
+        Args:
+            frame_number (int): The current frame number.
         """
-        # To be defined by each renderer
         pass

@@ -29,6 +29,7 @@ from ..bruhutil.bruhtypes import (
     valid_firework_types,
 )
 from .base_effect import BaseEffect
+from .settings import FireworkSettings
 
 
 class Particle:
@@ -1794,20 +1795,22 @@ class FireworkEffect(BaseEffect):
         - :class:`Buffer`: The buffer class used for rendering
     """
 
-    def __init__(self, buffer: Buffer, background: str):
+    def __init__(self, buffer: Buffer, background: str, settings: FireworkSettings = None):
         """
-        Initialize the fireworks effect
+        Initializes the FireworkEffect.
 
         Args:
-            buffer (Buffer): Image buffer used to push updates to
-            background (str): Character that should be used for the background of the buffer
+            buffer (Buffer): Effect buffer to push updates to.
+            background (str): Character or string to use as the background.
+            settings (FireworkSettings, optional): Configuration for the firework effect. Defaults to None.
         """
         super(FireworkEffect, self).__init__(buffer, background)
-        self.firework_type: FireworkType = "circular"
-        self.firework_color_type: FireworkColorType = "solid"
-        self.color_enabled: bool = False
+        s = settings or FireworkSettings()
+        self.firework_type: FireworkType = s.firework_type if s.firework_type in valid_firework_types or s.firework_type == "random" else "circular"
+        self.firework_color_type: FireworkColorType = s.color_type if s.color_type in valid_firework_color_types else "solid"
+        self.color_enabled: bool = s.color_enabled
         self.fireworks: list[Firework] = []
-        self.firework_rate: float = 0.05
+        self.firework_rate: float = s.rate
         self.allowed_firework_types = valid_firework_types
         self.second_effect = None
 

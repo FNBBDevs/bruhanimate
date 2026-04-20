@@ -34,7 +34,7 @@ def noise(screen):
         transparent=False,
     )
 
-    renderer.effect.update_color(True, False)
+    renderer.effect.set_color(True, False)
 
     renderer.run()
 

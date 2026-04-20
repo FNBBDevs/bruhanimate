@@ -34,7 +34,7 @@ def gol(screen):
         transparent=False,
     )
 
-    renderer.effect.update_decay(True, "RAINBOW", "default")
+    renderer.effect.set_decay(True, "RAINBOW", "default")
 
     renderer.run()
 

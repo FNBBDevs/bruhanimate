@@ -20,8 +20,6 @@ future = "^1.0.0"
 bruhcolor = "^0.0.64"
 pyfiglet = "^1.0.4"
 numpy = "^2.3.4"
-openai = "^2.6.1"
-requests = "^2.32.5"
 
 [tool.poetry.dependencies.pywin32]
 version = "^311"

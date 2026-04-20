@@ -33,7 +33,7 @@ def stars(screen):
         transparent=False,
     )
 
-    renderer.effect.update_color_type("GREYSCALE")
+    renderer.effect.set_color_type("GREYSCALE")
 
     renderer.run()
 

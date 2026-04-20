@@ -1,5 +1,4 @@
 from .base_effect import BaseEffect
-from .chatbot_effect import ChatbotEffect, GradientNoise, Key, Loading, StringStreamer
 from .draw_lines_effect import DrawLinesEffect, Line
 from .fire_effect import FireEffect
 from .firework_effect import Firework, FireworkEffect, Particle
@@ -10,6 +9,20 @@ from .noise_effect import NoiseEffect
 from .offset_effect import OffsetEffect
 from .plasma_effect import PlasmaEffect
 from .rain_effect import RainEffect
+from .settings import (
+    DrawLinesSettings,
+    FireSettings,
+    FireworkSettings,
+    GameOfLifeSettings,
+    MatrixSettings,
+    NoiseSettings,
+    OffsetSettings,
+    PlasmaSettings,
+    RainSettings,
+    SnowSettings,
+    StarSettings,
+    TwinkleSettings,
+)
 from .snow_effect import SnowEffect
 from .star_effect import StarEffect
 from .static_effect import StaticEffect
@@ -18,28 +31,35 @@ from .water_effect import WaterEffect
 
 __all__ = [
     "BaseEffect",
-    "StaticEffect",
-    "StarEffect",
-    "ChatbotEffect",
     "DrawLinesEffect",
-    "GameOfLifeEffect",
-    "MatrixEffect",
-    "PlasmaEffect",
-    "SnowEffect",
-    "TwinkleEffect",
-    "OffsetEffect",
-    "RainEffect",
-    "NoiseEffect",
-    "GradientNoise",
-    "Loading",
-    "StringStreamer",
-    "Key",
-    "Line",
-    "TWINKLE_SPEC",
-    "FireworkEffect",
-    "Firework",
-    "Particle",
+    "DrawLinesSettings",
     "FireEffect",
+    "FireSettings",
+    "Firework",
+    "FireworkEffect",
+    "FireworkSettings",
+    "GameOfLifeEffect",
+    "GameOfLifeSettings",
     "JuliaEffect",
-    "WaterEffect"
+    "Line",
+    "MatrixEffect",
+    "MatrixSettings",
+    "NoiseEffect",
+    "NoiseSettings",
+    "OffsetEffect",
+    "OffsetSettings",
+    "Particle",
+    "PlasmaEffect",
+    "PlasmaSettings",
+    "RainEffect",
+    "RainSettings",
+    "SnowEffect",
+    "SnowSettings",
+    "StarEffect",
+    "StarSettings",
+    "StaticEffect",
+    "TWINKLE_SPEC",
+    "TwinkleEffect",
+    "TwinkleSettings",
+    "WaterEffect",
 ]

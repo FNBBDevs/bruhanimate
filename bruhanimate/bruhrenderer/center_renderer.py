@@ -36,13 +36,10 @@ class CenterRenderer(BaseRenderer):
         transparent: bool = False,
         collision: bool = False,
     ):
-        super(CenterRenderer, self).__init__(
+        super().__init__(
             screen, frames, frame_time, effect_type, background, transparent, collision
         )
-        self.background = background
-        self.transparent = transparent
 
-        # Image attributes
         self.img = img
         self.img_height = len(self.img)
         self.img_width = len(self.img[0])
@@ -50,7 +47,6 @@ class CenterRenderer(BaseRenderer):
         self.img_x_start = (self.width - self.img_width) // 2
         self.current_img_x = self.img_x_start
         self.current_img_y = self.img_y_start
-        self.none_fill_char = None
 
     def render_img_frame(self, frame_number):
         """

@@ -120,15 +120,13 @@ SNOWFLAKE_TYPES = {
 }
 
 SNOWFLAKE_COLORS = {
-    ".": 31,
-    ",": 31,
-    "+": 69,
-    "*": 69,
-    "x": 255,
+    ".": 238,
+    ",": 244,
+    "+": 250,
+    "*": 254,
+    "x": 231,
 }
 
-FLAKE_WEIGHT_CHARS = {1: ",", 4: ";", 7: "*", 12: "@", 18: "#"}
+FLAKE_WEIGHT_CHARS = {1: ".", 4: "-", 7: "~", 12: "=", 18: "#"}
 
 TWINKLE_COLORS = {idx: val for idx, val in enumerate(range(232, 256))}
-
-VALID_INTERFACES = ["ollama", "openai"]

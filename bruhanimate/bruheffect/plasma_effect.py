@@ -21,206 +21,192 @@ from bruhcolor import bruhcolored
 
 from ..bruhutil import GREY_SCALES, PLASMA_COLORS, Buffer
 from .base_effect import BaseEffect
+from .settings import PlasmaSettings
 
 
 class PlasmaEffect(BaseEffect):
     """
-    Function to generate a plasma like effect
+    Class to generate an animated plasma effect.
     """
 
-    def __init__(self, buffer: Buffer, background: str):
+    def __init__(self, buffer: Buffer, background: str, settings: PlasmaSettings = None):
         """
-        Initializes the plasma effect class.
+        Initializes the PlasmaEffect class.
 
         Args:
             buffer (Buffer): Effect buffer to push updates to.
             background (str): Character or string to use as the background.
+            settings (PlasmaSettings, optional): Configuration for the plasma effect. Defaults to None.
         """
         super(PlasmaEffect, self).__init__(buffer, background)
-        self.info = False
-        self.random = False
+        s = settings or PlasmaSettings()
+        self.show_info = s.show_info
+        self.random_colors = s.random_colors
+        self.color = s.color
+        self.characters = s.characters
         self.scale = random.choice(GREY_SCALES)
-        self.ayo = 0
-        self.color = False
-        self.vals = [
-            random.randint(1, 100),
-            random.randint(1, 100),
-            random.randint(1, 100),
-            random.randint(1, 100),
-        ]
+        self.colors = PLASMA_COLORS[len(self.scale)][0]
+        self.t = 0
+        self.vals = [random.randint(1, 100) for _ in range(4)]
+        self._colored_cache = None
 
-    def update_info_visibility(self, visible: bool):
+    def _build_cache(self):
+        if self.color:
+            if self.characters:
+                self._colored_cache = [
+                    bruhcolored(self.scale[i], color=self.colors[i]).colored
+                    for i in range(len(self.scale))
+                ]
+            else:
+                self._colored_cache = [
+                    bruhcolored(" ", on_color=self.colors[i]).colored
+                    for i in range(len(self.scale))
+                ]
+        else:
+            self._colored_cache = list(self.scale)
+
+    def set_show_info(self, visible: bool):
         """
-        Function to toggle visibility of info text.
+        Toggles visibility of debug info overlay.
 
         Args:
-            visible (bool): Toggle visibility.
+            visible (bool): Whether to show the info overlay.
         """
-        self.info = visible
+        self.show_info = visible
 
-    def update_grey_scale_size(self, size: int):
+    def set_grey_scale_size(self, size: int):
         """
-        Function to change the size of the grey scale.
+        Sets the grey scale size, which controls detail level.
 
         Args:
-            size (int): Size of the grey scale to use.
+            size (int): Must be 8, 10, or 16.
 
         Raises:
-            Exception: If the requested grey scale size is not available.
+            ValueError: If size is not one of the supported values.
         """
-        if size in [8, 10, 16]:
-            self.scale = random.choice(
-                [scale for scale in GREY_SCALES if len(scale) == size]
+        if size not in [8, 10, 16]:
+            raise ValueError(
+                f"only 8, 10, and 16 are supported grey scale sizes, got {size}"
             )
-            if not self.random:
-                self.colors = random.choice(PLASMA_COLORS[size])
-            else:
-                self.colors = [random.randint(0, 255) for _ in range(len(self.scale))]
+        self.scale = random.choice([s for s in GREY_SCALES if len(s) == size])
+        if not self.random_colors:
+            self.colors = random.choice(PLASMA_COLORS[size])
         else:
-            raise Exception(
-                f"only 8, 10, and 16 are supported grey scale sizes, you provided {size}"
-            )
+            self.colors = [random.randint(0, 255) for _ in range(len(self.scale))]
+        self._colored_cache = None
 
-    def update_color_properties(
-        self, color: bool, characters: bool = True, random_color: bool = False
+    def set_color_properties(
+        self, color: bool, characters: bool = True, random_colors: bool = False
     ):
         """
-        Function to update the color properties. random_color overrules other functions.
+        Configures color rendering. random_colors overrides the palette.
 
         Args:
-            color (bool): Toggle the use of colors.
-            characters (bool, optional): Toggle the use of characters. Defaults to True.
-            random_color (bool, optional): Toggle the use of random colors. Defaults to False.
+            color (bool): Whether to render with color.
+            characters (bool, optional): Whether to render scale characters. Defaults to True.
+            random_colors (bool, optional): Whether to use a random color palette. Defaults to False.
         """
         self.color = color
-        self.random = random_color
-        if not random_color:
+        self.random_colors = random_colors
+        self.characters = characters
+        if not random_colors:
             self.colors = PLASMA_COLORS[len(self.scale)][0]
         else:
             self.colors = [random.randint(0, 255) for _ in range(len(self.scale))]
-        self.characters = characters
+        self._colored_cache = None
 
-    def update_color(self, colors: list[int]):
+    def set_colors(self, colors: list[int]):
         """
-        Function to update the color palette.
+        Sets a custom color palette. Has no effect if random_colors is enabled.
 
         Args:
-            colors (list[int]): List of RGB values for the color palette.
+            colors (list[int]): List of 256-color indices, one per scale character.
 
         Raises:
-            Exception: If the number of colors does not match the length of the scale.
+            ValueError: If the number of colors does not match the scale length.
         """
-        if not self.random:
-            if len(colors) == len(self.scale):
-                self.colors = colors
-            else:
-                raise Exception(
-                    f"update_color(..) must be provided a list of {len(self.scale)} colors, you provided {len(colors)}"
-                )
+        if self.random_colors:
+            return
+        if len(colors) != len(self.scale):
+            raise ValueError(
+                f"expected {len(self.scale)} colors, got {len(colors)}"
+            )
+        self.colors = colors
+        self._colored_cache = None
 
-    def update_background(self, background: str):
+    def set_background(self, background: str):
         """
-        Function to update the background color or character.
+        Updates the background character or string.
 
         Args:
-            background (str): Character or string to set the background to.
+            background (str): Character or string to use as background.
         """
         self.background = background
-        self.background_length = len(self.background)
+        self.background_length = len(background)
 
-    def update_plasma_values(
-        self,
-        a: int = random.randint(1, 50),
-        b: int = random.randint(1, 50),
-        c: int = random.randint(1, 50),
-        d: int = random.randint(1, 50),
-    ):
+    def set_plasma_values(self, a: int, b: int, c: int, d: int):
         """
-        Function to set the plasma values.
+        Sets the four plasma frequency values.
 
         Args:
-            a (int, optional): Value a. Defaults to random.randint(1, 50).
-            b (int, optional): Value b. Defaults to random.randint(1, 50).
-            c (int, optional): Value c. Defaults to random.randint(1, 50).
-            d (int, optional): Value d. Defaults to random.randint(1, 50).
+            a (int): First frequency value.
+            b (int): Second frequency value.
+            c (int): Third frequency value.
+            d (int): Fourth frequency value.
         """
         self.vals = [a, b, c, d]
 
     def shuffle_plasma_values(self):
         """
-        Function to shuffle the plasma values randomly.
+        Randomizes the four plasma frequency values.
         """
-        self.vals = [
-            random.randint(1, 50),
-            random.randint(1, 50),
-            random.randint(1, 50),
-            random.randint(1, 50),
-        ]
+        self.vals = [random.randint(1, 50) for _ in range(4)]
 
     def render_frame(self, frame_number: int):
         """
-        Function to render the plasma effect frame by frame.
+        Renders a single frame of the plasma effect.
 
         Args:
             frame_number (int): The current frame number.
         """
-        self.ayo += 1
+        self.t += 1
+        if self._colored_cache is None:
+            self._build_cache()
+
+        cache = self._colored_cache
+        scale_max = len(self.scale) - 1
+        t3 = self.t / 3.0
+
         for y in range(self.buffer.height()):
             for x in range(self.buffer.width()):
-                value = (
-                    abs(
-                        self.func(x + self.ayo / 3, y, 1 / 4, 1 / 3, self.vals[0])
-                        + self.func(x, y, 1 / 8, 1 / 5, self.vals[1])
-                        + self.func(x, y + self.ayo / 3, 1 / 2, 1 / 5, self.vals[2])
-                        + self.func(x, y, 3 / 4, 4 / 5, self.vals[3])
-                    )
-                    / 4.0
-                )
-                if self.color:
-                    if self.characters:
-                        self.buffer.put_char(
-                            x,
-                            y,
-                            bruhcolored(
-                                self.scale[int((len(self.scale) - 1) * value)],
-                                color=self.colors[int((len(self.scale) - 1) * value)],
-                            ).colored,
-                        )
-                    else:
-                        self.buffer.put_char(
-                            x,
-                            y,
-                            bruhcolored(
-                                " ",
-                                on_color=self.colors[
-                                    int((len(self.scale) - 1) * value)
-                                ],
-                            ).colored,
-                        )
-                else:
-                    self.buffer.put_char(
-                        x, y, self.scale[int((len(self.scale) - 1) * value)]
-                    )
-        if self.info:
+                value = abs(
+                    self._wave(x + t3, y, 1 / 4, 1 / 3, self.vals[0])
+                    + self._wave(x, y, 1 / 8, 1 / 5, self.vals[1])
+                    + self._wave(x, y + t3, 1 / 2, 1 / 5, self.vals[2])
+                    + self._wave(x, y, 3 / 4, 4 / 5, self.vals[3])
+                ) / 4.0
+                self.buffer.put_char(x, y, cache[int(scale_max * value)])
+
+        if self.show_info:
             self.buffer.put_at(
-                0, 0, f"COLORS: {' '.join([str(val) for val in self.colors])}"
+                0, 0, f"COLORS: {' '.join(str(v) for v in self.colors)}"
             )
             for i in range(1, 5):
-                self.buffer.put_at(0, i, f"VAL {i}: {str(self.vals[i - 1]):>3s} ")
+                self.buffer.put_at(0, i, f"VAL {i}: {self.vals[i - 1]:>3d}")
 
-    def func(self, x: int, y: int, a: int, b: int, n: int):
+    def _wave(self, x: float, y: float, a: float, b: float, n: float) -> float:
         """
-        Generates a plasma effect using the Perlin noise algorithm.
+        Sine wave radially projected from a point on the screen.
 
         Args:
-            x (int): x
-            y (int): y
-            a (int): a
-            b (int): b
-            n (int): n
+            x (float): Horizontal position.
+            y (float): Vertical position.
+            a (float): Horizontal anchor fraction of screen width.
+            b (float): Vertical anchor fraction of screen height.
+            n (float): Frequency divisor.
 
         Returns:
-            float: value of the Perlin noise at (x, y)
+            float: Sine value at (x, y).
         """
         return math.sin(
             math.sqrt(

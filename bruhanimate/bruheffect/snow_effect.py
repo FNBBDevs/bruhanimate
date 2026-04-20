@@ -20,6 +20,7 @@ from bruhcolor import bruhcolored
 
 from ..bruhutil import FLAKE_WEIGHT_CHARS, SNOWFLAKE_COLORS, SNOWFLAKE_TYPES, Buffer
 from .base_effect import BaseEffect
+from .settings import SnowSettings
 
 
 class SnowEffect(BaseEffect):
@@ -27,44 +28,59 @@ class SnowEffect(BaseEffect):
     A class to represent a snow effect.
     """
 
-    def __init__(
-        self,
-        buffer: Buffer,
-        background: str,
-        img_start_x: int = None,
-        img_start_y: int = None,
-        img_width: int = None,
-        img_height: int = None,
-        collision: bool = False,
-        show_info: bool = False,
-    ):
+    def __init__(self, buffer: Buffer, background: str, settings: SnowSettings = None):
         """
-        Initializes the SnowEffect class.
+        Initializes the SnowEffect.
 
         Args:
             buffer (Buffer): Effect buffer to render changes to.
             background (str): Character or string used for the background of the effect.
-            img_start_x (int, optional): Where the image starts on the x axis. Defaults to None.
-            img_start_y (int, optional): Where the image starts on the y axis. Defaults to None.
-            img_width (int, optional): The width of the image. Defaults to None.
-            img_height (int, optional): The height of the image. Defaults to None.
-            collision (bool, optional): Whether or not the effect should collide with the image. Defaults to False.
-            show_info (bool, optional): Whether or not to show snowflake information. Defaults to False.
+            settings (SnowSettings, optional): Configuration for the snow effect. Defaults to None.
         """
         super(SnowEffect, self).__init__(buffer, background)
-        self.image_present = (
-            True if img_start_x and img_start_y and img_width and img_height else False
-        )
-        self.collision = collision
-        self.total_ground_flakes = 0
-        self.show_info = show_info
+        s = settings or SnowSettings()
+
+        self.image_present = False
+        self.collision = s.collision
+        self.show_info = s.show_info
+        self.snow_intensity = max(0.01, min(1.0, s.intensity))
+        self.wind = max(-1.0, min(1.0, s.wind))
+
         self.flakes = []
         self.ground_flakes = [
             [0 for _ in range(buffer.width())] for _ in range(buffer.height())
         ]
         self.image_flakes = [None for _ in range(self.buffer.width())]
         self.smart_transparent = False
-        self.snow_intensity = 0.01
+        self.total_ground_flakes = 0
+
+    def set_snow_intensity(self, intensity: float):
+        """
+        Sets the probability of a new snowflake spawning per column per frame.
+
+        Args:
+            intensity (float): Value between 0.01 and 1.0.
+        """
+        if 0.01 <= intensity <= 1.0:
+            self.snow_intensity = intensity
+
+    def set_wind(self, wind: float):
+        """
+        Sets the horizontal wind bias that influences snowflake drift.
+
+        Args:
+            wind (float): Wind strength from -1.0 (hard left) to 1.0 (hard right).
+        """
+        self.wind = max(-1.0, min(1.0, wind))
+
+    def set_show_info(self, show_info: bool):
+        """
+        Toggles the snowflake debug info overlay.
+
+        Args:
+            show_info (bool): Whether to show flake counts on screen.
+        """
+        self.show_info = show_info
 
     def update_collision(
         self,
@@ -77,17 +93,16 @@ class SnowEffect(BaseEffect):
         image_buffer: Buffer = None,
     ):
         """
-        Function to set whether or not to visually see the snow collide with the ground
-        or images if they are present
+        Configures collision detection with an image.
 
         Args:
-            img_start_x (int): Start of the image on the x axis.
-            img_start_y (int): Start of the image on the y axis.
+            img_start_x (int): Image x position on screen.
+            img_start_y (int): Image y position on screen.
             img_width (int): Width of the image.
             img_height (int): Height of the image.
-            collision (bool): Whether or not the effect should collide with the image.
-            smart_transparent (bool): not used . . .
-            image_buffer (Buffer, optional): The image buffer in order to find collisions. Defaults to None.
+            collision (bool): Whether to enable collision.
+            smart_transparent (bool): Smart transparency flag.
+            image_buffer (Buffer, optional): Buffer containing the image. Defaults to None.
         """
         self.image_present = (
             True if img_start_x and img_start_y and img_width and img_height else False
@@ -105,35 +120,16 @@ class SnowEffect(BaseEffect):
         else:
             self.image_buffer = None
 
-    def set_show_info(self, show_info: bool):
-        """
-        Function to set whether or not to display information about the snow effect
-
-        Args:
-            show_info (bool): Whether or not to display information about the snow effect
-        """
-        self.show_info = show_info
-
-    def set_snow_intensity(self, intensity: float):
-        """
-        Sets the value to compare random.random() against to determine
-        if a snowflake should be created.
-
-        Args:
-            intensity (float): The value to check random.random() against
-        """
-        if 0.01 <= intensity <= 1.0:
-            self.snow_intensity = intensity
-
     def generate_snowflake(self, x: int):
         """
-        Generates a new snowflake at the given x position.
+        Generates a new snowflake at the given x position with a wind-influenced drift bias.
 
         Args:
-            x (int): The x position to generate the snowflake at.
+            x (int): The x position to spawn the snowflake at.
         """
         snowflake_type = random.choice(list(SNOWFLAKE_TYPES.keys()))
         snowflake_char = bruhcolored(snowflake_type, SNOWFLAKE_COLORS[snowflake_type])
+        drift_bias = self.wind + random.uniform(-0.35, 0.35)
         self.flakes.append(
             {
                 "x": x,
@@ -141,34 +137,35 @@ class SnowEffect(BaseEffect):
                 "type": snowflake_type,
                 "colored": snowflake_char,
                 "fall_delay": 0,
+                "drift_bias": drift_bias,
             }
         )
 
-    def can_stack(self, x: int, y: int):
+    def can_stack(self, x: int, y: int) -> bool:
         """
-        Checks if a snowflake can be stacked at the given position.
+        Checks whether accumulated snow at (x, y) is dense enough to stack onto the row above.
 
         Args:
-            x (int): The x position to check.
-            y (int): The y position to check.
+            x (int): Column to check.
+            y (int): Row to check.
 
         Returns:
-            bool: True if the snowflake can be stacked, False otherwise.
+            bool: True if snow should stack upward.
         """
         if y >= self.buffer.height():
             return False
         return self.ground_flakes[y][x] >= 18
 
-    def is_colliding(self, x: int, y: int):
+    def is_colliding(self, x: int, y: int) -> bool:
         """
-        Checks if a snowflake is colliding with the ground / snowflake at the given position.
+        Checks whether a snowflake at (x, y) would collide with an image.
 
         Args:
-            x (int): The x position to check.
-            y (int): The y position to check.
+            x (int): Column to check.
+            y (int): Row to check.
 
         Returns:
-            bool: True if the snowflake is colliding with the ground / snowflake, False otherwise.
+            bool: True if the position is inside the image boundary.
         """
         if self.image_present:
             if (
@@ -180,11 +177,11 @@ class SnowEffect(BaseEffect):
 
     def handle_snowflake_landing(self, x: int, y: int):
         """
-        Handles the snowflake landing at the given position.
+        Accumulates snow at the landing position and updates the ground character.
 
         Args:
-            x (int): The x position where the snowflake is landing.
-            y (int): The y position where the snowflake is landing.
+            x (int): Column where the flake landed.
+            y (int): Row where the flake landed.
         """
         self.ground_flakes[y][x] += 1
         weight = self.ground_flakes[y][x]
@@ -197,13 +194,12 @@ class SnowEffect(BaseEffect):
 
     def add_info(self):
         """
-        Adds information about the falling and grounded snowflakes.
+        Renders debug info (flake counts) at the top of the buffer.
         """
         self.buffer.put_at(0, 0, f"Total Snow Flakes: {len(self.flakes)}")
         self.buffer.put_at(
-            0,
-            1,
-            f"Total Flakes on Ground: {sum([sum([1 for v in row if v > 0]) for row in self.ground_flakes])}",
+            0, 1,
+            f"Total Flakes on Ground: {sum(1 for row in self.ground_flakes for v in row if v > 0)}",
         )
 
     def render_frame(self, frame_number: int):
@@ -211,21 +207,17 @@ class SnowEffect(BaseEffect):
         Renders a single frame of the snow effect.
 
         Args:
-            frame_number (int): The current frame number to render.
+            frame_number (int): The current frame number.
         """
-
-        # generate a new row of snowflakes
         for idx in range(self.buffer.width()):
             if random.random() < self.snow_intensity:
                 self.generate_snowflake(idx)
 
-        # update the positions of all flakes
         new_flakes = []
         for snowflake in self.flakes:
             x, y, flake_type = snowflake["x"], snowflake["y"], snowflake["type"]
             speed = SNOWFLAKE_TYPES[flake_type]["speed"]
 
-            # clear out the old position of the snowflake
             self.buffer.put_char(x, y, " ")
 
             if snowflake["fall_delay"] < speed:
@@ -238,11 +230,17 @@ class SnowEffect(BaseEffect):
             if y + 1 >= self.buffer.height() or self.can_stack(x, y + 1):
                 self.handle_snowflake_landing(x, y)
             else:
-                dx = random.choice([-1, 0, 1])
-                dy = 1
+                snowflake["drift_bias"] = max(
+                    -2.0,
+                    min(2.0, snowflake["drift_bias"] + random.uniform(-0.08, 0.08)),
+                )
+                bias = snowflake["drift_bias"]
+                left_w = max(0.05, 1.0 - bias)
+                right_w = max(0.05, 1.0 + bias)
+                dx = random.choices([-1, 0, 1], weights=[left_w, 1.2, right_w])[0]
 
                 new_x = max(0, min(self.buffer.width() - 1, x + dx))
-                new_y = y + dy
+                new_y = y + 1
                 if (
                     new_y < self.buffer.height()
                     and not self.is_colliding(new_x, new_y)
@@ -255,15 +253,10 @@ class SnowEffect(BaseEffect):
 
         self.flakes = new_flakes
 
-        # place the updates into the buffer
         for snowflake in self.flakes:
-            x, y, flake_type, colored = (
-                snowflake["x"],
-                snowflake["y"],
-                snowflake["type"],
-                snowflake["colored"],
+            self.buffer.put_char(
+                snowflake["x"], snowflake["y"], snowflake["colored"].colored
             )
-            self.buffer.put_char(x, y, colored.colored)
 
         if self.show_info:
             self.add_info()

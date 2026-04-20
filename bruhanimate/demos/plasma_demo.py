@@ -43,15 +43,15 @@ def show(screen):
     )
 
     # Set the attributes
-    renderer.effect.update_color_properties(
-        color=True, characters=True, random_color=True
+    renderer.effect.set_color_properties(
+        color=True, characters=True, random_colors=True
     )
 
-    renderer.effect.update_grey_scale_size(10)
+    renderer.effect.set_grey_scale_size(10)
 
-    renderer.effect.update_plasma_values(10, 26, 19, 41)
+    renderer.effect.set_plasma_values(10, 26, 19, 41)
 
-    renderer.effect.update_info_visibility(True)
+    renderer.effect.set_show_info(True)
 
     renderer.run(end_message=True)
 

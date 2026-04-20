@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import List, Tuple
-
 from ..bruhutil import Screen
 from ..bruhutil.bruherrors import InvalidPanRendererDirectionError
 from ..bruhutil.bruhtypes import (
@@ -35,7 +33,7 @@ class PanRenderer(BaseRenderer):
     def __init__(
         self,
         screen: Screen,
-        img: List[str],
+        img: list[str],
         frames: int = 100,
         frame_time: float = 0.1,
         effect_type: EffectType = "static",
@@ -93,15 +91,11 @@ class PanRenderer(BaseRenderer):
         self.current_img_y = self.img_top
 
     @property
-    def img_size(self) -> Tuple[int, int]:
+    def img_size(self) -> tuple[int, int]:
         """
-        Gets the size of the image.
-
-        Returns:
-            A tuple containing the height and width of the image. If the image is None or empty,
-            returns (0, 0).
+        Returns the (height, width) of the image, or (0, 0) if the image is empty.
         """
-        return len(self.img), len(self.img[0]) if self.img else (0, 0)
+        return (len(self.img), len(self.img[0])) if self.img else (0, 0)
 
     def render_img_frame(self, frame_number: int) -> None:
         """
@@ -118,12 +112,12 @@ class PanRenderer(BaseRenderer):
         elif self.direction == "vertical":
             self.render_vertical_frame(frame_number=frame_number)
 
-    def _set_padding(self, padding_vals: Tuple[int, int]) -> None:
+    def _set_padding(self, padding_vals: tuple[int, int]) -> None:
         """
         Sets the image's padding based on the provided values.
 
         Args:
-            padding_vals (Tuple[int, int]): A tuple containing two integers representing the left/right and top/bottom padding.
+            padding_vals (tuple[int, int]): A tuple containing two integers representing the left/right and top/bottom padding.
 
         Returns:
             None
@@ -137,9 +131,11 @@ class PanRenderer(BaseRenderer):
         self.padding = (left_right, top_bottom)
 
         # Create a new image with the desired padding
-        self.img = [" " * self.img_width for _ in range(top_bottom)]
-        +[(" " * left_right) + line + (" " * left_right) for line in self.img]
-        +[" " * self.img_width for _ in range(top_bottom)]
+        self.img = (
+            [" " * self.img_width for _ in range(top_bottom)]
+            + [(" " * left_right) + line + (" " * left_right) for line in self.img]
+            + [" " * self.img_width for _ in range(top_bottom)]
+        )
 
         # Update the image attributes to reflect the new padding
         self._set_img_attributes()
@@ -155,8 +151,8 @@ class PanRenderer(BaseRenderer):
             # Calculate the number of frames to render
             num_frames = (self.img_width // self.shift_rate) + 1
 
-            # Check if we're in loop mode or have reached the end of the image
-            if not self.loop or frame_number >= num_frames:
+            # Stop only when not looping and we've exhausted the frame sequence
+            if not self.loop and frame_number >= num_frames:
                 return
 
             # Update the image position based on the shift rate and current frame number

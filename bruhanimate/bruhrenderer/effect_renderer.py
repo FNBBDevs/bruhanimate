@@ -21,7 +21,7 @@ from .base_renderer import BaseRenderer
 
 class EffectRenderer(BaseRenderer):
     """
-    Class for rendering the Effect and only the Effect
+    Renders a full-screen effect with no image overlay.
     """
 
     def __init__(
@@ -33,34 +33,9 @@ class EffectRenderer(BaseRenderer):
         background: str = " ",
         transparent: bool = False,
     ):
-        super(EffectRenderer, self).__init__(
+        super().__init__(
             screen, frames, frame_time, effect_type, background, transparent
         )
 
-        self.background = self.effect.background
-
     def render_img_frame(self, frame_number: int):
-        """
-        No-op implementation since EffectRenderer doesn't render images.
-
-        Args:
-            frame_number (int): The current frame number.
-
-        Returns:
-            None
-        """
-        pass  # EffectRenderer doesn't need to render images
-
-    def render_effect_frame(self, frame_number: int):
-        """
-        Renders a single frame of the effect.
-        This method is kept for backwards compatibility but isn't needed
-        since the base renderer handles effect rendering automatically.
-
-        Args:
-            frame_number (int): The current frame number.
-
-        Returns:
-            None
-        """
-        self.effect.render_frame(frame_number)
+        pass
