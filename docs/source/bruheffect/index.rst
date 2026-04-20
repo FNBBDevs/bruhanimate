@@ -30,11 +30,13 @@ Effects
 - **draw_lines_effect** — Bresenham line drawing onto the buffer. Configure with ``DrawLinesSettings``.
 - **audio_effect** — System audio visualizer (EQ bars, waveform, mirror). Configure with ``AudioSettings``.
 - **settings** — All settings dataclasses live here.
+- **registry** — Discoverable effect registry; create effects by name, list presets, register custom effects.
 
 .. toctree::
    :maxdepth: 2
 
    settings
+   registry
    audio_effect
    base_effect
    static_effect
