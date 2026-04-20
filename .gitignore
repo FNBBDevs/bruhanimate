@@ -145,3 +145,4 @@ testing.*
 poetry.lock
 
 docs/build/
+.claude/
