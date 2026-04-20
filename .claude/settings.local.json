@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import zipfile; z=zipfile.ZipFile\\('dist/bruhanimate-0.2.99-py3-none-any.whl'\\); meta=[n for n in z.namelist\\(\\) if n.endswith\\('METADATA'\\)][0]; [print\\(l\\) for l in z.read\\(meta\\).decode\\(\\).splitlines\\(\\) if 'Requires' in l or 'Provides' in l]\")"
+    ]
+  }
+}
