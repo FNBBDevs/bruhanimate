@@ -24,6 +24,7 @@ from bruhanimate.bruhutil import Buffer, Screen, bruhimage
 
 
 def show(screen):
+    screen.clear()
     image = bruhimage.text_to_image("HAPPY NEW YEAR!", font="js_cursive")
 
     renderer = CenterRenderer(

@@ -23,6 +23,7 @@ from ..bruhutil import Screen
 
 
 def stars(screen):
+    screen.clear()
     renderer = EffectRenderer(
         screen=screen,
         frames=float("inf"),

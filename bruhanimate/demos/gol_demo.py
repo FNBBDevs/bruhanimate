@@ -23,11 +23,12 @@ from ..bruhutil import Screen, bruhimage
 
 
 def gol(screen):
+    screen.clear()
     renderer = CenterRenderer(
         screen=screen,
         frames=float("inf"),
         img=bruhimage.text_to_image("GOL!"),
-        frame_time=0.0,
+        frame_time=1/30,
         effect_type="gol",
         background=" ",
         transparent=False,

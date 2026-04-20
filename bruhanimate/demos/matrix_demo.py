@@ -23,11 +23,12 @@ from ..bruhutil import Screen, bruhimage
 
 
 def matrix(screen):
+    screen.clear()
     renderer = CenterRenderer(
         screen=screen,
         img=bruhimage.text_to_image("MATRIX!"),
         frames=float("inf"),
-        frame_time=0,
+        frame_time=1/30,
         effect_type="matrix",
         background=" ",
         transparent=False,

@@ -23,6 +23,7 @@ from bruhanimate.bruhutil import Screen, bruhimage
 
 
 def show(screen):
+    screen.clear()
     image = bruhimage.text_to_image("FIRE EFFECT!")
 
     renderer = CenterRenderer(

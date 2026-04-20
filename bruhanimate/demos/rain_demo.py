@@ -23,6 +23,7 @@ from ..bruhutil import Screen, bruhimage
 
 
 def rain(screen):
+    screen.clear()
     renderer = CenterRenderer(
         screen=screen,
         frames=float("inf"),

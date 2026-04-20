@@ -23,6 +23,7 @@ from ..bruhutil import Screen, bruhimage
 
 
 def twinkle(screen):
+    screen.clear()
     renderer = CenterRenderer(
         screen=screen,
         img=bruhimage.text_to_image("TWINKLE!"),

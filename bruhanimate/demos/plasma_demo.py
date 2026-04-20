@@ -23,6 +23,7 @@ from ..bruhutil import Screen, bruhimage
 
 
 def show(screen):
+    screen.clear()
     image = bruhimage.text_to_image(
         "PLASMA!", padding_top_bottom=1, padding_left_right=3
     )
@@ -31,7 +32,7 @@ def show(screen):
     renderer = FocusRenderer(
         screen=screen,
         frames=500,
-        frame_time=0,
+        frame_time=1/30,
         img=image,
         effect_type="plasma",
         background=" ",

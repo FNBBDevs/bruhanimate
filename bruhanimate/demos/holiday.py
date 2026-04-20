@@ -23,6 +23,7 @@ from ..bruhutil import Screen, get_image
 
 
 def holiday(screen):
+    screen.clear()
     renderer = CenterRenderer(
         screen=screen,
         frames=2000,
