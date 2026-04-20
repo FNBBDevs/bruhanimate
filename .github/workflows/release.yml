@@ -17,7 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # full history needed for changelog
+          fetch-depth: 0
 
       - name: Extract version from pyproject.toml
         id: version
@@ -47,13 +47,12 @@ jobs:
             LOG=$(git log --pretty=format:"- %s (%h)" "${PREV_TAG}..HEAD")
           fi
 
-          # Bucket commits by conventional-commit prefix; fall back to "Other"
-          FEAT=$(echo "$LOG"    | grep -E '^\- feat'    || true)
-          FIX=$(echo "$LOG"     | grep -E '^\- fix'     || true)
-          UPDATE=$(echo "$LOG"  | grep -E '^\- update'  || true)
-          DOCS=$(echo "$LOG"    | grep -E '^\- docs'    || true)
-          CHORE=$(echo "$LOG"   | grep -E '^\- chore'   || true)
-          OTHER=$(echo "$LOG"   | grep -vE '^\- (feat|fix|update|docs|chore)' || true)
+          FEAT=$(echo "$LOG"   | grep -E '^\- feat'   || true)
+          FIX=$(echo "$LOG"    | grep -E '^\- fix'    || true)
+          UPDATE=$(echo "$LOG" | grep -E '^\- update' || true)
+          DOCS=$(echo "$LOG"   | grep -E '^\- docs'   || true)
+          CHORE=$(echo "$LOG"  | grep -E '^\- chore'  || true)
+          OTHER=$(echo "$LOG"  | grep -vE '^\- (feat|fix|update|docs|chore)' || true)
 
           BODY=""
           [ -n "$FEAT"   ] && BODY="${BODY}### Features\n${FEAT}\n\n"
@@ -69,12 +68,36 @@ jobs:
             echo 'EOF'
           } >> $GITHUB_OUTPUT
 
-      - name: Create release
+      - name: Setup Python
+        if: steps.tag_check.outputs.exists == 'false'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Poetry
+        if: steps.tag_check.outputs.exists == 'false'
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Build package
+        if: steps.tag_check.outputs.exists == 'false'
+        run: poetry build
+
+      - name: Publish to PyPI
+        if: steps.tag_check.outputs.exists == 'false'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
+
+      - name: Create GitHub release
         if: steps.tag_check.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           name: ${{ steps.version.outputs.tag }}
           body: ${{ steps.changelog.outputs.changelog }}
+          files: dist/*
           draft: false
           prerelease: false

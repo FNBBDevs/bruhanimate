@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "bruhanimate"
-version = "0.2.99"
+version = "0.2.100"
 description = "ASCII Termnial Animation Package"
 authors = [ "ethanlchristensen <ethanlchristensen@outlook.com>",]
 license = "Apache License"
