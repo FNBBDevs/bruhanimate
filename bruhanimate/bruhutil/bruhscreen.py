@@ -99,7 +99,7 @@ if sys.platform == "win32":
         KEY_CONTROL = -601
         KEY_MENU = -602
 
-        def __init__(self, stdout, stdin, old_out, old_in):
+        def __init__(self, stdout, stdin, old_out, old_stdin, old_in):
             info = stdout.GetConsoleScreenBufferInfo()["Window"]
             self.width = info.Right - info.Left + 1
             self.height = info.Bottom - info.Top + 1
@@ -109,6 +109,7 @@ if sys.platform == "win32":
             self._last_height = self.height
             self._last_start = 0
             self._old_out = old_out
+            self._old_stdin = old_stdin
             self._old_in = old_in
             self._current_x = 0
             self._current_y = 0
@@ -166,6 +167,7 @@ if sys.platform == "win32":
             """
             if restore:
                 self._old_out.SetConsoleActiveScreenBuffer()
+                self._old_stdin.SetStdHandle(win32console.STD_INPUT_HANDLE)
                 self._stdin.SetConsoleMode(self._old_in)
 
         def print_at(self, text, x, y, width):
@@ -387,6 +389,10 @@ if sys.platform == "win32":
                     None,
                 )
             )
+            import win32api
+            old_stdin = win32console.PyConsoleScreenBufferType(
+                win32api.GetStdHandle(win32console.STD_INPUT_HANDLE)
+            )
             win_in.SetStdHandle(win32console.STD_INPUT_HANDLE)
             # Hide Cursor
             win_out.SetConsoleCursorInfo(1, 0)
@@ -405,7 +411,7 @@ if sys.platform == "win32":
             # new_mode &= ~win32console.ENABLE_PROCESSED_INPUT
             win_in.SetConsoleMode(new_mode)
 
-            screen = Screen(win_out, win_in, old_out, in_mode)
+            screen = Screen(win_out, win_in, old_out, old_stdin, in_mode)
             return screen
 
         @classmethod

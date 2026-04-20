@@ -19,14 +19,28 @@ import time
 
 os.system(" ")
 
-from bruhanimate.bruheffect import AudioEffect, AudioSettings
+from bruhanimate.bruheffect import AudioSettings
 from bruhanimate.bruhrenderer import EffectRenderer
 from bruhanimate.bruhutil import Screen
 
+TARGET_FPS = 30
+PHASE_FRAMES = 400
+
+
+def run_phase(screen, renderer, label):
+    for frame in range(PHASE_FRAMES):
+        t0 = time.perf_counter()
+        renderer.render_to_back_buffer(frame)
+        screen.print_at(f"  {label}".ljust(screen.width), 0, 0, screen.width)
+        renderer.swap_buffers()
+        renderer.present_frame()
+        elapsed = time.perf_counter() - t0
+        remaining = (1 / TARGET_FPS) - elapsed
+        if remaining > 0:
+            time.sleep(remaining)
+
 
 def show(screen):
-    screen.clear()
-
     phases = [
         ("EQ Bars  |  color",    AudioSettings(mode="bars",     color=True,  smoothing=0.75)),
         ("EQ Bars  |  mirror",   AudioSettings(mode="mirror",   color=True,  smoothing=0.75)),
@@ -34,26 +48,19 @@ def show(screen):
         ("EQ Bars  |  no color", AudioSettings(mode="bars",     color=False, smoothing=0.75)),
     ]
 
-    for label, settings in phases:
-        renderer = EffectRenderer(
-            screen=screen,
-            frames=float("inf"),
-            frame_time=1 / 30,
-            effect_type="audio",
-            background=" ",
-            transparent=False,
-        )
-        renderer.effect = AudioEffect(
-            renderer.effect.buffer,
-            " ",
-            settings=settings,
-        )
-        try:
-            renderer.run(end_message=False)
-        except KeyboardInterrupt:
-            renderer.effect.stop()
-            return
-        renderer.effect.stop()
+    r = EffectRenderer(screen, PHASE_FRAMES, 1 / TARGET_FPS, "audio", " ", False)
+
+    try:
+        for label, settings in phases:
+            screen.clear()
+            r.effect.set_mode(settings.mode)
+            r.effect.set_color(settings.color)
+            r.effect.set_smoothing(settings.smoothing)
+            run_phase(screen, r, label)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        r.effect.stop()
 
 
 def run():
