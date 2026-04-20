@@ -15,18 +15,16 @@ limitations under the License.
 """
 
 import sys
-from typing import Literal, TypeVar, Dict, Generic
+import time
 from abc import abstractmethod
-from ..bruheffect import *
-from ..bruhutil.utils import sleep
+
+from ..bruheffect import BaseEffect, effect_registry
+from ..bruhutil.bruherrors import InvalidEffectTypeError, ScreenResizedError
 from ..bruhutil.bruhffer import Buffer
 from ..bruhutil.bruhscreen import Screen
-from ..bruhutil.bruherrors import InvalidEffectTypeError, ScreenResizedError
 from ..bruhutil.bruhtypes import EffectType, valid_effect_types
+from ..bruhutil.utils import sleep
 
-
-HORIZONTAL = "h"
-VERTICAL = "v"
 INF = float("inf")
 
 
@@ -95,16 +93,20 @@ class BaseRenderer:
         """
         Presents the current display buffer to the screen.
         Only updates screen positions that have actually changed for efficiency.
+        Uses frame batching to reduce I/O to one write per frame (Unix) or
+        one Win32 call per changed row-segment (Windows).
+        last_displayed is updated via pointer rotation instead of a full buffer copy.
 
         Returns:
             None
         """
-        # Only update screen positions where the display buffer differs from what was last shown
+        self.screen.begin_frame()
         for y, x, val in self.last_displayed.get_buffer_changes(self.display_buffer):
             self.screen.print_at(val, x, y, 1)
-
-        # Track what we just displayed
-        self.last_displayed.sync_with(self.display_buffer)
+        self.screen.flush_frame()
+        # Rotate pointers: last_displayed takes display_buffer's content (no copy),
+        # and current_buffer (the recyclable back buffer) gets the old last_displayed slot.
+        self.last_displayed, self.current_buffer = self.display_buffer, self.last_displayed
 
     def clear_back_buffer(self):
         """
@@ -156,59 +158,21 @@ class BaseRenderer:
                 f"'{effect_type}' is not a valid effect. Please choose from {valid_effect_types}"
             )
 
-    def create_effect(self, effect_type: EffectType) -> object:
+    def create_effect(self, effect_type: EffectType) -> BaseEffect:
         """
-        Creates an instance of the specified effect type.
+        Creates an instance of the specified effect type via the effect registry.
 
         Args:
             effect_type (EffectType): The type of effect to be created.
 
         Returns:
             An instance of the specified effect type.
-
-        Raises:
-            ValueError: If the provided effect type is not recognized.
         """
-        if effect_type == "static":
-            return StaticEffect(self.create_buffer(), self.background)
-        elif effect_type == "offset":
-            return OffsetEffect(self.create_buffer(), self.background)
-        elif effect_type == "noise":
-            return NoiseEffect(self.create_buffer(), self.background)
-        elif effect_type == "stars":
-            return StarEffect(self.create_buffer(), self.background)
-        elif effect_type == "plasma":
-            return PlasmaEffect(self.create_buffer(), self.background)
-        elif effect_type == "gol":
-            return GameOfLifeEffect(self.create_buffer(), self.background)
-        elif effect_type == "rain":
-            return RainEffect(self.create_buffer(), self.background)
-        elif effect_type == "matrix":
-            return MatrixEffect(self.create_buffer(), self.background)
-        elif effect_type == "drawlines":
-            return DrawLinesEffect(self.create_buffer(), self.background)
-        elif effect_type == "snow":
-            return SnowEffect(self.create_buffer(), self.background)
-        elif effect_type == "twinkle":
-            return TwinkleEffect(self.create_buffer(), self.background)
-        elif effect_type == "audio":
-            return AudioEffect(self.create_buffer(), self.background)
-        elif effect_type == "chat":
-            return ChatbotEffect(
-                self.screen, self.create_buffer(), self.create_buffer(), self.background
-            )
-        elif effect_type == "firework":
-            return FireworkEffect(self.create_buffer(), self.background)
-        elif effect_type == "fire":
-            return FireEffect(self.create_buffer(), self.background)
-        elif effect_type == "julia":
-            return JuliaEffect(self.create_buffer(), self.background)
+        return effect_registry.create(effect_type, self.create_buffer(), self.background)
 
     def create_buffer(self) -> Buffer:
         """
-        Creates a new buffer with the specified height and width.
-
-        Args:
+        Creates a new buffer matching the current screen dimensions.
 
         Returns:
             A newly created buffer object.
@@ -236,8 +200,7 @@ class BaseRenderer:
                 self.smart_transparent,
                 self.image_buffer,
             )
-        except Exception as e:
-            print(f"base_renderer: update_collision: warning: {e}")
+        except AttributeError:
             self.effect.update_collision(None, None, None, None, collision, None)
 
     def update_smart_transparent(self, smart_transparent: bool):
@@ -328,37 +291,32 @@ class BaseRenderer:
 
             if self.frames != INF:
                 for frame in range(self.frames):
+                    frame_start = time.perf_counter()
                     if self.screen.has_resized():
                         raise ScreenResizedError("The screen was resized.")
 
-                    # Render complete frame to back buffer
                     self.render_to_back_buffer(frame)
-
-                    # Swap buffers (atomic operation)
                     self.swap_buffers()
-
-                    # Present the now-front buffer to screen
                     self.present_frame()
 
-                    # Wait for next frame
-                    sleep(self.frame_time)
+                    # Sleep only the remaining budget so total frame time ~ frame_time
+                    remaining = self.frame_time - (time.perf_counter() - frame_start)
+                    if remaining > 0:
+                        sleep(remaining)
             else:
                 frame = 0
                 while True:
+                    frame_start = time.perf_counter()
                     if self.screen.has_resized():
                         raise ScreenResizedError("The screen was resized.")
 
-                    # Render complete frame to back buffer
                     self.render_to_back_buffer(frame)
-
-                    # Swap buffers (atomic operation)
                     self.swap_buffers()
-
-                    # Present the now-front buffer to screen
                     self.present_frame()
 
-                    # Wait for next frame
-                    sleep(self.frame_time)
+                    remaining = self.frame_time - (time.perf_counter() - frame_start)
+                    if remaining > 0:
+                        sleep(remaining)
                     frame += 1
         except KeyboardInterrupt:
             pass
@@ -371,12 +329,11 @@ class BaseRenderer:
                 input()
 
     @abstractmethod
-    def render_frame(self):
+    def render_img_frame(self, frame_number: int):
         """
-        Renders a single frame of the effect.
+        Renders the image portion of a single frame into the image buffer.
 
-        Returns:
-            None
+        Args:
+            frame_number (int): The current frame number.
         """
-        # To be defined by each renderer
         pass

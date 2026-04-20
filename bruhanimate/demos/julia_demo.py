@@ -18,11 +18,12 @@ import os
 
 os.system(" ")
 
-from bruhanimate.bruhutil import Screen, bruhimage
 from bruhanimate.bruhrenderer import CenterRenderer
+from bruhanimate.bruhutil import Screen, bruhimage
 
 
 def show(screen):
+    screen.clear()
     image = bruhimage.text_to_image("JULIA FRACTALS!")
 
     renderer = CenterRenderer(

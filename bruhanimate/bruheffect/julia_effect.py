@@ -15,8 +15,9 @@ limitations under the License.
 """
 
 import numpy as np
-from .base_effect import BaseEffect
+
 from ..bruhutil.bruhffer import Buffer
+from .base_effect import BaseEffect
 
 
 class JuliaEffect(BaseEffect):
@@ -41,7 +42,7 @@ class JuliaEffect(BaseEffect):
         self.tick_delta = 1
         self.max_tick = 100
         self.min_tick = -200
-        
+
     def update_tick(self):
         """
         Updates the current tick value and modifies the tick delta.

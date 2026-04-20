@@ -15,13 +15,15 @@ limitations under the License.
 """
 
 import os
+
 os.system(" ")
 
-from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import CenterRenderer
+from ..bruhutil import Screen, bruhimage
 
 
 def twinkle(screen):
+    screen.clear()
     renderer = CenterRenderer(
         screen=screen,
         img=bruhimage.text_to_image("TWINKLE!"),

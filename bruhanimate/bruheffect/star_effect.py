@@ -17,57 +17,60 @@ limitations under the License.
 import random
 
 from bruhcolor import bruhcolored
+
 from ..bruhutil import LIFE_COLORS, Buffer
 from .noise_effect import NoiseEffect
+from .settings import StarSettings
+
 
 class StarEffect(NoiseEffect):
     """
-    Class for rendering out a blinking star effect. This is just a Noise effect with a predefined intensity.
-    Ideally the background would be ' ' for the best effect, but the choice is yours.
+    A blinking star effect — a NoiseEffect with a predefined intensity and star characters.
     """
 
-    def __init__(self, buffer: Buffer, background: str, color_type: str = "GREYSCALE"):
+    def __init__(self, buffer: Buffer, background: str, settings: StarSettings = None):
         """
-        Initializes the Star Effect.
+        Initializes the StarEffect.
 
         Args:
             buffer (Buffer): Effect buffer to push updates to.
             background (str): Character or string for the background.
-            color_type (str, optional): What color type should be used. Defaults to "GREYSCALE".
+            settings (StarSettings, optional): Configuration for the star effect. Defaults to None.
         """
         super(StarEffect, self).__init__(buffer, background)
+        s = settings or StarSettings()
 
-        self.stars = f"{background*(100 // self.background_length)}.*+"
+        self.stars = f"{background * (100 // self.background_length)}.*+"
         self.stars_length = len(self.stars)
-        self.color_type = color_type
+        self.color_type = s.color_type
 
-    def update_color_type(self, color_type: str):
+    def set_color_type(self, color_type: str):
         """
-        Function to update the color type.
+        Updates the color type used for star rendering.
 
         Args:
-            color_type (str): The color type to use for this effect.
+            color_type (str): The color palette key to use.
         """
         self.color_type = color_type
 
-    def update_background(self, background: str):
+    def set_background(self, background: str):
         """
-        Function to update the background character or string.
+        Updates the background character and rebuilds the star character set.
 
         Args:
-            background (str): The new background character or string to use.
+            background (str): The new background character or string.
         """
         self.background = background
         self.background_length = len(background)
-        self.stars = f"{background*(100 // self.background_length)}.*+"
+        self.stars = f"{background * (100 // self.background_length)}.*+"
         self.stars_length = len(self.stars)
 
     def render_frame(self, frame_number: int):
         """
-        Function to render the next frame of the Stars effect.
+        Renders a frame of the star effect.
 
         Args:
-            frame_number (int): The current frame number to render.
+            frame_number (int): The current frame number.
         """
         for y in range(self.buffer.height()):
             for x in range(self.buffer.width()):
@@ -78,9 +81,7 @@ class StarEffect(NoiseEffect):
                         bruhcolored(
                             self.stars[random.randint(0, self.stars_length - 1)],
                             color=LIFE_COLORS[self.color_type][
-                                random.randint(
-                                    0, len(LIFE_COLORS[self.color_type]) - 1
-                                )
+                                random.randint(0, len(LIFE_COLORS[self.color_type]) - 1)
                             ],
                         ).colored,
                     )

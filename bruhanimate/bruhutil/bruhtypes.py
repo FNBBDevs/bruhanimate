@@ -16,7 +16,6 @@ limitations under the License.
 
 from typing import Literal
 
-
 Font = Literal[
     "1943____",
     "1row",
@@ -584,10 +583,10 @@ EffectType = Literal[
     "snow",
     "twinkle",
     "audio",
-    "chat",
     "firework",
     "fire",
     "julia",
+    "water",
 ]
 valid_effect_types = {
     "static",
@@ -602,10 +601,10 @@ valid_effect_types = {
     "snow",
     "twinkle",
     "audio",
-    "chat",
     "firework",
     "fire",
     "julia",
+    "water",
 }
 PanRendererDirection = Literal["horizontal", "vertical"]
 valid_pan_renderer_directions = {"horizontal", "vertical"}
@@ -698,7 +697,7 @@ valid_firework_types = [
     "realitywarp",
     "noneuclidean",
     "cosmicstring",
-    "fancytrailburst"
+    "fancytrailburst",
 ]
 FireworkColorType = Literal["solid", "twotone", "rainbow", "random"]
 valid_firework_color_types = ["solid", "twotone", "rainbow", "random"]

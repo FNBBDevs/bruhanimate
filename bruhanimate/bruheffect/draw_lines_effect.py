@@ -14,21 +14,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from .base_effect import BaseEffect
 from ..bruhutil import Buffer
+from .base_effect import BaseEffect
+from .settings import DrawLinesSettings
 
 
 class Line:
     """
-    A class representing a line segment.
+    A line segment defined by two endpoints.
     """
+
     def __init__(self, start_point: tuple[int], end_point: tuple[int]):
         """
-        Initializes a Line object with the given start and end points.
+        Initializes a Line with start and end points (doubled for sub-cell rendering).
 
         Args:
-            start_point (tuple[int]): Start point of the line segment as a tuple (x, y).
-            end_point (tuple[int]): End point of the line segment as a tuple (x, y).
+            start_point (tuple[int]): Start point as (x, y).
+            end_point (tuple[int]): End point as (x, y).
         """
         if start_point and end_point:
             self.start_point = (start_point[0] * 2, start_point[1] * 2)
@@ -39,54 +41,58 @@ class Line:
 
     def update_points(self, start_point: tuple[int], end_point: tuple[int]):
         """
-        Updates the points of the line segment with new values.
+        Updates the line's start and end points.
 
         Args:
-            start_point (tuple[int]): New start point of the line segment as a tuple (x, y).
-            end_point (tuple[int]): New end point of the line segment as a tuple (x, y).
+            start_point (tuple[int]): New start point as (x, y).
+            end_point (tuple[int]): New end point as (x, y).
         """
         self.start_point = (start_point[0], start_point[1])
         self.end_point = (end_point[0], end_point[1])
 
     def get_points(self):
         """
-        Returns the start and end points of the line segment.
+        Returns the start and end points of the line.
 
         Returns:
-            tuple[tuple[int], tuple[int]]: The start and end points of the line.
+            tuple[tuple[int], tuple[int]]: The start and end points.
         """
         return self.start_point, self.end_point
 
 
 class DrawLinesEffect(BaseEffect):
-    def __init__(self, buffer: Buffer, background: str, char: str = None, thin: bool = False):
+    """
+    Effect for drawing Bresenham line segments onto the buffer.
+    """
+
+    def __init__(self, buffer: Buffer, background: str, settings: DrawLinesSettings = None):
         """
-        Initializes the DrawLinesEffect class.
+        Initializes the DrawLinesEffect.
 
         Args:
             buffer (Buffer): Effect buffer to push updates to.
             background (str): Character or string to use as the background.
-            char (str, optional): Character to use for line drawing. Defaults to None.
-            thin (bool, optional): Whether or not the line should be thin. Defaults to False.
+            settings (DrawLinesSettings, optional): Configuration for the effect. Defaults to None.
         """
         super(DrawLinesEffect, self).__init__(buffer, background)
+        s = settings or DrawLinesSettings()
         self.lines = []
-        self.char = char
-        self.thin = thin
+        self.char = s.char
+        self.thin = s.thin
 
     def add_line(self, start_point: tuple[int], end_point: tuple[int]):
         """
-        Adds a line to the effect.
+        Adds a line segment to be rendered.
 
         Args:
-            start_point (tuple[int]): Start point of the line as a tuple (x, y).
-            end_point (tuple[int]): End point of the line as a tuple (x, y).
+            start_point (tuple[int]): Start point as (x, y).
+            end_point (tuple[int]): End point as (x, y).
         """
         self.lines.append(Line(start_point, end_point))
 
     def render_frame(self, frame_number: int):
         """
-        Renders the effect for a given frame number.
+        Renders all lines on frame 0.
 
         Args:
             frame_number (int): The current frame number.
@@ -138,11 +144,8 @@ class DrawLinesEffect(BaseEffect):
                             iy += cy
                             err += 2 * dx
                         ix += cx
-
                         if self.char is None:
-                            self.buffer.put_char(
-                                px // 2, py // 2, line_chars[next_char]
-                            )
+                            self.buffer.put_char(px // 2, py // 2, line_chars[next_char])
                         else:
                             self.buffer.put_char(px // 2, py // 2, self.char)
 
@@ -151,7 +154,6 @@ class DrawLinesEffect(BaseEffect):
                     px = ix - 2
                     py = iy - 2
                     next_char = 0
-
                     while iy != line.end_point[1]:
                         if ix < px or ix - px >= 2 or iy < py or iy - py >= 2:
                             px = ix & ~1
@@ -163,11 +165,8 @@ class DrawLinesEffect(BaseEffect):
                             ix += cx
                             err += 2 * dy
                         iy += cy
-
                         if self.char is None:
-                            self.buffer.put_char(
-                                px // 2, py // 2, line_chars[next_char]
-                            )
+                            self.buffer.put_char(px // 2, py // 2, line_chars[next_char])
                         else:
                             self.buffer.put_char(px // 2, py // 2, self.char)
 

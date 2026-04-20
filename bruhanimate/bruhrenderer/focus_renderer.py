@@ -15,9 +15,9 @@ limitations under the License.
 """
 
 import random
-from typing import List
-from .base_renderer import BaseRenderer
+
 from ..bruhutil.bruhtypes import EffectType
+from .base_renderer import BaseRenderer
 
 
 class FocusRenderer(BaseRenderer):
@@ -29,7 +29,7 @@ class FocusRenderer(BaseRenderer):
     def __init__(
         self,
         screen,
-        img: List[str],
+        img: list[str],
         frames: int = 100,
         frame_time: float = 0.1,
         effect_type: EffectType = "static",
@@ -41,28 +41,26 @@ class FocusRenderer(BaseRenderer):
         start_reverse: int = None,
         loop: bool = True,
     ):
-        super(FocusRenderer, self).__init__(
+        super().__init__(
             screen, frames, frame_time, effect_type, background, transparent, collision
         )
-        self.background = background if background else " "
-        self.transparent = transparent if transparent else False
         self.img = img
         self.start_frame = start_frame
         self.reverse = reverse
         self.start_reverse = start_reverse
         if self.start_reverse:
             self.frame_gap = start_reverse - start_frame
-        self.loop = True if loop == True and reverse == True else False
+        self.loop = True if loop and reverse else False
         self.loops = 1
 
-        if self.reverse and self.start_reverse == None:
-            raise Exception(
-                "if reverse is enabled, and start_reverse frame must be provided"
+        if self.reverse and self.start_reverse is None:
+            raise ValueError(
+                "if reverse is enabled, a start_reverse frame must be provided"
             )
 
         if self.reverse and start_reverse < self.start_frame:
-            raise Exception(
-                f"the frame to start the reverse can not be less than the start frame\n\tstart_frame: {self.start_frame}, start_reverse: {self.start_reverse}"
+            raise ValueError(
+                f"start_reverse ({self.start_reverse}) cannot be less than start_frame ({self.start_frame})"
             )
 
         if self.img:
@@ -79,7 +77,7 @@ class FocusRenderer(BaseRenderer):
         self.img_x_start = (self.width - len(self.img[0])) // 2
         self.current_img_x = self.img_x_start
         self.current_img_y = self.img_y_start
-        
+
         # Initialize start board with characters at random positions
         self.start_board = [
             [
@@ -93,7 +91,7 @@ class FocusRenderer(BaseRenderer):
             ]
             for y in range(self.img_height)
         ]
-        
+
         # Initialize current board with characters at start positions
         self.current_board = [
             [
@@ -107,7 +105,7 @@ class FocusRenderer(BaseRenderer):
             ]
             for y in range(self.img_height)
         ]
-        
+
         # Initialize end board with characters at target positions
         self.end_board = [
             [
@@ -116,7 +114,7 @@ class FocusRenderer(BaseRenderer):
             ]
             for y in range(self.img_height)
         ]
-        
+
         # Initialize direction board to track character movement
         self.direction_board = [
             [
@@ -154,8 +152,8 @@ class FocusRenderer(BaseRenderer):
         self.reverse = reverse
         self.start_reverse = start_reverse
         if start_reverse < self.start_frame:
-            raise Exception(
-                f"the frame to start the reverse can not be less than the start frame\n\tstart_frame: {self.start_frame}, start_reverse: {self.start_reverse}"
+            raise ValueError(
+                f"start_reverse ({self.start_reverse}) cannot be less than start_frame ({self.start_frame})"
             )
 
     def update_start_frame(self, frame_number):
@@ -171,39 +169,23 @@ class FocusRenderer(BaseRenderer):
         """
         self.start_frame = frame_number
 
-    def solved(self, end_state):
+    def solved(self, end_state: str) -> bool:
         """
-        Checks whether the current board is in a desired state.
+        Returns True if the current board matches the target state ("end" or "start").
 
-        Args:
-
-            end_state (str): The desired state to check against. Can be "end",
-                "start", or any other value for custom checks.
-
-        Returns:
-            bool: Whether the current board matches the desired state.
+        Raises:
+            ValueError: If end_state is not "end" or "start".
         """
-        b1 = self.current_board
-        b2 = self.end_board
-        b3 = self.start_board
-        if end_state == "end":
-            for y in range(len(b1)):
-                for x in range(len(b1[y])):
-                    if b1[y][x][0] == b2[y][x][0] and b1[y][x][1] == b2[y][x][1]:
-                        pass
-                    else:
-                        return False
-            return True
-        elif end_state == "start":
-            for y in range(len(b1)):
-                for x in range(len(b1[y])):
-                    if b1[y][x][0] == b3[y][x][0] and b1[y][x][1] == b3[y][x][1]:
-                        pass
-                    else:
-                        return False
-            return True
-        else:
-            raise Exception(f"unknown solved board state for FocusRenderer: {end_state}")
+        targets = {"end": self.end_board, "start": self.start_board}
+        if end_state not in targets:
+            raise ValueError(f"unknown solved board state for FocusRenderer: {end_state}")
+        target = targets[end_state]
+        return all(
+            self.current_board[y][x][0] == target[y][x][0]
+            and self.current_board[y][x][1] == target[y][x][1]
+            for y in range(len(self.current_board))
+            for x in range(len(self.current_board[y]))
+        )
 
     def render_img_frame(self, frame_number):
         """
@@ -221,12 +203,10 @@ class FocusRenderer(BaseRenderer):
                 for y in range(len(self.current_board)):
                     for x in range(len(self.current_board[y])):
                         x_check, y_check = False, False
-                        # MOVE X IF NEEDED
                         if self.current_board[y][x][0] != self.start_board[y][x][0]:
                             self.current_board[y][x][0] -= self.direction_board[y][x][0]
                         else:
                             x_check = True
-                        # MOVE Y IF NEEDED
                         if self.current_board[y][x][1] != self.start_board[y][x][1]:
                             self.current_board[y][x][1] -= self.direction_board[y][x][1]
                         else:
@@ -251,11 +231,8 @@ class FocusRenderer(BaseRenderer):
             if not self.solved(end_state="end"):
                 for y in range(len(self.current_board)):
                     for x in range(len(self.current_board[y])):
-                        # MOVE X IF NEEDED
                         if self.current_board[y][x][0] != self.end_board[y][x][0]:
                             self.current_board[y][x][0] += self.direction_board[y][x][0]
-
-                        # MOVE Y IF NEEDED
                         if self.current_board[y][x][1] != self.end_board[y][x][1]:
                             self.current_board[y][x][1] += self.direction_board[y][x][1]
                 self.image_buffer.clear_buffer(val=None)

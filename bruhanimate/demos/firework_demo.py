@@ -15,14 +15,16 @@ limitations under the License.
 """
 
 import os
+
 os.system(" ")
 
-from bruhanimate.bruhutil import Screen, bruhimage, Buffer
-from bruhanimate.bruhrenderer import CenterRenderer
 from bruhanimate.bruheffect import TwinkleEffect
+from bruhanimate.bruhrenderer import CenterRenderer
+from bruhanimate.bruhutil import Buffer, Screen, bruhimage
 
 
 def show(screen):
+    screen.clear()
     image = bruhimage.text_to_image("HAPPY NEW YEAR!", font="js_cursive")
 
     renderer = CenterRenderer(
@@ -32,10 +34,12 @@ def show(screen):
         frame_time=0.05,
         effect_type="firework",
         background=" ",
-        transparent=True
+        transparent=True,
     )
 
-    second_effect = TwinkleEffect(buffer=Buffer(screen.height, screen.width), background=" ")
+    second_effect = TwinkleEffect(
+        buffer=Buffer(screen.height, screen.width), background=" "
+    )
     second_effect.set_density(0.01)
 
     renderer.effect.set_second_effect(second_effect)

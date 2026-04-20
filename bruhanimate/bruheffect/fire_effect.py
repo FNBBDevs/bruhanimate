@@ -14,26 +14,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import random
 import math
-from bruhcolor import bruhcolored as bc
-from .base_effect import BaseEffect
-from ..bruhutil.bruhffer import Buffer
-from typing import List, Dict
+import random
+from typing import Dict, List
+
 import numpy as np
+from bruhcolor import bruhcolored as bc
+
+from ..bruhutil.bruhffer import Buffer
+from .base_effect import BaseEffect
+from .settings import FireSettings
 
 
 class FireEffect(BaseEffect):
     """
-    Class for generating a dynamic, improved fire effect with taller, rounder,
+    Class for generating a dynamic fire effect with taller, rounder,
     and more visible flames using fuller ASCII characters.
     """
 
-    def __init__(self, buffer: Buffer, background: str):
+    def __init__(self, buffer: Buffer, background: str, settings: FireSettings = None):
         """
-        Initializes the enhanced fire effect with a buffer and a background string.
+        Initializes the fire effect.
+
+        Args:
+            buffer (Buffer): Effect buffer to push updates to.
+            background (str): Character or string to use as the background.
+            settings (FireSettings, optional): Configuration for the fire effect. Defaults to None.
         """
         super(FireEffect, self).__init__(buffer, background)
+        s = settings or FireSettings()
+
         self.ascii_chars = " ░▒▓██████"
         self.color_map = [232, 160, 196, 202, 208, 214, 220, 226, 231, 15]
 
@@ -42,35 +52,41 @@ class FireEffect(BaseEffect):
         )
         self.current_data = np.zeros_like(self.previous_data)
 
-        # Values are closer to 1.0, so heat is retained longer as it rises.
-        self.height_cooling_map = np.linspace(0.98, 0.92, buffer.height())[:, np.newaxis]
+        self.height_cooling_map = np.linspace(0.98, 0.92, buffer.height())[
+            :, np.newaxis
+        ]
 
-        self.fire_intensity = 0.2
-        self.swell = False
+        self.fire_intensity = s.intensity
+        self.swell = s.swell
         self.swell_delta = 0.02
-        self.swell_halt = 1
-        self.use_char_color = False
-        self.background_color = False
-        self.wind_direction = 0.0
-        self.wind_strength = 0.0
-        self.turbulence = 0.0
+        self.swell_halt = s.swell_halt
+        self.use_char_color = s.use_char_color
+        self.background_color = s.background_color
+        self.turbulence = max(0.0, min(1.0, s.turbulence))
         self.heat_spots: List[Dict] = []
-        self.heat_spot_intensity = 0.1
+        self.heat_spot_intensity = max(0.0, min(1.0, s.heat_spot_intensity))
 
         self._random_variations = np.random.uniform(0.8, 1.2, (buffer.width(),))
         self._update_random_variations_counter = 0
 
+        self.set_fire_wind(s.wind_direction, s.wind_strength)
+
     def set_fire_ascii_chars(self, ascii_chars: str):
         """
-        Set the ASCII characters used for the fire effect.
+        Sets the ASCII characters used for the fire effect.
+
+        Args:
+            ascii_chars (str): Exactly 10 characters to use for the fire gradient.
         """
-        if len(ascii_chars) != 10:
-            return
-        self.ascii_chars = ascii_chars
+        if len(ascii_chars) == 10:
+            self.ascii_chars = ascii_chars
 
     def set_fire_intensity(self, fire_intensity: float):
         """
         Sets the intensity of the fire effect.
+
+        Args:
+            fire_intensity (float): Value between 0 and 1.
         """
         if 0 <= fire_intensity <= 1:
             self.fire_intensity = fire_intensity
@@ -78,25 +94,39 @@ class FireEffect(BaseEffect):
     def set_fire_wind(self, direction: float, strength: float):
         """
         Sets wind parameters for the fire effect.
+
+        Args:
+            direction (float): Wind angle in degrees.
+            strength (float): Wind strength between 0 and 1.
         """
         self.wind_direction = math.radians(direction)
         self.wind_strength = max(0.0, min(1.0, strength))
 
     def set_fire_use_char_color(self, use_char_color: bool):
         """
-        Enables or disables the use of character color for the fire effect.
+        Enables or disables character color rendering.
+
+        Args:
+            use_char_color (bool): Whether to color the ASCII characters.
         """
         self.use_char_color = use_char_color
 
     def set_fire_background_color(self, background_color: bool):
         """
-        Enables or disables the background color for the fire effect.
+        Enables or disables background color rendering.
+
+        Args:
+            background_color (bool): Whether to render as colored background blocks.
         """
         self.background_color = background_color
 
     def set_fire_swell(self, swell: bool, swell_halt: int = 1):
         """
-        Controls the swell effect for the fire.
+        Controls intensity oscillation (breathing effect).
+
+        Args:
+            swell (bool): Whether to enable swelling.
+            swell_halt (int, optional): Frames between swell updates. Defaults to 1.
         """
         self.swell = swell
         self.swell_halt = swell_halt
@@ -104,18 +134,31 @@ class FireEffect(BaseEffect):
     def set_fire_turbulence(self, turbulence: float):
         """
         Sets how chaotic the fire behaves.
+
+        Args:
+            turbulence (float): Value between 0 and 1.
         """
         self.turbulence = max(0.0, min(1.0, turbulence))
 
     def set_fire_heat_spot_intensity(self, heat_spot_intensity: float):
         """
-        Sets the intensity of heat spots for the fire effect.
+        Sets the intensity of heat spots.
+
+        Args:
+            heat_spot_intensity (float): Value between 0 and 1.
         """
         self.heat_spot_intensity = max(0.0, min(1.0, heat_spot_intensity))
 
     def get_colored_char(self, intensity: float, max_intensity: float = 255.0) -> str:
         """
-        Returns a colored character for the fire effect based on its intensity.
+        Returns a colored character based on fire intensity.
+
+        Args:
+            intensity (float): Current cell intensity.
+            max_intensity (float, optional): Maximum intensity value. Defaults to 255.0.
+
+        Returns:
+            str: The character (with optional ANSI color) to render.
         """
         intensity_variation = intensity * (1 + random.uniform(-0.1, 0.1))
         intensity_variation = max(0, min(intensity_variation, max_intensity))
@@ -123,12 +166,10 @@ class FireEffect(BaseEffect):
         char_index = int(
             (intensity_variation / max_intensity) * (len(self.ascii_chars) - 1)
         )
-        char_index = min(
-            char_index, len(self.ascii_chars) - 1
-        )
-        
+        char_index = min(char_index, len(self.ascii_chars) - 1)
+
         if intensity_variation < 1:
-             return " "
+            return " "
 
         if self.ascii_chars[char_index] == " ":
             return " "
@@ -136,9 +177,7 @@ class FireEffect(BaseEffect):
         color_index = int(
             (intensity_variation / max_intensity) * (len(self.color_map) - 2)
         )
-        color_index = min(
-            color_index, len(self.color_map) - 2
-        )
+        color_index = min(color_index, len(self.color_map) - 2)
 
         if random.random() < 0.04 and intensity > max_intensity * 0.9:
             color_index = len(self.color_map) - 1
@@ -153,7 +192,10 @@ class FireEffect(BaseEffect):
 
     def update_data(self, frame_number: int):
         """
-        Updates the fire effect data with logic for taller and rounder flames.
+        Updates the fire simulation data for one frame.
+
+        Args:
+            frame_number (int): The current frame number.
         """
         wind_x = (
             math.cos(self.wind_direction + math.sin(frame_number * 0.05) * 0.2)
@@ -161,14 +203,10 @@ class FireEffect(BaseEffect):
         )
         wind_offset_x = int(wind_x * 2)
 
-        height, width = self.buffer.height(), self.buffer.width()
-
         left = np.roll(self.previous_data, -1, axis=1)
         right = np.roll(self.previous_data, 1, axis=1)
         up = np.roll(self.previous_data, -1, axis=0)
 
-        # The left and right weights are now higher, making the fire spread outwards more.
-        # The divisor is the sum of the new weights (1.8 + 1.2 + 1.2 = 4.2)
         base_values = (up * 1.8 + left * 1.2 + right * 1.2) / 4.2
 
         if wind_offset_x != 0:
@@ -203,17 +241,17 @@ class FireEffect(BaseEffect):
                 spot["y"] = max(0, spot["y"] - int(spot["y_offset"]))
                 spot["x_offset"] += random.uniform(-0.3, 0.3)
                 spot["x"] += spot["x_offset"]
-                
+
                 x, y = int(spot["x"]), int(spot["y"])
-                
+
                 if 0 <= x < self.buffer.width() and 0 <= y < self.buffer.height():
                     self.current_data[y, x] = max(
                         self.current_data[y, x], 255 * spot["intensity"]
                     )
-                
+
                 spot["lifetime"] -= 1
                 if spot["y"] > 0:
-                     new_heat_spots.append(spot)
+                    new_heat_spots.append(spot)
         self.heat_spots = new_heat_spots
 
         self.previous_data, self.current_data = (
@@ -223,7 +261,10 @@ class FireEffect(BaseEffect):
 
     def add_new_fire_row(self, frame_number: int):
         """
-        Adds a new row to the fire effect.
+        Seeds a new row of heat at the bottom of the fire.
+
+        Args:
+            frame_number (int): The current frame number.
         """
         if self._update_random_variations_counter % 10 == 0:
             self._random_variations = np.random.uniform(
@@ -243,6 +284,9 @@ class FireEffect(BaseEffect):
     def render_frame(self, frame_number: int):
         """
         Renders the current frame of the fire effect.
+
+        Args:
+            frame_number (int): The current frame number.
         """
         self.update_data(frame_number)
 
@@ -250,14 +294,13 @@ class FireEffect(BaseEffect):
 
         for y in range(self.buffer.height()):
             for x in range(self.buffer.width()):
-                colored_char = self.get_colored_char(intensities[y, x])
-                self.buffer.put_char(x, y, colored_char)
+                self.buffer.put_char(x, y, self.get_colored_char(intensities[y, x]))
 
         self.add_new_fire_row(frame_number)
 
         if self.swell and frame_number % self.swell_halt == 0:
             if self.fire_intensity >= 1.0:
-                self.swell_delta = -0.02 # Adjusted to match the new delta
+                self.swell_delta = -0.02
             elif self.fire_intensity <= 0.1:
-                self.swell_delta = 0.02 # Adjusted to match the new delta
+                self.swell_delta = 0.02
             self.fire_intensity += self.swell_delta

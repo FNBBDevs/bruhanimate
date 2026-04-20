@@ -15,13 +15,15 @@ limitations under the License.
 """
 
 import os
+
 os.system("")
 
-from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import PanRenderer
+from ..bruhutil import Screen, bruhimage
 
 
 def demo(screen, img, frames, time, effect, background, transparent):
+    screen.clear()
     # CREATE THE RENDERER
     renderer = PanRenderer(
         screen=screen,

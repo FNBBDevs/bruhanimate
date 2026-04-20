@@ -15,13 +15,15 @@ limitations under the License.
 """
 
 import os
+
 os.system(" ")
 
-from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import CenterRenderer
+from ..bruhutil import Screen, bruhimage
 
 
 def rain(screen):
+    screen.clear()
     renderer = CenterRenderer(
         screen=screen,
         frames=float("inf"),
@@ -35,9 +37,9 @@ def rain(screen):
     renderer.update_collision(True)
     renderer.update_smart_transparent(True)
 
-    renderer.effect.update_intensity(0)
-    renderer.effect.update_swells(True)
-    renderer.effect.update_wind_direction("east")
+    renderer.effect.set_intensity(0)
+    renderer.effect.set_swells(True)
+    renderer.effect.set_wind_direction("east")
 
     renderer.run()
 

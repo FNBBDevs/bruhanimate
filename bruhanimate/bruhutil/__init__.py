@@ -1,28 +1,27 @@
-from .bruhscreen import Screen
+from .bruherrors import InvalidEffectTypeError, InvalidImageError, ScreenResizedError
 from .bruhffer import Buffer
 from .bruhimage import get_image, text_to_image
+from .bruhscreen import Screen
 from .bruhtypes import EffectType, Font, Image, valid_effect_types
-from .bruherrors import ScreenResizedError, InvalidEffectTypeError, InvalidImageError
 from .utils import (
-    INF,
-    VERTICAL,
-    HORIZONTAL,
-    VALID_EFFECTS,
-    SNOWFLAKE_COLORS,
     FLAKE_WEIGHT_CHARS,
     GRADIENTS,
     GREY_SCALES,
+    HORIZONTAL,
+    INF,
     LIFE_COLORS,
     LIFE_SCALES,
     NOISE,
     OLD_GREY_SCALES,
     PLASMA_COLORS,
     PLASMA_VALUES,
+    SNOWFLAKE_COLORS,
+    SNOWFLAKE_TYPES,
     TWINKLE_COLORS,
     VALID_DIRECTIONS,
+    VALID_EFFECTS,
+    VERTICAL,
     WIND_DIRECTIONS,
-    VALID_INTERFACES,
-    SNOWFLAKE_TYPES,
     sleep,
 )
 
@@ -49,7 +48,6 @@ __all__ = [
     "TWINKLE_COLORS",
     "VALID_DIRECTIONS",
     "WIND_DIRECTIONS",
-    "VALID_INTERFACES",
     "sleep",
     "Effect",
     "Font",
@@ -57,6 +55,7 @@ __all__ = [
     "valid_effects",
     "ScreenResizedError",
     "InvalidEffectTypeError",
-    "InvalidImageError"
+    "InvalidImageError",
+    "EffectType",
+    "valid_effect_types"
 ]
-

@@ -18,53 +18,34 @@ import random
 
 from ..bruhutil import WIND_DIRECTIONS, Buffer
 from .base_effect import BaseEffect
+from .settings import RainSettings
 
 
 class RainEffect(BaseEffect):
     """
-    Effect to emmulate the look of rain
+    Effect to simulate the look of rain.
     """
 
-    def __init__(
-        self,
-        buffer: Buffer,
-        background: str,
-        img_start_x: int = None,
-        img_start_y: int = None,
-        img_width: int = None,
-        img_height: int = None,
-        collision: bool = False,
-        intensity: int = 1,
-        swells: bool = False,
-        wind_direction: str = "none",
-    ):
+    def __init__(self, buffer: Buffer, background: str, settings: RainSettings = None):
         """
-        Initialize the RainEffect class with given parameters.
+        Initializes the RainEffect.
 
         Args:
             buffer (Buffer): Effect buffer to push updates to.
             background (str): Character or string to use for the background.
-            img_start_x (int, optional): Where the image starts on the x axis. Defaults to None.
-            img_start_y (int, optional): Where the image starts on the y axis. Defaults to None.
-            img_width (int, optional): The width of the image. Defaults to None.
-            img_height (int, optional): The height of the image. Defaults to None.
-            collision (bool, optional): Whether or not the effect should hit the image. Defaults to False.
-            intensity (int, optional): How intense should the rain be. Defaults to 1.
-            swells (bool, optional): Where or not to increase and deacrease the intensity automatically. Defaults to False.
-            wind_direction (str, optional): Which direction the rain should fall. Defaults to "none".
+            settings (RainSettings, optional): Configuration for the rain effect. Defaults to None.
         """
         super(RainEffect, self).__init__(buffer, background)
+        s = settings or RainSettings()
 
-        self.image_present = (
-            True if img_start_x and img_start_y and img_width and img_height else False
-        )
-        self.collision = collision
-        self.intensity = intensity
-        self.swells = swells
+        self.image_present = False
+        self.collision = s.collision
+        self.intensity = s.intensity
+        self.swells = s.swells
         self.swell_direction = 1
         self.multiplier = 1
         self.wind_direction = (
-            wind_direction if wind_direction in WIND_DIRECTIONS else "none"
+            s.wind_direction if s.wind_direction in WIND_DIRECTIONS else "none"
         )
         self.wind_mappings = {
             "east": [".\\", -1, ["\\", "."]],
@@ -73,45 +54,32 @@ class RainEffect(BaseEffect):
         }
         self._set_rain()
 
-    def update_multiplier(self, val: int):
+    def set_multiplier(self, val: int):
         """
-        Update the multiplier value that relates to shift amount.
+        Sets the scroll multiplier (controls shift amount per frame).
 
         Args:
-            val (int): multiplier value
+            val (int): Multiplier value.
         """
         self.multiplier = val
 
-    def update_wind_direction(self, direction: str):
+    def set_wind_direction(self, direction: str):
         """
-        Update the direction of the rain.
+        Sets the direction the rain falls.
 
         Args:
-            direction (str): Direction the rain should fall.
+            direction (str): Wind direction ("none", "east", or "west").
         """
         if direction in WIND_DIRECTIONS:
             self.wind_direction = direction
             self._set_rain()
 
-    def _set_rain(self):
+    def set_intensity(self, intensity: int):
         """
-        Set the rain based on intensity and wind direction.
-        """
-        self.rain = f"{' ' * (1000 - self.intensity)}"
-        if self.intensity > 50:
-            self.rain += "."
-        if self.intensity > 250:
-            self.rain += "."
-        if self.intensity > 500:
-            self.rain += self.wind_mappings[self.wind_direction][0]
-        self.rain_length = len(self.rain)
-
-    def update_intensity(self, intensity: int):
-        """
-        Function to update the intensity of the rain.
+        Sets the intensity of the rain.
 
         Args:
-            intensity (int): The intensity of the rain.
+            intensity (int): Intensity value between 0 and 999.
         """
         if self.swells:
             if self.intensity == 900:
@@ -122,6 +90,25 @@ class RainEffect(BaseEffect):
         else:
             self.intensity = intensity if intensity < 1000 else 999
         self._set_rain()
+
+    def set_swells(self, swells: bool):
+        """
+        Enables or disables automatic intensity oscillation.
+
+        Args:
+            swells (bool): Whether the rain intensity should oscillate.
+        """
+        self.swells = swells
+
+    def _set_rain(self):
+        self.rain = f"{' ' * (1000 - self.intensity)}"
+        if self.intensity > 50:
+            self.rain += "."
+        if self.intensity > 250:
+            self.rain += "."
+        if self.intensity > 500:
+            self.rain += self.wind_mappings[self.wind_direction][0]
+        self.rain_length = len(self.rain)
 
     def update_collision(
         self,
@@ -134,16 +121,16 @@ class RainEffect(BaseEffect):
         image_buffer: Buffer = None,
     ):
         """
-        Function to set whether or not to visually see the rain collide with the ground
-        or images if they are present.
+        Configures collision detection with an image.
+
         Args:
-            img_start_x (int): Where the image starts on the screen.
-            img_start_y (int): Where the image starts on the screen.
-            img_width (int): The width of the image.
-            img_height (int): The height of the image.
-            collision (bool): Update collision variable.
-            smart_transparent (bool): Update smart_transparent. Defaults to False.
-            image_buffer (Buffer): The buffer that contains the image. Defaults to None.
+            img_start_x (int): Image x position on screen.
+            img_start_y (int): Image y position on screen.
+            img_width (int): Width of the image.
+            img_height (int): Height of the image.
+            collision (bool): Whether to enable collision.
+            smart_transparent (bool, optional): Smart transparency flag. Defaults to False.
+            image_buffer (Buffer, optional): Buffer containing the image. Defaults to None.
         """
         self.image_present = (
             True if img_start_x and img_start_y and img_width and img_height else False
@@ -159,73 +146,49 @@ class RainEffect(BaseEffect):
         else:
             self.image_buffer = None
 
-    def update_swells(self, swells: bool):
-        """
-        Function to update whether or not there are swells in the rain effect.
-
-        Args:
-            swells (bool): Whether or not there are swells in the rain effect.
-        """
-        self.swells = swells
-
     def render_frame(self, frame_number: int):
         """
-        Function to render the next frame of the Rain Effect.
+        Renders a single frame of the rain effect.
 
         Args:
-            frame_number (int): The current frame number to render.
+            frame_number (int): The current frame number.
         """
         if self.swells:
-            self.update_intensity(None)
+            self.set_intensity(None)
         if frame_number == 0:
             self.buffer.put_at(
-                0,
-                0,
+                0, 0,
                 "".join(
-                    [
-                        self.rain[random.randint(0, self.rain_length - 1)]
-                        for _ in range(self.buffer.width())
-                    ]
+                    self.rain[random.randint(0, self.rain_length - 1)]
+                    for _ in range(self.buffer.width())
                 ),
             )
         else:
-            self.buffer.shift(
-                self.wind_mappings[self.wind_direction][1] * self.multiplier
-            )
+            self.buffer.shift(self.wind_mappings[self.wind_direction][1] * self.multiplier)
             self.buffer.scroll(-1 * self.multiplier)
             self.buffer.put_at(
-                0,
-                0,
+                0, 0,
                 "".join(
-                    [
-                        self.rain[random.randint(0, self.rain_length - 1)]
-                        for _ in range(self.buffer.width())
-                    ]
+                    self.rain[random.randint(0, self.rain_length - 1)]
+                    for _ in range(self.buffer.width())
                 ),
             )
 
             if self.collision:
                 for y in range(self.buffer.height()):
                     for x in range(self.buffer.width()):
-                        # Wipe prior frames impact
                         if self.buffer.get_char(x, y) == "v":
                             self.buffer.put_char(x, y, " ")
                         else:
-                            if self.image_present:
-                                # if we are inscope of the image we need to process impacts
-                                if self.image_buffer:
-                                    if 0 <= y + 1 < self.buffer.height():
-                                        if (
-                                            not self.image_buffer.buffer[y + 1][x]
-                                            in [" ", None]
-                                            and self.buffer.get_char(x, y)
-                                            in self.wind_mappings[self.wind_direction][
-                                                2
-                                            ]
-                                        ):
-                                            self.buffer.put_char(x, y, "v")
+                            if self.image_present and self.image_buffer:
+                                if 0 <= y + 1 < self.buffer.height():
+                                    if (
+                                        self.image_buffer.buffer[y + 1][x] not in [" ", None]
+                                        and self.buffer.get_char(x, y)
+                                        in self.wind_mappings[self.wind_direction][2]
+                                    ):
+                                        self.buffer.put_char(x, y, "v")
 
-                            # impacting the bottom
                             if y == self.buffer.height() - 1:
                                 if (
                                     self.buffer.get_char(x, y)

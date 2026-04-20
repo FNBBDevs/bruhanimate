@@ -14,9 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from .base_effect import BaseEffect
 from ..bruhutil.bruhffer import Buffer
-
+from .base_effect import BaseEffect
 
 
 class StaticEffect(BaseEffect):
@@ -51,4 +50,3 @@ class StaticEffect(BaseEffect):
                     + self.background_length
                 ),
             )
-

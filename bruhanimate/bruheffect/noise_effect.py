@@ -17,8 +17,10 @@ limitations under the License.
 import random
 
 from bruhcolor import bruhcolored
-from .base_effect import BaseEffect
+
 from ..bruhutil import Buffer
+from .base_effect import BaseEffect
+from .settings import NoiseSettings
 
 
 class NoiseEffect(BaseEffect):
@@ -26,52 +28,57 @@ class NoiseEffect(BaseEffect):
     A noise effect that adds random pixels to the screen with a specified intensity.
     """
 
-    def __init__(self, buffer: Buffer, background: str, intensity: int = 200, color: bool = False):
+    def __init__(
+        self, buffer: Buffer, background: str, settings: NoiseSettings = None
+    ):
         """
-        Initializes the NoiseEffect class with a specified buffer, background color, noise intensity, and whether to use colors.
+        Initializes the NoiseEffect class.
 
         Args:
-            buffer (Buffer): Effect buffer to push updates tol.
+            buffer (Buffer): Effect buffer to push updates to.
             background (str): Character or string for background.
-            intensity (int, optional): How offten the nosie should update. Defaults to 200.
-            color (bool, optional): Whether or not the effect should use color. Defaults to False.
+            settings (NoiseSettings, optional): Configuration for the noise effect. Defaults to None.
         """
         super(NoiseEffect, self).__init__(buffer, background)
+        s = settings or NoiseSettings()
 
         self.intensity = (
-            intensity / 1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
+            s.intensity / 1000 if 1 <= s.intensity <= 999 else 200 / 1000
         )
+        self.color = s.color
+        self.characters = True
 
-        self.noise = " !@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
+        self.noise = " !@#$%^&*()_+1234567890-=~`qazwsxedcrfvtgbyhnujmik,ol.p;/[']\\QAZXSWEDCVFRTGBNHYUJM<KIOL>?:P{\"}|"
         self.noise_length = len(self.noise)
-        self.color = color
 
-    def update_intensity(self, intensity: int):
+    def set_intensity(self, intensity: int):
         """
-        Function to update the intensity of the effect
-        :param intensity: new intensity
-        """
-        self.intensity = (
-            intensity / 1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
-        )
-
-    def update_color(self, color: bool, characters: str):
-        """
-        Function to update the color and character set for the noise.
+        Updates the intensity of the effect.
 
         Args:
-            color (bool): Whether or not the noise should use color.
-            characters (str): The set of characters that can be used for noise generation.
+            intensity (int): New intensity value between 1 and 999.
+        """
+        self.intensity = (
+            intensity / 1000 if intensity and 1 <= intensity <= 999 else 200 / 1000
+        )
+
+    def set_color(self, color: bool, characters: bool = True):
+        """
+        Updates the color and character rendering mode.
+
+        Args:
+            color (bool): Whether to render with color.
+            characters (bool, optional): Whether to render noise characters or background blocks. Defaults to True.
         """
         self.color = color
         self.characters = characters
 
     def render_frame(self, frame_number: int):
         """
-        Function to render the frame with noise effect applied.
+        Renders a frame of the noise effect.
 
         Args:
-            frame_number (int): The current frame number being rendered.
+            frame_number (int): The current frame number.
         """
         if self.color:
             for y in range(self.buffer.height()):

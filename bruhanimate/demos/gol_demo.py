@@ -15,24 +15,26 @@ limitations under the License.
 """
 
 import os
+
 os.system(" ")
 
-from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import CenterRenderer
+from ..bruhutil import Screen, bruhimage
 
 
 def gol(screen):
+    screen.clear()
     renderer = CenterRenderer(
         screen=screen,
         frames=float("inf"),
         img=bruhimage.text_to_image("GOL!"),
-        frame_time=0.0,
+        frame_time=1/30,
         effect_type="gol",
         background=" ",
         transparent=False,
     )
 
-    renderer.effect.update_decay(True, "RAINBOW", "default")
+    renderer.effect.set_decay(True, "RAINBOW", "default")
 
     renderer.run()
 

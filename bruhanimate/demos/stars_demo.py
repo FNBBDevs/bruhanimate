@@ -15,13 +15,15 @@ limitations under the License.
 """
 
 import os
+
 os.system(" ")
 
-from ..bruhutil import Screen
 from ..bruhrenderer import EffectRenderer
+from ..bruhutil import Screen
 
 
 def stars(screen):
+    screen.clear()
     renderer = EffectRenderer(
         screen=screen,
         frames=float("inf"),
@@ -31,7 +33,7 @@ def stars(screen):
         transparent=False,
     )
 
-    renderer.effect.update_color_type("GREYSCALE")
+    renderer.effect.set_color_type("GREYSCALE")
 
     renderer.run()
 

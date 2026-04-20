@@ -15,20 +15,24 @@ limitations under the License.
 """
 
 import os
+
 os.system(" ")
 
-from ..bruhutil import Screen, bruhimage
 from ..bruhrenderer import FocusRenderer
+from ..bruhutil import Screen, bruhimage
 
 
 def show(screen):
-    image = bruhimage.text_to_image("PLASMA!", padding_top_bottom=1, padding_left_right=3)
+    screen.clear()
+    image = bruhimage.text_to_image(
+        "PLASMA!", padding_top_bottom=1, padding_left_right=3
+    )
 
     # Create the renderer
     renderer = FocusRenderer(
         screen=screen,
         frames=500,
-        frame_time=0,
+        frame_time=1/30,
         img=image,
         effect_type="plasma",
         background=" ",
@@ -39,15 +43,15 @@ def show(screen):
     )
 
     # Set the attributes
-    renderer.effect.update_color_properties(
-        color=True, characters=True, random_color=True
+    renderer.effect.set_color_properties(
+        color=True, characters=True, random_colors=True
     )
 
-    renderer.effect.update_grey_scale_size(10)
+    renderer.effect.set_grey_scale_size(10)
 
-    renderer.effect.update_plasma_values(10, 26, 19, 41)
+    renderer.effect.set_plasma_values(10, 26, 19, 41)
 
-    renderer.effect.update_info_visibility(True)
+    renderer.effect.set_show_info(True)
 
     renderer.run(end_message=True)
 

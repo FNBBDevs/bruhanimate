@@ -15,29 +15,49 @@ limitations under the License.
 """
 
 import os
+import time
+
 os.system(" ")
 
-from ..bruhutil import Screen, bruhimage, GRADIENTS
-from ..bruhrenderer import CenterRenderer
+from bruhanimate.bruheffect import AudioEffect, AudioSettings
+from bruhanimate.bruhrenderer import EffectRenderer
+from bruhanimate.bruhutil import Screen
 
-def audio(screen):
-    renderer = CenterRenderer(
-        screen=screen,
-        frames=float("inf"),
-        img=bruhimage.text_to_image("AUDIO!"),
-        frame_time=0.01,
-        effect_type="audio",
-        background=" ",
-        transparent=False,
-    )
-    renderer.effect.set_audio_properties(num_bands=screen.width, audio_halt=15, use_gradient=True)
-    renderer.effect.set_audio_gradient(GRADIENTS[0], mode="repeat")
-    renderer.effect.set_orientation("top")
-    renderer.run()
+
+def show(screen):
+    screen.clear()
+
+    phases = [
+        ("EQ Bars  |  color",    AudioSettings(mode="bars",     color=True,  smoothing=0.75)),
+        ("EQ Bars  |  mirror",   AudioSettings(mode="mirror",   color=True,  smoothing=0.75)),
+        ("Waveform |  color",    AudioSettings(mode="waveform", color=True,  smoothing=0.5)),
+        ("EQ Bars  |  no color", AudioSettings(mode="bars",     color=False, smoothing=0.75)),
+    ]
+
+    for label, settings in phases:
+        renderer = EffectRenderer(
+            screen=screen,
+            frames=float("inf"),
+            frame_time=1 / 30,
+            effect_type="audio",
+            background=" ",
+            transparent=False,
+        )
+        renderer.effect = AudioEffect(
+            renderer.effect.buffer,
+            " ",
+            settings=settings,
+        )
+        try:
+            renderer.run(end_message=False)
+        except KeyboardInterrupt:
+            renderer.effect.stop()
+            return
+        renderer.effect.stop()
 
 
 def run():
-    Screen.show(audio)
+    Screen.show(show)
 
 
 if __name__ == "__main__":

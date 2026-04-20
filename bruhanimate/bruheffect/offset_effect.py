@@ -15,45 +15,46 @@ limitations under the License.
 """
 
 from ..bruhutil import VALID_DIRECTIONS
-from .base_effect import BaseEffect
 from ..bruhutil.bruhffer import Buffer
-
+from .base_effect import BaseEffect
+from .settings import OffsetSettings
 
 
 class OffsetEffect(BaseEffect):
     """
-    Class for generating an offset-static backgorund.
-    :new-param direction: which way the offset should go.
+    Class for generating an offset-scrolling background.
     """
 
-    def __init__(self, buffer: Buffer, background: str, direction: str = "right"):
+    def __init__(self, buffer: Buffer, background: str, settings: OffsetSettings = None):
         """
-        Initializes the offset effect.
+        Initializes the OffsetEffect.
 
         Args:
             buffer (Buffer): Effect buffer to push updates to.
             background (str): Character or string to use as the background.
-            direction (str): Direction for the effect, defaults to right.
+            settings (OffsetSettings, optional): Configuration for the offset effect. Defaults to None.
         """
         super(OffsetEffect, self).__init__(buffer, background)
-        self.direction = direction if direction in VALID_DIRECTIONS else "right"
+        s = settings or OffsetSettings()
+        self.direction = s.direction if s.direction in VALID_DIRECTIONS else "right"
 
-    def update_direction(self, direction: str):
+    def set_direction(self, direction: str):
         """
-        Function to update the direction of the offset.
+        Updates the scroll direction.
 
         Args:
-            direction (str): Direction the background text should go.
+            direction (str): Direction to scroll ("left" or "right").
         """
-        self.direction = direction if direction in VALID_DIRECTIONS else "right"
-        self.buffer.clear_buffer()
+        if direction in VALID_DIRECTIONS:
+            self.direction = direction
+            self.buffer.clear_buffer()
 
     def render_frame(self, frame_number: int):
         """
-        Function to render the frame based on the current direction and frame number.
+        Renders a frame of the offset effect.
 
         Args:
-            frame_number (int): Current frame number of the animation. Not used by the effect, but required for backwards compatibility.
+            frame_number (int): The current frame number.
         """
         for y in range(self.buffer.height()):
             row = (
@@ -64,4 +65,3 @@ class OffsetEffect(BaseEffect):
                 self.buffer.put_at(0, y, row[::-1])
             else:
                 self.buffer.put_at(0, y, row)
-

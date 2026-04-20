@@ -44,6 +44,8 @@ class Buffer:
             raise ValueError("Buffer dimensions must match")
 
         for y in range(self._height):
+            if self.buffer[y] == in_buf.buffer[y]:
+                continue
             for x in range(self._width):
                 if self.buffer[y][x] != in_buf.buffer[y][x]:
                     yield y, x, in_buf.buffer[y][x]
@@ -160,13 +162,13 @@ class Buffer:
             for y in range(0, self._height - shift):
                 self.buffer[y] = self.buffer[y + shift]
             for y in range(self._height - shift, self._height):
-                self.buffer[y] = self._line[:]
+                self.buffer[y] = self._empty_line[:]
         else:
             shift = max(shift, -self._height)
             for y in range(self._height - 1, -shift - 1, -1):
                 self.buffer[y] = self.buffer[y + shift]
             for y in range(0, -shift):
-                self.buffer[y] = self._line[:]
+                self.buffer[y] = self._empty_line[:]
 
     def shift_line(self, y, shift):
         """
