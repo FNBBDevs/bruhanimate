@@ -87,7 +87,7 @@ from .demos import (
     twinkle_demo,
 )
 
-__version__ = "0.2.100"
+__version__ = "0.2.101"
 __valid_demos__ = [
     "audio_demo",
     "static_demo",
