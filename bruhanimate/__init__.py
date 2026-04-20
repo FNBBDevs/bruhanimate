@@ -2,7 +2,12 @@ import sys
 
 from .bruheffect import (
     TWINKLE_SPEC,
+    AudioEffect,
+    AudioSettings,
     BaseEffect,
+    EffectEntry,
+    EffectRegistry,
+    effect_registry,
     DrawLinesEffect,
     DrawLinesSettings,
     FireEffect,
@@ -64,6 +69,7 @@ from .bruhutil import (
     text_to_image,
 )
 from .demos import (
+    audio_demo,
     fire_demo,
     firework_demo,
     gol_demo,
@@ -81,8 +87,9 @@ from .demos import (
     twinkle_demo,
 )
 
-__version__ = "0.2.98"
+__version__ = "0.2.99"
 __valid_demos__ = [
+    "audio_demo",
     "static_demo",
     "offset_demo",
     "matrix_demo",
@@ -103,7 +110,12 @@ __valid_demos__ = [
 __all__ = [
     "Screen",
     "Buffer",
+    "AudioEffect",
+    "AudioSettings",
     "BaseEffect",
+    "EffectEntry",
+    "EffectRegistry",
+    "effect_registry",
     "BaseRenderer",
     "BackgroundColorRenderer",
     "CenterRenderer",
@@ -142,6 +154,7 @@ __all__ = [
     "TwinkleSettings",
     "WaterEffect",
     "bruhimage",
+    "audio_demo",
     "fire_demo",
     "firework_demo",
     "gol_demo",

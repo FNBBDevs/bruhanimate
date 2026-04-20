@@ -121,6 +121,57 @@ renderer.effect.set_color_properties(color=True, random_colors=True)  # PlasmaEf
 renderer.effect.shuffle_plasma_values()
 ```
 
+### Effect Registry
+
+Every built-in effect is registered in `effect_registry` — a discoverable, extensible registry that maps effect names to their class, settings class, description, and named presets.
+
+```python
+from bruhanimate import effect_registry
+
+# List all registered effects
+for name, entry in effect_registry.entries().items():
+    print(name, "—", entry.description)
+
+# List presets for an effect
+print(effect_registry.presets("snow"))
+# {'light': SnowSettings(...), 'moderate': SnowSettings(...), 'blizzard': SnowSettings(...), 'windy': SnowSettings(...)}
+
+# Create an effect by name with a preset
+effect = effect_registry.create("snow", buffer, " ", preset="blizzard")
+
+# Create an effect with a custom settings object
+from bruhanimate import SnowSettings
+effect = effect_registry.create("snow", buffer, " ", settings=SnowSettings(wind=0.8))
+
+# Register your own effect
+from bruhanimate import EffectRegistry
+effect_registry.register(
+    "myeffect",
+    MyEffect,
+    settings_cls=MySettings,
+    description="Does something cool",
+    presets={"fast": MySettings(speed=10)},
+)
+```
+
+Available built-in presets:
+
+| Effect | Presets |
+|---|---|
+| `offset` | `right`, `left`, `up`, `down` |
+| `noise` | `sparse`, `dense`, `color` |
+| `stars` | `greyscale`, `color` |
+| `plasma` | `greyscale`, `color`, `blocks`, `random` |
+| `gol` | `plain`, `decay`, `color` |
+| `rain` | `drizzle`, `storm`, `monsoon` |
+| `matrix` | `default`, `fast` |
+| `drawlines` | `thin`, `thick` |
+| `snow` | `light`, `moderate`, `blizzard`, `windy` |
+| `twinkle` | `sparse`, `dense` |
+| `firework` | `plain`, `color`, `random` |
+| `fire` | `campfire`, `inferno`, `windy` |
+| `audio` | `bars`, `mirror`, `waveform`, `minimal` |
+
 ### Renderers
 
 | Renderer | Description |

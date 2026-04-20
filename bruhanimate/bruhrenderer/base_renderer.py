@@ -18,24 +18,7 @@ import sys
 import time
 from abc import abstractmethod
 
-from ..bruheffect import (
-    BaseEffect,
-    DrawLinesEffect,
-    FireEffect,
-    FireworkEffect,
-    GameOfLifeEffect,
-    JuliaEffect,
-    MatrixEffect,
-    NoiseEffect,
-    OffsetEffect,
-    PlasmaEffect,
-    RainEffect,
-    SnowEffect,
-    StarEffect,
-    StaticEffect,
-    TwinkleEffect,
-    WaterEffect,
-)
+from ..bruheffect import BaseEffect, effect_registry
 from ..bruhutil.bruherrors import InvalidEffectTypeError, ScreenResizedError
 from ..bruhutil.bruhffer import Buffer
 from ..bruhutil.bruhscreen import Screen
@@ -175,49 +158,17 @@ class BaseRenderer:
                 f"'{effect_type}' is not a valid effect. Please choose from {valid_effect_types}"
             )
 
-    def create_effect(self, effect_type: EffectType) -> object:
+    def create_effect(self, effect_type: EffectType) -> BaseEffect:
         """
-        Creates an instance of the specified effect type.
+        Creates an instance of the specified effect type via the effect registry.
 
         Args:
             effect_type (EffectType): The type of effect to be created.
 
         Returns:
             An instance of the specified effect type.
-
-        Raises:
-            ValueError: If the provided effect type is not recognized.
         """
-        if effect_type == "static":
-            return StaticEffect(self.create_buffer(), self.background)
-        elif effect_type == "offset":
-            return OffsetEffect(self.create_buffer(), self.background)
-        elif effect_type == "noise":
-            return NoiseEffect(self.create_buffer(), self.background)
-        elif effect_type == "stars":
-            return StarEffect(self.create_buffer(), self.background)
-        elif effect_type == "plasma":
-            return PlasmaEffect(self.create_buffer(), self.background)
-        elif effect_type == "gol":
-            return GameOfLifeEffect(self.create_buffer(), self.background)
-        elif effect_type == "rain":
-            return RainEffect(self.create_buffer(), self.background)
-        elif effect_type == "matrix":
-            return MatrixEffect(self.create_buffer(), self.background)
-        elif effect_type == "drawlines":
-            return DrawLinesEffect(self.create_buffer(), self.background)
-        elif effect_type == "snow":
-            return SnowEffect(self.create_buffer(), self.background)
-        elif effect_type == "twinkle":
-            return TwinkleEffect(self.create_buffer(), self.background)
-        elif effect_type == "firework":
-            return FireworkEffect(self.create_buffer(), self.background)
-        elif effect_type == "fire":
-            return FireEffect(self.create_buffer(), self.background)
-        elif effect_type == "julia":
-            return JuliaEffect(self.create_buffer(), self.background)
-        elif effect_type == "water":
-            return WaterEffect(self.create_buffer(), self.background)
+        return effect_registry.create(effect_type, self.create_buffer(), self.background)
 
     def create_buffer(self) -> Buffer:
         """

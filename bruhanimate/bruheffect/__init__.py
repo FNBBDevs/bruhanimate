@@ -1,3 +1,5 @@
+from .audio_effect import AudioEffect
+from .registry import EffectEntry, EffectRegistry, effect_registry
 from .base_effect import BaseEffect
 from .draw_lines_effect import DrawLinesEffect, Line
 from .fire_effect import FireEffect
@@ -10,6 +12,7 @@ from .offset_effect import OffsetEffect
 from .plasma_effect import PlasmaEffect
 from .rain_effect import RainEffect
 from .settings import (
+    AudioSettings,
     DrawLinesSettings,
     FireSettings,
     FireworkSettings,
@@ -30,7 +33,12 @@ from .twinkle_effect import TWINKLE_SPEC, TwinkleEffect
 from .water_effect import WaterEffect
 
 __all__ = [
+    "AudioEffect",
+    "AudioSettings",
     "BaseEffect",
+    "EffectEntry",
+    "EffectRegistry",
+    "effect_registry",
     "DrawLinesEffect",
     "DrawLinesSettings",
     "FireEffect",

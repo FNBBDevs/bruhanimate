@@ -28,12 +28,14 @@ Effects
 - **firework_effect** — Firework explosions with multiple burst patterns. Configure with ``FireworkSettings``.
 - **julia_effect** — Animated Julia-set fractal.
 - **draw_lines_effect** — Bresenham line drawing onto the buffer. Configure with ``DrawLinesSettings``.
+- **audio_effect** — System audio visualizer (EQ bars, waveform, mirror). Configure with ``AudioSettings``.
 - **settings** — All settings dataclasses live here.
 
 .. toctree::
    :maxdepth: 2
 
    settings
+   audio_effect
    base_effect
    static_effect
    offset_effect

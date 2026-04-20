@@ -18,6 +18,16 @@ from dataclasses import dataclass, field
 
 
 @dataclass
+class AudioSettings:
+    mode: str = "bars"
+    bar_char: str = "|"
+    smoothing: float = 0.7
+    num_bars: int = 0
+    color: bool = True
+    sensitivity: float = 1.0
+
+
+@dataclass
 class DrawLinesSettings:
     char: str = None
     thin: bool = False

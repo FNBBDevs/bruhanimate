@@ -583,10 +583,10 @@ EffectType = Literal[
     "snow",
     "twinkle",
     "audio",
-    "chat",
     "firework",
     "fire",
     "julia",
+    "water",
 ]
 valid_effect_types = {
     "static",
@@ -601,11 +601,10 @@ valid_effect_types = {
     "snow",
     "twinkle",
     "audio",
-    "chat",
     "firework",
     "fire",
     "julia",
-    "water"
+    "water",
 }
 PanRendererDirection = Literal["horizontal", "vertical"]
 valid_pan_renderer_directions = {"horizontal", "vertical"}

@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "bruhanimate"
-version = "0.2.98"
+version = "0.2.99"
 description = "ASCII Termnial Animation Package"
 authors = [ "ethanlchristensen <ethanlchristensen@outlook.com>",]
 license = "Apache License"
@@ -24,6 +24,19 @@ numpy = "^2.3.4"
 [tool.poetry.dependencies.pywin32]
 version = "^311"
 markers = "sys_platform == 'win32'"
+
+[tool.poetry.dependencies.PyAudioWPatch]
+version = ">=0.2.12"
+markers = "sys_platform == 'win32'"
+optional = true
+
+[tool.poetry.dependencies.sounddevice]
+version = ">=0.4"
+markers = "sys_platform != 'win32'"
+optional = true
+
+[tool.poetry.extras]
+audio = ["PyAudioWPatch", "sounddevice"]
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "8.1.3"

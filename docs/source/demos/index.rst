@@ -16,6 +16,7 @@ from ``bruhanimate`` and call ``run()`` to see the effect in action.
 Available Demos
 ---------------
 
+- **audio_demo** — System audio visualizer (EQ bars, waveform, mirror).
 - **static_demo** — Static background fill.
 - **offset_demo** — Scrolling offset background.
 - **noise_demo** — Coloured random-noise pixels.
@@ -35,6 +36,7 @@ Available Demos
 .. toctree::
    :maxdepth: 2
 
+   audio_demo
    static_demo
    offset_demo
    noise_demo
