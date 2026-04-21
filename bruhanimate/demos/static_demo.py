@@ -23,7 +23,7 @@ from bruhanimate import EffectRenderer, Screen
 TARGET_FPS = 30
 
 
-def run(screen):
+def _run(screen):
     screen.clear()
     renderer = EffectRenderer(
         screen,
@@ -35,5 +35,9 @@ def run(screen):
     renderer.run()
 
 
+def run():
+    Screen.show(_run)
+
+
 if __name__ == "__main__":
-    Screen.show(run)
+    Screen.show(_run)
