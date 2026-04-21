@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Any
+
 from ..bruhutil import Screen
 from ..bruhutil.bruhtypes import EffectType
 from .base_renderer import BaseRenderer
@@ -32,9 +34,18 @@ class EffectRenderer(BaseRenderer):
         effect_type: EffectType = "static",
         background: str = " ",
         transparent: bool = False,
+        settings: Any = None,
+        preset: str | None = None,
     ):
         super().__init__(
-            screen, frames, frame_time, effect_type, background, transparent
+            screen,
+            frames,
+            frame_time,
+            effect_type,
+            background,
+            transparent,
+            settings=settings,
+            preset=preset,
         )
 
     def render_img_frame(self, frame_number: int):

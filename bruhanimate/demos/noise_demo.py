@@ -18,30 +18,24 @@ import os
 
 os.system(" ")
 
-from ..bruhrenderer import CenterRenderer
-from ..bruhutil import Screen, bruhimage
+from bruhanimate import EffectRenderer, Screen
+from bruhanimate.bruheffect import NoiseSettings
+
+TARGET_FPS = 30
 
 
-def noise(screen):
+def run(screen):
     screen.clear()
-    renderer = CenterRenderer(
-        screen=screen,
+    renderer = EffectRenderer(
+        screen,
         frames=float("inf"),
-        img=bruhimage.text_to_image("NOISE!"),
-        frame_time=1/30,
+        frame_time=1 / TARGET_FPS,
         effect_type="noise",
         background=" ",
-        transparent=False,
+        settings=NoiseSettings(intensity=150, color=True),
     )
-
-    renderer.effect.set_color(True, False)
-
     renderer.run()
 
 
-def run():
-    Screen.show(noise)
-
-
 if __name__ == "__main__":
-    run()
+    Screen.show(run)

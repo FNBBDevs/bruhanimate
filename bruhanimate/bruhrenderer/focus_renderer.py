@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import random
+from typing import Any
 
 from ..bruhutil.bruhtypes import EffectType
 from .base_renderer import BaseRenderer
@@ -40,9 +41,19 @@ class FocusRenderer(BaseRenderer):
         reverse: bool = False,
         start_reverse: int = None,
         loop: bool = True,
+        settings: Any = None,
+        preset: str | None = None,
     ):
         super().__init__(
-            screen, frames, frame_time, effect_type, background, transparent, collision
+            screen,
+            frames,
+            frame_time,
+            effect_type,
+            background,
+            transparent,
+            collision,
+            settings=settings,
+            preset=preset,
         )
         self.img = img
         self.start_frame = start_frame
@@ -178,7 +189,9 @@ class FocusRenderer(BaseRenderer):
         """
         targets = {"end": self.end_board, "start": self.start_board}
         if end_state not in targets:
-            raise ValueError(f"unknown solved board state for FocusRenderer: {end_state}")
+            raise ValueError(
+                f"unknown solved board state for FocusRenderer: {end_state}"
+            )
         target = targets[end_state]
         return all(
             self.current_board[y][x][0] == target[y][x][0]

@@ -25,7 +25,9 @@ class OffsetEffect(BaseEffect):
     Class for generating an offset-scrolling background.
     """
 
-    def __init__(self, buffer: Buffer, background: str, settings: OffsetSettings = None):
+    def __init__(
+        self, buffer: Buffer, background: str, settings: OffsetSettings = None
+    ):
         """
         Initializes the OffsetEffect.
 

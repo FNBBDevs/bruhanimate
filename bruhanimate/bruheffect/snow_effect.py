@@ -198,7 +198,8 @@ class SnowEffect(BaseEffect):
         """
         self.buffer.put_at(0, 0, f"Total Snow Flakes: {len(self.flakes)}")
         self.buffer.put_at(
-            0, 1,
+            0,
+            1,
             f"Total Flakes on Ground: {sum(1 for row in self.ground_flakes for v in row if v > 0)}",
         )
 

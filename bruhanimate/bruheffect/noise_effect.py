@@ -28,9 +28,7 @@ class NoiseEffect(BaseEffect):
     A noise effect that adds random pixels to the screen with a specified intensity.
     """
 
-    def __init__(
-        self, buffer: Buffer, background: str, settings: NoiseSettings = None
-    ):
+    def __init__(self, buffer: Buffer, background: str, settings: NoiseSettings = None):
         """
         Initializes the NoiseEffect class.
 
@@ -42,9 +40,7 @@ class NoiseEffect(BaseEffect):
         super(NoiseEffect, self).__init__(buffer, background)
         s = settings or NoiseSettings()
 
-        self.intensity = (
-            s.intensity / 1000 if 1 <= s.intensity <= 999 else 200 / 1000
-        )
+        self.intensity = s.intensity / 1000 if 1 <= s.intensity <= 999 else 200 / 1000
         self.color = s.color
         self.characters = True
 

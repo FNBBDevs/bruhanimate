@@ -32,6 +32,12 @@ Available Demos
 - **julia_demo** — Animated Julia-set fractal.
 - **line_demo** — Bresenham line drawing.
 - **holiday** — Festive holiday scene.
+- **boids_demo** — Reynolds flocking simulation.
+- **sand_demo** — Falling-sand cellular automaton.
+- **diffusion_demo** — Gray-Scott reaction-diffusion (cycles coral/spots/stripes).
+- **automaton_demo** — Wolfram 1-D elementary CA (cycles rules 30/90/110/184).
+- **voronoi_demo** — Animated Voronoi diagram.
+- **perlin_demo** — Smooth animated noise field.
 
 .. toctree::
    :maxdepth: 2
@@ -52,3 +58,9 @@ Available Demos
    julia_demo
    line_demo
    holiday
+   boids_demo
+   sand_demo
+   diffusion_demo
+   automaton_demo
+   voronoi_demo
+   perlin_demo

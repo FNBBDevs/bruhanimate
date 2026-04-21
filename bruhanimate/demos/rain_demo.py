@@ -18,35 +18,26 @@ import os
 
 os.system(" ")
 
-from ..bruhrenderer import CenterRenderer
-from ..bruhutil import Screen, bruhimage
+from bruhanimate import EffectRenderer, Screen
+from bruhanimate.bruheffect import RainSettings
+
+TARGET_FPS = 30
 
 
-def rain(screen):
+def run(screen):
     screen.clear()
-    renderer = CenterRenderer(
-        screen=screen,
+    renderer = EffectRenderer(
+        screen,
         frames=float("inf"),
-        img=bruhimage.text_to_image("RAIN!"),
         frame_time=0.01,
         effect_type="rain",
         background=" ",
-        transparent=False,
+        settings=RainSettings(
+            intensity=3, wind_direction="east", swells=True, collision=True
+        ),
     )
-
-    renderer.update_collision(True)
-    renderer.update_smart_transparent(True)
-
-    renderer.effect.set_intensity(0)
-    renderer.effect.set_swells(True)
-    renderer.effect.set_wind_direction("east")
-
     renderer.run()
 
 
-def run():
-    Screen.show(rain)
-
-
 if __name__ == "__main__":
-    run()
+    Screen.show(run)

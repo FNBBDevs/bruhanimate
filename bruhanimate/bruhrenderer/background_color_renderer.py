@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Any
+
 from bruhcolor import bruhcolored
 
 from ..bruhutil.bruhtypes import EffectType
@@ -34,6 +36,8 @@ class BackgroundColorRenderer(BaseRenderer):
         transparent (bool): Whether to apply transparency. Defaults to False.
         collision (bool): Whether to enable collision detection. Defaults to False.
         on_color_code (int): ANSI 256-color code (0–255) for the background. Defaults to 27.
+        settings: Optional settings dataclass to configure the effect.
+        preset: Optional named preset registered for the effect.
     """
 
     def __init__(
@@ -47,14 +51,28 @@ class BackgroundColorRenderer(BaseRenderer):
         transparent: bool = False,
         collision: bool = False,
         on_color_code: int = 27,
+        settings: Any = None,
+        preset: str | None = None,
     ):
         super().__init__(
-            screen, frames, frame_time, effect_type, background, transparent, collision
+            screen,
+            frames,
+            frame_time,
+            effect_type,
+            background,
+            transparent,
+            collision,
+            settings=settings,
+            preset=preset,
         )
 
         if not on_color_code:
             raise ValueError("a color code must be provided to BackgroundColorRenderer")
-        if not isinstance(on_color_code, int) or on_color_code < 0 or on_color_code > 255:
+        if (
+            not isinstance(on_color_code, int)
+            or on_color_code < 0
+            or on_color_code > 255
+        ):
             raise ValueError("the color code must be an int value 0-255")
 
         self.img = img

@@ -1795,7 +1795,9 @@ class FireworkEffect(BaseEffect):
         - :class:`Buffer`: The buffer class used for rendering
     """
 
-    def __init__(self, buffer: Buffer, background: str, settings: FireworkSettings = None):
+    def __init__(
+        self, buffer: Buffer, background: str, settings: FireworkSettings = None
+    ):
         """
         Initializes the FireworkEffect.
 
@@ -1806,8 +1808,14 @@ class FireworkEffect(BaseEffect):
         """
         super(FireworkEffect, self).__init__(buffer, background)
         s = settings or FireworkSettings()
-        self.firework_type: FireworkType = s.firework_type if s.firework_type in valid_firework_types or s.firework_type == "random" else "circular"
-        self.firework_color_type: FireworkColorType = s.color_type if s.color_type in valid_firework_color_types else "solid"
+        self.firework_type: FireworkType = (
+            s.firework_type
+            if s.firework_type in valid_firework_types or s.firework_type == "random"
+            else "circular"
+        )
+        self.firework_color_type: FireworkColorType = (
+            s.color_type if s.color_type in valid_firework_color_types else "solid"
+        )
         self.color_enabled: bool = s.color_enabled
         self.fireworks: list[Firework] = []
         self.firework_rate: float = s.rate

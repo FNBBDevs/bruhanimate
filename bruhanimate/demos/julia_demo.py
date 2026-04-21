@@ -18,30 +18,22 @@ import os
 
 os.system(" ")
 
-from bruhanimate.bruhrenderer import CenterRenderer
-from bruhanimate.bruhutil import Screen, bruhimage
+from bruhanimate import EffectRenderer, Screen
+
+TARGET_FPS = 30
 
 
-def show(screen):
+def run(screen):
     screen.clear()
-    image = bruhimage.text_to_image("JULIA FRACTALS!")
-
-    renderer = CenterRenderer(
-        screen=screen,
-        img=image,
+    renderer = EffectRenderer(
+        screen,
         frames=float("inf"),
         frame_time=0.01,
         effect_type="julia",
         background=" ",
-        transparent=True,
     )
-
     renderer.run()
 
 
-def run():
-    Screen.show(show)
-
-
 if __name__ == "__main__":
-    run()
+    Screen.show(run)

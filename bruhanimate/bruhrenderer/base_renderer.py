@@ -17,6 +17,7 @@ limitations under the License.
 import sys
 import time
 from abc import abstractmethod
+from typing import Any
 
 from ..bruheffect import BaseEffect, effect_registry
 from ..bruhutil.bruherrors import InvalidEffectTypeError, ScreenResizedError
@@ -42,6 +43,8 @@ class BaseRenderer:
         background: str = " ",
         transparent: bool = False,
         collision: bool = False,
+        settings: Any = None,
+        preset: str | None = None,
     ):
         self.validate_effect_type(effect_type)
 
@@ -56,7 +59,7 @@ class BaseRenderer:
         self.smart_transparent = False
         self.collision = collision
 
-        self.effect = self.create_effect(effect_type)
+        self.effect = self.create_effect(effect_type, settings=settings, preset=preset)
         self.image_buffer = self.create_buffer().clear_buffer(val=None)
 
         self.buffer_a = self.create_buffer()
@@ -106,7 +109,10 @@ class BaseRenderer:
         self.screen.flush_frame()
         # Rotate pointers: last_displayed takes display_buffer's content (no copy),
         # and current_buffer (the recyclable back buffer) gets the old last_displayed slot.
-        self.last_displayed, self.current_buffer = self.display_buffer, self.last_displayed
+        self.last_displayed, self.current_buffer = (
+            self.display_buffer,
+            self.last_displayed,
+        )
 
     def clear_back_buffer(self):
         """
@@ -158,17 +164,31 @@ class BaseRenderer:
                 f"'{effect_type}' is not a valid effect. Please choose from {valid_effect_types}"
             )
 
-    def create_effect(self, effect_type: EffectType) -> BaseEffect:
+    def create_effect(
+        self,
+        effect_type: EffectType,
+        *,
+        settings: Any = None,
+        preset: str | None = None,
+    ) -> BaseEffect:
         """
         Creates an instance of the specified effect type via the effect registry.
 
         Args:
             effect_type (EffectType): The type of effect to be created.
+            settings: Optional settings dataclass to configure the effect.
+            preset: Optional named preset registered for the effect.
 
         Returns:
             An instance of the specified effect type.
         """
-        return effect_registry.create(effect_type, self.create_buffer(), self.background)
+        return effect_registry.create(
+            effect_type,
+            self.create_buffer(),
+            self.background,
+            settings=settings,
+            preset=preset,
+        )
 
     def create_buffer(self) -> Buffer:
         """
@@ -284,6 +304,31 @@ class BaseRenderer:
         Returns:
             None
         """
+        # On Windows, disable console signal processing so Ctrl+C is read as a
+        # raw byte (0x03) via msvcrt instead of becoming a Win32 signal event.
+        # This prevents PowerShell from showing "Terminate batch job (Y/N)?".
+        _win32 = sys.platform == "win32"
+        _original_console_mode = None
+        if _win32:
+            import ctypes
+            import ctypes.wintypes
+            import msvcrt
+
+            _ENABLE_PROCESSED_INPUT = 0x0001
+            _stdin_handle = ctypes.windll.kernel32.GetStdHandle(-10)
+            _mode = ctypes.c_ulong()
+            ctypes.windll.kernel32.GetConsoleMode(_stdin_handle, ctypes.byref(_mode))
+            _original_console_mode = _mode.value
+            ctypes.windll.kernel32.SetConsoleMode(
+                _stdin_handle, _original_console_mode & ~_ENABLE_PROCESSED_INPUT
+            )
+
+        def _should_stop():
+            if _win32 and msvcrt.kbhit():
+                key = msvcrt.getch()
+                return key in (b"\x03", b"q", b"Q", b"\x1b")  # Ctrl+C, q, Q, ESC
+            return False
+
         try:
             # Initialize both buffers
             self.clear_back_buffer()
@@ -294,6 +339,8 @@ class BaseRenderer:
                     frame_start = time.perf_counter()
                     if self.screen.has_resized():
                         raise ScreenResizedError("The screen was resized.")
+                    if _should_stop():
+                        break
 
                     self.render_to_back_buffer(frame)
                     self.swap_buffers()
@@ -309,6 +356,8 @@ class BaseRenderer:
                     frame_start = time.perf_counter()
                     if self.screen.has_resized():
                         raise ScreenResizedError("The screen was resized.")
+                    if _should_stop():
+                        break
 
                     self.render_to_back_buffer(frame)
                     self.swap_buffers()
@@ -320,13 +369,21 @@ class BaseRenderer:
                     frame += 1
         except KeyboardInterrupt:
             pass
+        finally:
+            if _original_console_mode is not None:
+                ctypes.windll.kernel32.SetConsoleMode(
+                    _stdin_handle, _original_console_mode
+                )
 
         if end_message:
             self.render_exit_to_back_buffer()
             self.swap_buffers()
             self.present_frame()
-            if sys.platform == "win32":
-                input()
+            if _win32:
+                try:
+                    input()
+                except KeyboardInterrupt:
+                    pass
 
     @abstractmethod
     def render_img_frame(self, frame_number: int):

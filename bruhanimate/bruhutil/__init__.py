@@ -57,5 +57,5 @@ __all__ = [
     "InvalidEffectTypeError",
     "InvalidImageError",
     "EffectType",
-    "valid_effect_types"
+    "valid_effect_types",
 ]

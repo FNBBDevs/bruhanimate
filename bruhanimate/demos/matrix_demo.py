@@ -18,30 +18,24 @@ import os
 
 os.system(" ")
 
-from ..bruhrenderer import CenterRenderer
-from ..bruhutil import Screen, bruhimage
+from bruhanimate import EffectRenderer, Screen
+from bruhanimate.bruheffect import MatrixSettings
+
+TARGET_FPS = 30
 
 
-def matrix(screen):
+def run(screen):
     screen.clear()
-    renderer = CenterRenderer(
-        screen=screen,
-        img=bruhimage.text_to_image("MATRIX!"),
+    renderer = EffectRenderer(
+        screen,
         frames=float("inf"),
-        frame_time=1/30,
+        frame_time=1 / TARGET_FPS,
         effect_type="matrix",
         background=" ",
-        transparent=False,
+        settings=MatrixSettings(),
     )
-
-    renderer.effect.set_matrix_properties((1, 25), (1, 10), 0.5, 0.5, 0.5, 10)
-
     renderer.run()
 
 
-def run():
-    Screen.show(matrix)
-
-
 if __name__ == "__main__":
-    run()
+    Screen.show(run)

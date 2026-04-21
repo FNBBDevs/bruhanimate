@@ -1,6 +1,8 @@
 from .audio_effect import AudioEffect
-from .registry import EffectEntry, EffectRegistry, effect_registry
+from .automaton_effect import AutomatonEffect
 from .base_effect import BaseEffect
+from .boids_effect import BoidsEffect
+from .diffusion_effect import DiffusionEffect
 from .draw_lines_effect import DrawLinesEffect, Line
 from .fire_effect import FireEffect
 from .firework_effect import Firework, FireworkEffect, Particle
@@ -9,10 +11,16 @@ from .julia_effect import JuliaEffect
 from .matrix_effect import MatrixEffect
 from .noise_effect import NoiseEffect
 from .offset_effect import OffsetEffect
+from .perlin_effect import PerlinEffect
 from .plasma_effect import PlasmaEffect
 from .rain_effect import RainEffect
+from .registry import EffectEntry, EffectRegistry, effect_registry
+from .sand_effect import SandEffect
 from .settings import (
     AudioSettings,
+    AutomatonSettings,
+    BoidsSettings,
+    DiffusionSettings,
     DrawLinesSettings,
     FireSettings,
     FireworkSettings,
@@ -20,22 +28,32 @@ from .settings import (
     MatrixSettings,
     NoiseSettings,
     OffsetSettings,
+    PerlinSettings,
     PlasmaSettings,
     RainSettings,
+    SandSettings,
     SnowSettings,
     StarSettings,
     TwinkleSettings,
+    VoronoiSettings,
 )
 from .snow_effect import SnowEffect
 from .star_effect import StarEffect
 from .static_effect import StaticEffect
 from .twinkle_effect import TWINKLE_SPEC, TwinkleEffect
+from .voronoi_effect import VoronoiEffect
 from .water_effect import WaterEffect
 
 __all__ = [
     "AudioEffect",
     "AudioSettings",
+    "AutomatonEffect",
+    "AutomatonSettings",
     "BaseEffect",
+    "BoidsEffect",
+    "BoidsSettings",
+    "DiffusionEffect",
+    "DiffusionSettings",
     "EffectEntry",
     "EffectRegistry",
     "effect_registry",
@@ -57,10 +75,14 @@ __all__ = [
     "OffsetEffect",
     "OffsetSettings",
     "Particle",
+    "PerlinEffect",
+    "PerlinSettings",
     "PlasmaEffect",
     "PlasmaSettings",
     "RainEffect",
     "RainSettings",
+    "SandEffect",
+    "SandSettings",
     "SnowEffect",
     "SnowSettings",
     "StarEffect",
@@ -69,5 +91,7 @@ __all__ = [
     "TWINKLE_SPEC",
     "TwinkleEffect",
     "TwinkleSettings",
+    "VoronoiEffect",
+    "VoronoiSettings",
     "WaterEffect",
 ]

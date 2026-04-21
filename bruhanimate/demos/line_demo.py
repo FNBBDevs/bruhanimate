@@ -16,45 +16,34 @@ limitations under the License.
 
 import os
 
-os.system("")
+os.system(" ")
 
-from ..bruhrenderer import PanRenderer
-from ..bruhutil import Screen, bruhimage
+from bruhanimate import EffectRenderer, Screen
+from bruhanimate.bruheffect import DrawLinesSettings
+
+TARGET_FPS = 30
 
 
-def demo(screen, img, frames, time, effect, background, transparent):
+def run(screen):
     screen.clear()
-    # CREATE THE RENDERER
-    renderer = PanRenderer(
-        screen=screen,
-        frames=frames,
-        frame_time=time,
-        img=img,
-        effect_type=effect,
-        background=background,
-        transparent=transparent,
-        loop=True,
+    renderer = EffectRenderer(
+        screen,
+        frames=float("inf"),
+        frame_time=1 / TARGET_FPS,
+        effect_type="drawlines",
+        background=" ",
+        settings=DrawLinesSettings(thin=False),
     )
-
-    # REGISTER THE LINES - LET'S MAKE A DECENT 3D TRIANGLE
-    renderer.effect.add_line((15, 15), (30, 30))
-    renderer.effect.add_line((30, 30), (50, 20))
-    renderer.effect.add_line((50, 20), (15, 15))
-
-    renderer.effect.add_line((30, 30), (32, 22))
-    renderer.effect.add_line((32, 22), (15, 15))
-    renderer.effect.add_line((32, 22), (50, 20))
-
-    # RUN THE ANIMATION
-    renderer.run(end_message=False)
-
-
-def run():
-    image = bruhimage.text_to_image(
-        "HELLO WORLD!", padding_top_bottom=1, padding_left_right=3
+    renderer.effect.add_line((15, 15), (screen.width - 15, 15))
+    renderer.effect.add_line(
+        (screen.width - 15, 15), (screen.width // 2, screen.height - 5)
     )
-    Screen.show(demo, args=(image, 500, 0.05, "drawlines", " ", True))
+    renderer.effect.add_line((screen.width // 2, screen.height - 5), (15, 15))
+    renderer.effect.add_line(
+        (screen.width // 2, 5), (screen.width // 2, screen.height - 5)
+    )
+    renderer.run()
 
 
 if __name__ == "__main__":
-    run()
+    Screen.show(run)
