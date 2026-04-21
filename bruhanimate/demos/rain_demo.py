@@ -33,7 +33,12 @@ def _run(screen):
         effect_type="rain",
         background=" ",
         settings=RainSettings(
-            intensity=3, wind_direction="east", swells=True, collision=True
+            intensity=3,
+            wind_direction="east",
+            swells=True,
+            collision=True,
+            lightning=True,
+            lightning_chance=0.03,
         ),
     )
     renderer.run()

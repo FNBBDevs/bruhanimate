@@ -98,6 +98,8 @@ class RainSettings:
     wind_direction: str = "none"
     swells: bool = False
     collision: bool = False
+    lightning: bool = False
+    lightning_chance: float = 0.02
 
 
 @dataclass

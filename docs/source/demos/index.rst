@@ -5,13 +5,20 @@ This section contains content related to the demos package.
 
 Overview
 --------
-Each demo is a standalone runnable example for one effect. Import the demo module
-from ``bruhanimate`` and call ``run()`` to see the effect in action.
+Each demo is a standalone runnable example for one effect. There are two ways to run a demo:
+
+**From Python:**
 
 .. code-block:: python
 
    from bruhanimate import plasma_demo
    plasma_demo.run()
+
+**From the command line:**
+
+.. code-block:: bash
+
+   python -m bruhanimate.demos.plasma_demo
 
 Available Demos
 ---------------

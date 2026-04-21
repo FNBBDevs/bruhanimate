@@ -31,14 +31,20 @@ python -m pip install .
 
 ## Quick Start
 
-Use the built-in demos to explore each effect. Import any `<effect>_demo` from `bruhanimate` and call `.run()`.
+Use the built-in demos to explore each effect. Each demo can be run two ways:
 
+**From Python:**
 ```python
 from bruhanimate import plasma_demo
 plasma_demo.run()
 ```
 
-Available demos: `static_demo`, `offset_demo`, `noise_demo`, `stars_demo`, `snow_demo`, `rain_demo`, `plasma_demo`, `gol_demo`, `matrix_demo`, `twinkle_demo`, `firework_demo`, `fire_demo`, `julia_demo`, `line_demo`, `holiday`.
+**From the command line:**
+```bash
+python -m bruhanimate.demos.plasma_demo
+```
+
+Available demos: `static_demo`, `offset_demo`, `noise_demo`, `stars_demo`, `snow_demo`, `rain_demo`, `plasma_demo`, `gol_demo`, `matrix_demo`, `twinkle_demo`, `firework_demo`, `fire_demo`, `julia_demo`, `line_demo`, `audio_demo`, `boids_demo`, `sand_demo`, `diffusion_demo`, `automaton_demo`, `voronoi_demo`, `perlin_demo`, `holiday`.
 
 ## Effects
 

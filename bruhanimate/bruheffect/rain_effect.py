@@ -52,6 +52,9 @@ class RainEffect(BaseEffect):
             "none": [".|", 0, ["|", "."]],
             "west": ["./", 1, ["/", "."]],
         }
+        self.lightning = s.lightning
+        self.lightning_chance = s.lightning_chance
+        self._bolts = []  # list of (cells, frames_remaining)
         self._set_rain()
 
     def set_multiplier(self, val: int):
@@ -99,6 +102,30 @@ class RainEffect(BaseEffect):
             swells (bool): Whether the rain intensity should oscillate.
         """
         self.swells = swells
+
+    def set_lightning(self, lightning: bool, chance: float = None):
+        """
+        Enables or disables lightning strikes.
+
+        Args:
+            lightning (bool): Whether to show lightning.
+            chance (float, optional): Per-frame probability of a new bolt (0.0–1.0).
+        """
+        self.lightning = lightning
+        if chance is not None:
+            self.lightning_chance = chance
+
+    def _spawn_bolt(self):
+        w = self.buffer.width()
+        h = self.buffer.height()
+        bolt_height = random.randint(h // 3, h - 2)
+        x = random.randint(2, w - 3)
+        cells = []
+        chars = ["|", "/", "\\"]
+        for y in range(bolt_height):
+            cells.append((x, y, random.choice(chars)))
+            x = max(0, min(w - 1, x + random.choice([-1, 0, 0, 1])))
+        self._bolts.append([cells, random.randint(2, 4)])
 
     def _set_rain(self):
         self.rain = f"{' ' * (1000 - self.intensity)}"
@@ -200,3 +227,14 @@ class RainEffect(BaseEffect):
                                     in self.wind_mappings[self.wind_direction][2]
                                 ):
                                     self.buffer.put_char(x, y, "v")
+
+        if self.lightning:
+            if random.random() < self.lightning_chance:
+                self._spawn_bolt()
+            next_bolts = []
+            for bolt, remaining in self._bolts:
+                for bx, by, ch in bolt:
+                    self.buffer.put_char(bx, by, ch)
+                if remaining > 1:
+                    next_bolts.append([bolt, remaining - 1])
+            self._bolts = next_bolts
