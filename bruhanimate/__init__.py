@@ -103,7 +103,7 @@ from .demos import (
     voronoi_demo,
 )
 
-__version__ = "0.2.103"
+__version__ = "0.2.104"
 __valid_demos__ = [
     "audio_demo",
     "automaton_demo",
