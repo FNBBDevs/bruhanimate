@@ -26,7 +26,7 @@ TARGET_FPS = 30
 PHASE_FRAMES = 200
 
 
-def run(screen):
+def _run(screen):
     screen.clear()
 
     phases = [
@@ -68,5 +68,9 @@ def run(screen):
         pass
 
 
+def run():
+    Screen.show(_run)
+
+
 if __name__ == "__main__":
-    Screen.show(run)
+    Screen.show(_run)

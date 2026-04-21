@@ -26,7 +26,7 @@ TARGET_FPS = 30
 PHASE_FRAMES = 300
 
 
-def run(screen):
+def _run(screen):
     screen.clear()
 
     phases = [
@@ -111,5 +111,9 @@ def run(screen):
         renderer.effect.stop()
 
 
+def run():
+    Screen.show(_run)
+
+
 if __name__ == "__main__":
-    Screen.show(run)
+    Screen.show(_run)

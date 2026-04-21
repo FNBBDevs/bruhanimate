@@ -24,7 +24,7 @@ from bruhanimate.bruheffect import RainSettings
 TARGET_FPS = 30
 
 
-def run(screen):
+def _run(screen):
     screen.clear()
     renderer = EffectRenderer(
         screen,
@@ -33,11 +33,20 @@ def run(screen):
         effect_type="rain",
         background=" ",
         settings=RainSettings(
-            intensity=3, wind_direction="east", swells=True, collision=True
+            intensity=3,
+            wind_direction="east",
+            swells=True,
+            collision=True,
+            lightning=True,
+            lightning_chance=0.03,
         ),
     )
     renderer.run()
 
 
+def run():
+    Screen.show(_run)
+
+
 if __name__ == "__main__":
-    Screen.show(run)
+    Screen.show(_run)

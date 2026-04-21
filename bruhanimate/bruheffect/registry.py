@@ -289,11 +289,10 @@ def _populate():
         settings_cls=RainSettings,
         description="Falling rain with wind direction and collision.",
         presets={
-            "drizzle": RainSettings(intensity=1, wind_direction="none"),
-            "storm": RainSettings(intensity=3, wind_direction="east", swells=True),
-            "monsoon": RainSettings(
-                intensity=5, wind_direction="east", swells=True, collision=True
-            ),
+            "drizzle":      RainSettings(intensity=1, wind_direction="none"),
+            "storm":        RainSettings(intensity=3, wind_direction="east", swells=True),
+            "thunderstorm": RainSettings(intensity=3, wind_direction="east", swells=True, lightning=True, lightning_chance=0.03),
+            "monsoon":      RainSettings(intensity=5, wind_direction="east", swells=True, collision=True, lightning=True, lightning_chance=0.05),
         },
     )
     effect_registry.register(
