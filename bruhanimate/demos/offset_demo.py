@@ -18,28 +18,24 @@ import os
 
 os.system(" ")
 
-from ..bruhrenderer import CenterRenderer
-from ..bruhutil import Screen, bruhimage
+from bruhanimate import EffectRenderer, Screen
+from bruhanimate.bruheffect import OffsetSettings
+
+TARGET_FPS = 30
 
 
-def offset(screen):
+def run(screen):
     screen.clear()
-    renderer = CenterRenderer(
-        screen=screen,
+    renderer = EffectRenderer(
+        screen,
         frames=float("inf"),
-        img=bruhimage.text_to_image("OFFSET!"),
-        frame_time=1/30,
+        frame_time=1 / TARGET_FPS,
         effect_type="offset",
         background="!!@@##$$%%^^&&**(())__++",
-        transparent=False,
+        settings=OffsetSettings(direction="right"),
     )
-
     renderer.run()
 
 
-def run():
-    Screen.show(offset)
-
-
 if __name__ == "__main__":
-    run()
+    Screen.show(run)

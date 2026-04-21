@@ -19,6 +19,7 @@ from pathlib import Path
 # Version helpers
 # ---------------------------------------------------------------------------
 
+
 def _parse(ver: str) -> tuple[int, int, int]:
     parts = ver.strip().strip('"').split(".")
     if len(parts) != 3:
@@ -36,7 +37,12 @@ def _bump_patch(v: tuple[int, int, int]) -> tuple[int, int, int]:
 
 def _update_version(path: Path, pattern: str, new_ver: str) -> None:
     text = path.read_text(encoding="utf-8")
-    updated = re.sub(pattern, lambda m: f'{m.group(1)}{new_ver}{m.group(3)}', text, flags=re.MULTILINE)
+    updated = re.sub(
+        pattern,
+        lambda m: f"{m.group(1)}{new_ver}{m.group(3)}",
+        text,
+        flags=re.MULTILINE,
+    )
     path.write_text(updated, encoding="utf-8")
 
 
@@ -46,19 +52,27 @@ def bump_version(
     new_version: tuple[int, int, int] | None = None,
 ) -> tuple[tuple[int, int, int], tuple[int, int, int]]:
     pyproject_text = pyproject.read_text(encoding="utf-8")
-    m = re.search(r'^version\s*=\s*"([0-9]+\.[0-9]+\.[0-9]+)"', pyproject_text, re.MULTILINE)
+    m = re.search(
+        r'^version\s*=\s*"([0-9]+\.[0-9]+\.[0-9]+)"', pyproject_text, re.MULTILINE
+    )
     if not m:
         raise RuntimeError("Could not find version in pyproject.toml")
     old = _parse(m.group(1))
     new = _bump_patch(old) if new_version is None else new_version
 
-    _update_version(pyproject, r'(^version\s*=\s*")([0-9]+\.[0-9]+\.[0-9]+)(")', _fmt(new))
-    _update_version(module,    r'(^__version__\s*=\s*")([0-9]+\.[0-9]+\.[0-9]+)(")', _fmt(new))
+    _update_version(
+        pyproject, r'(^version\s*=\s*")([0-9]+\.[0-9]+\.[0-9]+)(")', _fmt(new)
+    )
+    _update_version(
+        module, r'(^__version__\s*=\s*")([0-9]+\.[0-9]+\.[0-9]+)(")', _fmt(new)
+    )
     return old, new
+
 
 # ---------------------------------------------------------------------------
 # Shell helpers
 # ---------------------------------------------------------------------------
+
 
 def _run(cmd: list[str]) -> None:
     result = subprocess.run(cmd, check=False)
@@ -82,14 +96,16 @@ def _gh_installed() -> bool:
     except FileNotFoundError:
         return False
 
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
     project_root = Path(__file__).parent
-    pyproject    = project_root / "pyproject.toml"
-    module       = project_root / "bruhanimate" / "__init__.py"
+    pyproject = project_root / "pyproject.toml"
+    module = project_root / "bruhanimate" / "__init__.py"
 
     new_ver = None
     if len(sys.argv) == 2:
@@ -112,19 +128,31 @@ def main() -> None:
 
     # Open PR into main via gh CLI
     if not _gh_installed():
-        print("\ngh CLI not found — open a PR manually and merge into main to trigger the release.")
+        print(
+            "\ngh CLI not found — open a PR manually and merge into main to trigger the release."
+        )
         return
 
     print("\nOpening PR into main...")
-    _run([
-        "gh", "pr", "create",
-        "--base", "main",
-        "--head", branch,
-        "--title", f"release v{ver_str}",
-        "--body", f"Bumps version to `{ver_str}`.\n\nMerging this PR will trigger the release workflow: PyPI publish + GitHub release.",
-    ])
+    _run(
+        [
+            "gh",
+            "pr",
+            "create",
+            "--base",
+            "main",
+            "--head",
+            branch,
+            "--title",
+            f"release v{ver_str}",
+            "--body",
+            f"Bumps version to `{ver_str}`.\n\nMerging this PR will trigger the release workflow: PyPI publish + GitHub release.",
+        ]
+    )
 
-    print(f"\nPR opened. Merge it into main and GitHub Actions will publish v{ver_str}.")
+    print(
+        f"\nPR opened. Merge it into main and GitHub Actions will publish v{ver_str}."
+    )
 
 
 if __name__ == "__main__":

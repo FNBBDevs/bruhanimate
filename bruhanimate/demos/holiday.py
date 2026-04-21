@@ -18,32 +18,24 @@ import os
 
 os.system(" ")
 
-from ..bruhrenderer import CenterRenderer
-from ..bruhutil import Screen, get_image
+from bruhanimate import EffectRenderer, Screen
+from bruhanimate.bruheffect import SnowSettings
+
+TARGET_FPS = 30
 
 
-def holiday(screen):
+def run(screen):
     screen.clear()
-    renderer = CenterRenderer(
-        screen=screen,
-        frames=2000,
-        frame_time=0.075,
-        img=get_image("christmas"),
+    renderer = EffectRenderer(
+        screen,
+        frames=float("inf"),
+        frame_time=1 / TARGET_FPS,
         effect_type="snow",
         background=" ",
-        transparent=True,
+        settings=SnowSettings(intensity=0.015, wind=0.1),
     )
-
-    renderer.update_collision(True)
-
-    renderer.update_smart_transparent(True)
-
     renderer.run()
 
 
-def run():
-    Screen.show(holiday)
-
-
 if __name__ == "__main__":
-    run()
+    Screen.show(run)

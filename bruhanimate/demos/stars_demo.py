@@ -18,29 +18,24 @@ import os
 
 os.system(" ")
 
-from ..bruhrenderer import EffectRenderer
-from ..bruhutil import Screen
+from bruhanimate import EffectRenderer, Screen
+from bruhanimate.bruheffect import StarSettings
+
+TARGET_FPS = 30
 
 
-def stars(screen):
+def run(screen):
     screen.clear()
     renderer = EffectRenderer(
-        screen=screen,
+        screen,
         frames=float("inf"),
-        frame_time=0.05,
+        frame_time=1 / TARGET_FPS,
         effect_type="stars",
         background=" ",
-        transparent=False,
+        settings=StarSettings(color_type="COLOR"),
     )
-
-    renderer.effect.set_color_type("GREYSCALE")
-
     renderer.run()
 
 
-def run():
-    Screen.show(stars)
-
-
 if __name__ == "__main__":
-    run()
+    Screen.show(run)

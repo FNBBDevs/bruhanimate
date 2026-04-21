@@ -29,7 +29,9 @@ class MatrixEffect(BaseEffect):
     Effect to mimic the classic cascading random-character terminal background.
     """
 
-    def __init__(self, buffer: Buffer, background: str, settings: MatrixSettings = None):
+    def __init__(
+        self, buffer: Buffer, background: str, settings: MatrixSettings = None
+    ):
         """
         Initializes the MatrixEffect.
 
@@ -52,9 +54,30 @@ class MatrixEffect(BaseEffect):
         self.__gradient_length = s.gradient_length
 
         self.__base_gradient = [
-            232, 233, 234, 235, 236, 237, 238, 239, 240, 241,
-            242, 243, 244, 245, 246, 247, 248, 249, 250, 251,
-            252, 253, 254, 255,
+            232,
+            233,
+            234,
+            235,
+            236,
+            237,
+            238,
+            239,
+            240,
+            241,
+            242,
+            243,
+            244,
+            245,
+            246,
+            247,
+            248,
+            249,
+            250,
+            251,
+            252,
+            253,
+            254,
+            255,
         ]
         self.__gradient = [
             color
@@ -62,7 +85,9 @@ class MatrixEffect(BaseEffect):
             for _ in range(self.__gradient_length)
         ]
         self.__character_halts = [
-            random.randint(self.__character_halt_range[0], self.__character_halt_range[1])
+            random.randint(
+                self.__character_halt_range[0], self.__character_halt_range[1]
+            )
             for _ in range(self.buffer.height())
         ]
         self.__color_halts = [
@@ -108,7 +133,9 @@ class MatrixEffect(BaseEffect):
             for _ in range(self.__gradient_length)
         ]
         self.__character_halts = [
-            random.randint(self.__character_halt_range[0], self.__character_halt_range[1])
+            random.randint(
+                self.__character_halt_range[0], self.__character_halt_range[1]
+            )
             for _ in range(self.buffer.height())
         ]
         self.__color_halts = [
@@ -145,7 +172,8 @@ class MatrixEffect(BaseEffect):
                 self.__buffer_characters[y][x] = random.choice(self.__character_choices)
             for x in range(self.buffer.width()):
                 self.buffer.put_char(
-                    x, y,
+                    x,
+                    y,
                     bruhcolored(
                         self.__buffer_characters[y][x],
                         self.__gradient[x % len(self.__gradient)],
@@ -181,11 +209,13 @@ class MatrixEffect(BaseEffect):
                     self.__color_frame_numbers[y] += 1
                     for x in range(self.buffer.width()):
                         self.buffer.put_char(
-                            x, y,
+                            x,
+                            y,
                             bruhcolored(
                                 self.__buffer_characters[y][x],
                                 color=self.__gradient[
-                                    (x - self.__color_frame_numbers[y]) % len(self.__gradient)
+                                    (x - self.__color_frame_numbers[y])
+                                    % len(self.__gradient)
                                 ],
                             ),
                         )

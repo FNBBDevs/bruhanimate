@@ -157,17 +157,21 @@ class RainEffect(BaseEffect):
             self.set_intensity(None)
         if frame_number == 0:
             self.buffer.put_at(
-                0, 0,
+                0,
+                0,
                 "".join(
                     self.rain[random.randint(0, self.rain_length - 1)]
                     for _ in range(self.buffer.width())
                 ),
             )
         else:
-            self.buffer.shift(self.wind_mappings[self.wind_direction][1] * self.multiplier)
+            self.buffer.shift(
+                self.wind_mappings[self.wind_direction][1] * self.multiplier
+            )
             self.buffer.scroll(-1 * self.multiplier)
             self.buffer.put_at(
-                0, 0,
+                0,
+                0,
                 "".join(
                     self.rain[random.randint(0, self.rain_length - 1)]
                     for _ in range(self.buffer.width())
@@ -183,7 +187,8 @@ class RainEffect(BaseEffect):
                             if self.image_present and self.image_buffer:
                                 if 0 <= y + 1 < self.buffer.height():
                                     if (
-                                        self.image_buffer.buffer[y + 1][x] not in [" ", None]
+                                        self.image_buffer.buffer[y + 1][x]
+                                        not in [" ", None]
                                         and self.buffer.get_char(x, y)
                                         in self.wind_mappings[self.wind_direction][2]
                                     ):

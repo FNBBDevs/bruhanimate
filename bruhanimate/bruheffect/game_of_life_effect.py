@@ -52,8 +52,14 @@ class GameOfLifeEffect(BaseEffect):
         self._set_attributes()
 
         self.directions = [
-            [1, 0], [0, 1], [-1, 0], [0, -1],
-            [1, 1], [1, -1], [-1, 1], [-1, -1],
+            [1, 0],
+            [0, 1],
+            [-1, 0],
+            [0, -1],
+            [1, 1],
+            [1, -1],
+            [-1, 1],
+            [-1, -1],
         ]
         self.rules = {"life": [2, 3], "death": [3, 3]}
         self.board = [
@@ -74,7 +80,9 @@ class GameOfLifeEffect(BaseEffect):
         self.DEAD = 0
         self.mappings = {i: self.grey_scale[i] for i in range(len(self.grey_scale))}
 
-    def set_decay(self, decay: bool, color_type: str = "GREYSCALE", scale: str = "random"):
+    def set_decay(
+        self, decay: bool, color_type: str = "GREYSCALE", scale: str = "random"
+    ):
         """
         Enables or disables cell decay and selects the color/scale scheme.
 
@@ -112,25 +120,32 @@ class GameOfLifeEffect(BaseEffect):
                 for x in range(self.buffer.width()):
                     if random.random() < 0.1:
                         self.buffer.put_char(
-                            x, y,
+                            x,
+                            y,
                             bruhcolored(
                                 self.grey_scale[self.ALIVE],
                                 color=self.colors[self.ALIVE],
                             ).colored,
                         )
                         self.board[y][x] = (
-                            bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]),
+                            bruhcolored(
+                                self.grey_scale[self.ALIVE],
+                                color=self.colors[self.ALIVE],
+                            ),
                             self.ALIVE,
                         )
                     else:
                         self.buffer.put_char(
-                            x, y,
+                            x,
+                            y,
                             bruhcolored(
                                 self.grey_scale[self.DEAD], color=self.colors[self.DEAD]
                             ).colored,
                         )
                         self.board[y][x] = (
-                            bruhcolored(self.grey_scale[self.DEAD], color=self.colors[self.DEAD]),
+                            bruhcolored(
+                                self.grey_scale[self.DEAD], color=self.colors[self.DEAD]
+                            ),
                             0,
                         )
         else:
@@ -145,7 +160,8 @@ class GameOfLifeEffect(BaseEffect):
                         if (
                             0 <= y + direction[0] < self.buffer.height()
                             and 0 <= x + direction[1] < self.buffer.width()
-                            and self.board[y + direction[0]][x + direction[1]][1] == self.ALIVE
+                            and self.board[y + direction[0]][x + direction[1]][1]
+                            == self.ALIVE
                         ):
                             neighbors += 1
                     all_neighbors[y][x] = neighbors
@@ -153,43 +169,62 @@ class GameOfLifeEffect(BaseEffect):
             for y in range(self.buffer.height()):
                 for x in range(self.buffer.width()):
                     if self.board[y][x][1] == self.ALIVE:
-                        if self.rules["life"][0] <= all_neighbors[y][x] <= self.rules["life"][1]:
+                        if (
+                            self.rules["life"][0]
+                            <= all_neighbors[y][x]
+                            <= self.rules["life"][1]
+                        ):
                             pass
                         else:
                             self.buffer.put_char(
-                                x, y,
+                                x,
+                                y,
                                 bruhcolored(
                                     self.grey_scale[self.ALIVE - 1],
                                     color=self.colors[self.ALIVE - 1],
                                 ).colored,
                             )
                             self.board[y][x] = (
-                                bruhcolored(self.grey_scale[self.ALIVE - 1], color=self.colors[self.ALIVE - 1]),
+                                bruhcolored(
+                                    self.grey_scale[self.ALIVE - 1],
+                                    color=self.colors[self.ALIVE - 1],
+                                ),
                                 self.ALIVE - 1,
                             )
                     else:
-                        if self.rules["death"][0] <= all_neighbors[y][x] <= self.rules["death"][1]:
+                        if (
+                            self.rules["death"][0]
+                            <= all_neighbors[y][x]
+                            <= self.rules["death"][1]
+                        ):
                             self.buffer.put_char(
-                                x, y,
+                                x,
+                                y,
                                 bruhcolored(
                                     self.grey_scale[self.ALIVE],
                                     color=self.colors[self.ALIVE],
                                 ).colored,
                             )
                             self.board[y][x] = (
-                                bruhcolored(self.grey_scale[self.ALIVE], color=self.colors[self.ALIVE]),
+                                bruhcolored(
+                                    self.grey_scale[self.ALIVE],
+                                    color=self.colors[self.ALIVE],
+                                ),
                                 self.ALIVE,
                             )
                         else:
                             pos = max(0, self.board[y][x][1] - 1)
                             self.buffer.put_char(
-                                x, y,
+                                x,
+                                y,
                                 bruhcolored(
                                     self.grey_scale[pos],
                                     color=self.colors[pos],
                                 ).colored,
                             )
                             self.board[y][x] = (
-                                bruhcolored(self.grey_scale[pos], color=self.colors[pos]),
+                                bruhcolored(
+                                    self.grey_scale[pos], color=self.colors[pos]
+                                ),
                                 pos,
                             )

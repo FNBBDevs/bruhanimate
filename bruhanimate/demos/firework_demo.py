@@ -18,41 +18,26 @@ import os
 
 os.system(" ")
 
-from bruhanimate.bruheffect import TwinkleEffect
-from bruhanimate.bruhrenderer import CenterRenderer
-from bruhanimate.bruhutil import Buffer, Screen, bruhimage
+from bruhanimate import EffectRenderer, Screen
+from bruhanimate.bruheffect import FireworkSettings
+
+TARGET_FPS = 30
 
 
-def show(screen):
+def run(screen):
     screen.clear()
-    image = bruhimage.text_to_image("HAPPY NEW YEAR!", font="js_cursive")
-
-    renderer = CenterRenderer(
-        screen=screen,
-        img=image,
+    renderer = EffectRenderer(
+        screen,
         frames=float("inf"),
-        frame_time=0.05,
+        frame_time=1 / TARGET_FPS,
         effect_type="firework",
         background=" ",
-        transparent=True,
+        settings=FireworkSettings(
+            firework_type="random", color_enabled=True, color_type="rainbow", rate=0.05
+        ),
     )
-
-    second_effect = TwinkleEffect(
-        buffer=Buffer(screen.height, screen.width), background=" "
-    )
-    second_effect.set_density(0.01)
-
-    renderer.effect.set_second_effect(second_effect)
-    renderer.effect.set_firework_rate(0.05)
-    renderer.effect.set_firework_type("random")
-    renderer.effect.set_firework_color_enabled(True)
-    renderer.effect.set_firework_color_type("twotone")
-    renderer.run(end_message=True)
-
-
-def run():
-    Screen.show(show)
+    renderer.run()
 
 
 if __name__ == "__main__":
-    run()
+    Screen.show(run)

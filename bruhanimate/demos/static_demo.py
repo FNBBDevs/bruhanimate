@@ -18,28 +18,22 @@ import os
 
 os.system(" ")
 
-from ..bruhrenderer import CenterRenderer
-from ..bruhutil import Screen, bruhimage
+from bruhanimate import EffectRenderer, Screen
+
+TARGET_FPS = 30
 
 
-def static(screen):
+def run(screen):
     screen.clear()
-    renderer = CenterRenderer(
-        screen=screen,
+    renderer = EffectRenderer(
+        screen,
         frames=float("inf"),
-        img=bruhimage.text_to_image("STATIC!"),
         frame_time=1.0,
         effect_type="static",
         background="This is a static background! ",
-        transparent=False,
     )
-
     renderer.run()
 
 
-def run():
-    Screen.show(static)
-
-
 if __name__ == "__main__":
-    run()
+    Screen.show(run)

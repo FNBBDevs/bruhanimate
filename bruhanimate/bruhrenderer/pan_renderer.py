@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Any
+
 from ..bruhutil import Screen
 from ..bruhutil.bruherrors import InvalidPanRendererDirectionError
 from ..bruhutil.bruhtypes import (
@@ -43,9 +45,19 @@ class PanRenderer(BaseRenderer):
         direction: PanRendererDirection = "horizontal",
         shift_rate: int = 1,
         loop: bool = False,
+        settings: Any = None,
+        preset: str | None = None,
     ) -> None:
         super().__init__(
-            screen, frames, frame_time, effect_type, background, transparent, collision
+            screen,
+            frames,
+            frame_time,
+            effect_type,
+            background,
+            transparent,
+            collision,
+            settings=settings,
+            preset=preset,
         )
         self.direction = self.validate_direction(direction)
         self.img = img

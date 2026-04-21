@@ -18,30 +18,24 @@ import os
 
 os.system(" ")
 
-from ..bruhrenderer import CenterRenderer
-from ..bruhutil import Screen, bruhimage
+from bruhanimate import EffectRenderer, Screen
+from bruhanimate.bruheffect import GameOfLifeSettings
+
+TARGET_FPS = 30
 
 
-def gol(screen):
+def run(screen):
     screen.clear()
-    renderer = CenterRenderer(
-        screen=screen,
+    renderer = EffectRenderer(
+        screen,
         frames=float("inf"),
-        img=bruhimage.text_to_image("GOL!"),
-        frame_time=1/30,
+        frame_time=1 / TARGET_FPS,
         effect_type="gol",
         background=" ",
-        transparent=False,
+        settings=GameOfLifeSettings(decay=True, color=True, color_type="RAINBOW"),
     )
-
-    renderer.effect.set_decay(True, "RAINBOW", "default")
-
     renderer.run()
 
 
-def run():
-    Screen.show(gol)
-
-
 if __name__ == "__main__":
-    run()
+    Screen.show(run)

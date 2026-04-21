@@ -18,28 +18,24 @@ import os
 
 os.system(" ")
 
-from ..bruhrenderer import CenterRenderer
-from ..bruhutil import Screen, bruhimage
+from bruhanimate import EffectRenderer, Screen
+from bruhanimate.bruheffect import TwinkleSettings
+
+TARGET_FPS = 30
 
 
-def twinkle(screen):
+def run(screen):
     screen.clear()
-    renderer = CenterRenderer(
-        screen=screen,
-        img=bruhimage.text_to_image("TWINKLE!"),
+    renderer = EffectRenderer(
+        screen,
         frames=float("inf"),
-        frame_time=0.05,
+        frame_time=1 / TARGET_FPS,
         effect_type="twinkle",
         background=" ",
-        transparent=False,
+        settings=TwinkleSettings(density=0.08),
     )
-
     renderer.run()
 
 
-def run():
-    Screen.show(twinkle)
-
-
 if __name__ == "__main__":
-    run()
+    Screen.show(run)

@@ -65,7 +65,9 @@ class DrawLinesEffect(BaseEffect):
     Effect for drawing Bresenham line segments onto the buffer.
     """
 
-    def __init__(self, buffer: Buffer, background: str, settings: DrawLinesSettings = None):
+    def __init__(
+        self, buffer: Buffer, background: str, settings: DrawLinesSettings = None
+    ):
         """
         Initializes the DrawLinesEffect.
 
@@ -145,7 +147,9 @@ class DrawLinesEffect(BaseEffect):
                             err += 2 * dx
                         ix += cx
                         if self.char is None:
-                            self.buffer.put_char(px // 2, py // 2, line_chars[next_char])
+                            self.buffer.put_char(
+                                px // 2, py // 2, line_chars[next_char]
+                            )
                         else:
                             self.buffer.put_char(px // 2, py // 2, self.char)
 
@@ -166,7 +170,9 @@ class DrawLinesEffect(BaseEffect):
                             err += 2 * dy
                         iy += cy
                         if self.char is None:
-                            self.buffer.put_char(px // 2, py // 2, line_chars[next_char])
+                            self.buffer.put_char(
+                                px // 2, py // 2, line_chars[next_char]
+                            )
                         else:
                             self.buffer.put_char(px // 2, py // 2, self.char)
 

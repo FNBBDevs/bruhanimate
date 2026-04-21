@@ -25,6 +25,7 @@ class AudioSettings:
     num_bars: int = 0
     color: bool = True
     sensitivity: float = 1.0
+    compact: bool = False
 
 
 @dataclass
@@ -116,3 +117,52 @@ class StarSettings:
 class TwinkleSettings:
     twinkle_chars: list = field(default_factory=lambda: ["."])
     density: float = 0.05
+
+
+@dataclass
+class BoidsSettings:
+    num_boids: int = 60
+    color: bool = True
+    char: str = "*"
+    max_speed: float = 1.5
+    perception: float = 12.0
+
+
+@dataclass
+class SandSettings:
+    color: bool = True
+    char: str = "#"
+    spawn_rate: float = 0.2
+
+
+@dataclass
+class DiffusionSettings:
+    color: bool = True
+    char: str = "."
+    f: float = 0.055
+    k: float = 0.062
+    steps_per_frame: int = 8
+
+
+@dataclass
+class AutomatonSettings:
+    color: bool = True
+    char: str = "#"
+    rule: int = 30
+
+
+@dataclass
+class VoronoiSettings:
+    color: bool = True
+    char: str = "#"
+    num_seeds: int = 12
+    seed_speed: float = 0.3
+
+
+@dataclass
+class PerlinSettings:
+    color: bool = True
+    char: str = "."
+    octaves: int = 4
+    speed: float = 0.015
+    threshold: float = 0.35

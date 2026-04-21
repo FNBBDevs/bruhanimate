@@ -587,6 +587,12 @@ EffectType = Literal[
     "fire",
     "julia",
     "water",
+    "boids",
+    "sand",
+    "diffusion",
+    "automaton",
+    "voronoi",
+    "perlin",
 ]
 valid_effect_types = {
     "static",
@@ -605,6 +611,12 @@ valid_effect_types = {
     "fire",
     "julia",
     "water",
+    "boids",
+    "sand",
+    "diffusion",
+    "automaton",
+    "voronoi",
+    "perlin",
 }
 PanRendererDirection = Literal["horizontal", "vertical"]
 valid_pan_renderer_directions = {"horizontal", "vertical"}

@@ -18,37 +18,24 @@ import os
 
 os.system(" ")
 
-from bruhanimate.bruhrenderer import CenterRenderer
-from bruhanimate.bruhutil import Screen, bruhimage
+from bruhanimate import EffectRenderer, Screen
+from bruhanimate.bruheffect import FireSettings
+
+TARGET_FPS = 30
 
 
-def show(screen):
+def run(screen):
     screen.clear()
-    image = bruhimage.text_to_image("FIRE EFFECT!")
-
-    renderer = CenterRenderer(
-        screen=screen,
-        img=image,
+    renderer = EffectRenderer(
+        screen,
         frames=float("inf"),
         frame_time=0.02,
         effect_type="fire",
         background=" ",
-        transparent=False,
+        settings=FireSettings(intensity=0.4, turbulence=0.1, use_char_color=True),
     )
-
-    renderer.effect.set_fire_ascii_chars(ascii_chars=" .:#####%@")
-    renderer.effect.set_fire_intensity(fire_intensity=0.4)
-    # renderer.effect.set_fire_background_color(True)
-    renderer.effect.set_fire_use_char_color(use_char_color=True)
-    # renderer.effect.set_fire_wind(direction=270, strength=1.0)
-    renderer.effect.set_fire_turbulence(turbulence=0.1)
-    renderer.effect.set_fire_heat_spot_intensity(1)
     renderer.run()
 
 
-def run():
-    Screen.show(show)
-
-
 if __name__ == "__main__":
-    run()
+    Screen.show(run)

@@ -79,7 +79,9 @@ class TwinkleEffect(BaseEffect):
     A twinkling star-like effect where characters pulse in brightness.
     """
 
-    def __init__(self, buffer: Buffer, background: str, settings: TwinkleSettings = None):
+    def __init__(
+        self, buffer: Buffer, background: str, settings: TwinkleSettings = None
+    ):
         """
         Initializes the TwinkleEffect.
 

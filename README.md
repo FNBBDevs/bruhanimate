@@ -60,6 +60,12 @@ Every effect is configured through a **settings object** — one dataclass per e
 | `FireworkEffect` | `FireworkSettings` | `firework_type`, `color_enabled`, `color_type`, `rate` |
 | `JuliaEffect` | — | none |
 | `DrawLinesEffect` | `DrawLinesSettings` | `char`, `thin` |
+| `BoidsEffect` | `BoidsSettings` | `num_boids`, `color`, `char`, `max_speed`, `perception` |
+| `SandEffect` | `SandSettings` | `color`, `char`, `spawn_rate` |
+| `DiffusionEffect` | `DiffusionSettings` | `color`, `char`, `f`, `k`, `steps_per_frame` |
+| `AutomatonEffect` | `AutomatonSettings` | `color`, `char`, `rule` |
+| `VoronoiEffect` | `VoronoiSettings` | `color`, `char`, `num_seeds`, `seed_speed` |
+| `PerlinEffect` | `PerlinSettings` | `color`, `char`, `octaves`, `speed`, `threshold` |
 
 ## Usage
 

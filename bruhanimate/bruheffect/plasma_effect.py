@@ -29,7 +29,9 @@ class PlasmaEffect(BaseEffect):
     Class to generate an animated plasma effect.
     """
 
-    def __init__(self, buffer: Buffer, background: str, settings: PlasmaSettings = None):
+    def __init__(
+        self, buffer: Buffer, background: str, settings: PlasmaSettings = None
+    ):
         """
         Initializes the PlasmaEffect class.
 
@@ -128,9 +130,7 @@ class PlasmaEffect(BaseEffect):
         if self.random_colors:
             return
         if len(colors) != len(self.scale):
-            raise ValueError(
-                f"expected {len(self.scale)} colors, got {len(colors)}"
-            )
+            raise ValueError(f"expected {len(self.scale)} colors, got {len(colors)}")
         self.colors = colors
         self._colored_cache = None
 
@@ -179,18 +179,19 @@ class PlasmaEffect(BaseEffect):
 
         for y in range(self.buffer.height()):
             for x in range(self.buffer.width()):
-                value = abs(
-                    self._wave(x + t3, y, 1 / 4, 1 / 3, self.vals[0])
-                    + self._wave(x, y, 1 / 8, 1 / 5, self.vals[1])
-                    + self._wave(x, y + t3, 1 / 2, 1 / 5, self.vals[2])
-                    + self._wave(x, y, 3 / 4, 4 / 5, self.vals[3])
-                ) / 4.0
+                value = (
+                    abs(
+                        self._wave(x + t3, y, 1 / 4, 1 / 3, self.vals[0])
+                        + self._wave(x, y, 1 / 8, 1 / 5, self.vals[1])
+                        + self._wave(x, y + t3, 1 / 2, 1 / 5, self.vals[2])
+                        + self._wave(x, y, 3 / 4, 4 / 5, self.vals[3])
+                    )
+                    / 4.0
+                )
                 self.buffer.put_char(x, y, cache[int(scale_max * value)])
 
         if self.show_info:
-            self.buffer.put_at(
-                0, 0, f"COLORS: {' '.join(str(v) for v in self.colors)}"
-            )
+            self.buffer.put_at(0, 0, f"COLORS: {' '.join(str(v) for v in self.colors)}")
             for i in range(1, 5):
                 self.buffer.put_at(0, i, f"VAL {i}: {self.vals[i - 1]:>3d}")
 

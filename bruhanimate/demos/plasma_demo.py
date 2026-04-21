@@ -18,47 +18,24 @@ import os
 
 os.system(" ")
 
-from ..bruhrenderer import FocusRenderer
-from ..bruhutil import Screen, bruhimage
+from bruhanimate import EffectRenderer, Screen
+from bruhanimate.bruheffect import PlasmaSettings
+
+TARGET_FPS = 30
 
 
-def show(screen):
+def run(screen):
     screen.clear()
-    image = bruhimage.text_to_image(
-        "PLASMA!", padding_top_bottom=1, padding_left_right=3
-    )
-
-    # Create the renderer
-    renderer = FocusRenderer(
-        screen=screen,
-        frames=500,
-        frame_time=1/30,
-        img=image,
+    renderer = EffectRenderer(
+        screen,
+        frames=float("inf"),
+        frame_time=1 / TARGET_FPS,
         effect_type="plasma",
         background=" ",
-        transparent=False,
-        start_frame=110,
-        reverse=True,
-        start_reverse=300,
+        settings=PlasmaSettings(color=True, characters=True, random_colors=True),
     )
-
-    # Set the attributes
-    renderer.effect.set_color_properties(
-        color=True, characters=True, random_colors=True
-    )
-
-    renderer.effect.set_grey_scale_size(10)
-
-    renderer.effect.set_plasma_values(10, 26, 19, 41)
-
-    renderer.effect.set_show_info(True)
-
-    renderer.run(end_message=True)
-
-
-def run():
-    Screen.show(show)
+    renderer.run()
 
 
 if __name__ == "__main__":
-    run()
+    Screen.show(run)
