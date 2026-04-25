@@ -100,6 +100,9 @@ class RainSettings:
     collision: bool = False
     lightning: bool = False
     lightning_chance: float = 0.02
+    lightning_threshold: int = 500
+    lightning_color: bool = False
+    lightning_color_type: int = 226
 
 
 @dataclass

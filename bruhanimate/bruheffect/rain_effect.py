@@ -16,6 +16,8 @@ limitations under the License.
 
 import random
 
+from bruhcolor import bruhcolored
+
 from ..bruhutil import WIND_DIRECTIONS, Buffer
 from .base_effect import BaseEffect
 from .settings import RainSettings
@@ -54,6 +56,9 @@ class RainEffect(BaseEffect):
         }
         self.lightning = s.lightning
         self.lightning_chance = s.lightning_chance
+        self.lightning_threshold = s.lightning_threshold
+        self.lightning_color = s.lightning_color
+        self.lightning_color_type = s.lightning_color_type
         self._bolts = []  # list of (cells, frames_remaining)
         self._set_rain()
 
@@ -103,29 +108,45 @@ class RainEffect(BaseEffect):
         """
         self.swells = swells
 
-    def set_lightning(self, lightning: bool, chance: float = None):
+    def set_lightning(
+        self,
+        lightning: bool,
+        chance: float = None,
+        threshold: int = None,
+        color: bool = None,
+        color_type: int = None,
+    ):
         """
         Enables or disables lightning strikes.
 
         Args:
             lightning (bool): Whether to show lightning.
             chance (float, optional): Per-frame probability of a new bolt (0.0–1.0).
+            threshold (int, optional): Intensity threshold for lightning.
+            color (bool, optional): Whether to color the lightning.
+            color_type (int, optional): Color code to use for the lightning.
         """
         self.lightning = lightning
         if chance is not None:
             self.lightning_chance = chance
+        if threshold is not None:
+            self.lightning_threshold = threshold
+        if color is not None:
+            self.lightning_color = color
+        if color_type is not None:
+            self.lightning_color_type = color_type
 
     def _spawn_bolt(self):
         w = self.buffer.width()
         h = self.buffer.height()
-        bolt_height = random.randint(h // 3, h - 2)
+        bolt_height = h
         x = random.randint(2, w - 3)
         cells = []
         chars = ["|", "/", "\\"]
         for y in range(bolt_height):
             cells.append((x, y, random.choice(chars)))
             x = max(0, min(w - 1, x + random.choice([-1, 0, 0, 1])))
-        self._bolts.append([cells, random.randint(2, 4)])
+        self._bolts.append([cells, random.randint(10, 20)])
 
     def _set_rain(self):
         self.rain = f"{' ' * (1000 - self.intensity)}"
@@ -182,6 +203,14 @@ class RainEffect(BaseEffect):
         """
         if self.swells:
             self.set_intensity(None)
+
+        if self.lightning:
+            for bolt, _ in self._bolts:
+                for bx, by, _ in bolt:
+                    self.buffer.put_char(bx, by, " ")
+            
+            self._bolts = [[bolt, remaining - 1] for bolt, remaining in self._bolts if remaining > 1]
+
         if frame_number == 0:
             self.buffer.put_at(
                 0,
@@ -229,12 +258,15 @@ class RainEffect(BaseEffect):
                                     self.buffer.put_char(x, y, "v")
 
         if self.lightning:
-            if random.random() < self.lightning_chance:
+            if (
+                random.random() < self.lightning_chance
+                and self.intensity >= self.lightning_threshold
+            ):
                 self._spawn_bolt()
-            next_bolts = []
             for bolt, remaining in self._bolts:
                 for bx, by, ch in bolt:
-                    self.buffer.put_char(bx, by, ch)
-                if remaining > 1:
-                    next_bolts.append([bolt, remaining - 1])
-            self._bolts = next_bolts
+                    if self.lightning_color:
+                        colored_ch = bruhcolored(ch, color=self.lightning_color_type).colored
+                        self.buffer.put_char(bx, by, colored_ch)
+                    else:
+                        self.buffer.put_char(bx, by, ch)

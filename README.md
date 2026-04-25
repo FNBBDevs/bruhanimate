@@ -7,11 +7,24 @@
 <img src="https://github.com/user-attachments/assets/644afa91-ffb0-465e-815f-998a59759c3b" alt="fireworks" border="0">
 </div>
 
-[![Supported Python versions](https://img.shields.io/pypi/pyversions/termcolor.svg?logo=python&logoColor=FFE873)](https://pypi.org/project/bruhanimate/)
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/bruhanimate.svg?logo=python&logoColor=FFE873)](https://pypi.org/project/bruhanimate/)
 
-bruhanimate provides a set of tools for creating and rendering animations directly in the terminal. Designed for ease of use, this package enables developers to incorporate dynamic animations into command-line applications. While drawing inspiration from existing terminal animation libraries, bruhanimate brings a fresh approach and offers a unique set of features tailored for flexibility and creativity in terminal-based projects.
+**bruhanimate** is a high-performance ASCII terminal animation package for Python. It provides a rich set of tools for creating dynamic, interactive, and visually stunning animations directly in your command-line interface.
 
-Inspired by the <a href="https://github.com/peterbrittain/asciimatics">Asciimatics</a> package.
+Inspired by [Asciimatics](https://github.com/peterbrittain/asciimatics), bruhanimate offers a streamlined architecture built around Buffers, Effects, and Renderers, making it easy to create everything from simple falling snow to complex fractal animations and real-time audio visualizers.
+
+---
+
+## Features
+
+- **20+ Built-in Effects:** From classic Matrix rain to organic Reaction-Diffusion patterns.
+- **Flexible Rendering:** Multiple renderer types for full-screen effects, centered images, panning backgrounds, and interactive terminals.
+- **System Audio Visualization:** Real-time visualizers with 25+ different display modes.
+- **Easy Customization:** Configure effects via typed settings classes or named presets.
+- **Image & Text Support:** Convert images and text (via PyFiglet) to ASCII for use in animations.
+- **Cross-Platform:** Works on Windows, macOS, and Linux.
+
+---
 
 ## Installation
 
@@ -21,17 +34,29 @@ Inspired by the <a href="https://github.com/peterbrittain/asciimatics">Asciimati
 pip install --upgrade bruhanimate
 ```
 
-### From source
+### With Audio Support
+To use the `AudioEffect`, you'll need the optional audio dependencies:
+```bash
+pip install "bruhanimate[audio]"
+```
 
+### From Source
 ```bash
 git clone https://github.com/FNBBDevs/bruhanimate
 cd bruhanimate
-python -m pip install .
+pip install .
 ```
+
+---
 
 ## Quick Start
 
-Use the built-in demos to explore each effect. Each demo can be run two ways:
+The best way to see what **bruhanimate** can do is to run the built-in demos:
+
+**From the command line:**
+```bash
+python -m bruhanimate.demos.plasma_demo
+```
 
 **From Python:**
 ```python
@@ -39,68 +64,82 @@ from bruhanimate import plasma_demo
 plasma_demo.run()
 ```
 
-**From the command line:**
-```bash
-python -m bruhanimate.demos.plasma_demo
-```
+**Available demos:** `static`, `offset`, `noise`, `stars`, `snow`, `rain`, `plasma`, `gol`, `matrix`, `twinkle`, `firework`, `fire`, `julia`, `line`, `audio`, `boids`, `sand`, `diffusion`, `automaton`, `voronoi`, `perlin`, `holiday`.
 
-Available demos: `static_demo`, `offset_demo`, `noise_demo`, `stars_demo`, `snow_demo`, `rain_demo`, `plasma_demo`, `gol_demo`, `matrix_demo`, `twinkle_demo`, `firework_demo`, `fire_demo`, `julia_demo`, `line_demo`, `audio_demo`, `boids_demo`, `sand_demo`, `diffusion_demo`, `automaton_demo`, `voronoi_demo`, `perlin_demo`, `holiday`.
+---
 
-## Effects
+## How it Works: The Architecture
 
-Every effect is configured through a **settings object** — one dataclass per effect, all fields optional with sensible defaults. Pass it to the effect at construction time, or leave it out to get the defaults.
+bruhanimate uses a layered approach to rendering:
 
-| Effect | Settings class | Key options |
+1.  **Screen:** Handles the terminal window, input events, and final output.
+2.  **Buffer:** A 2D grid of characters and colors. Effects draw into a Buffer.
+3.  **Effect:** Logic that updates a Buffer every frame (e.g., moving "snowflakes" down).
+4.  **Renderer:** Coordinates the Screen and the Effect. It can overlay images, handle transparency, and manage the animation loop.
+
+---
+
+## Effects Registry
+
+Every effect in bruhanimate is registered in the `effect_registry`. You can discover effects, their descriptions, and their available presets at runtime.
+
+| Effect | Description | Key Settings |
 |---|---|---|
-| `StaticEffect` | — | none |
-| `OffsetEffect` | `OffsetSettings` | `direction` |
-| `NoiseEffect` | `NoiseSettings` | `intensity`, `color` |
-| `StarEffect` | `StarSettings` | `color_type` |
-| `SnowEffect` | `SnowSettings` | `intensity`, `wind`, `show_info`, `collision` |
-| `RainEffect` | `RainSettings` | `intensity`, `wind_direction`, `swells`, `collision` |
-| `PlasmaEffect` | `PlasmaSettings` | `color`, `characters`, `random_colors`, `show_info` |
-| `MatrixEffect` | `MatrixSettings` | `character_halt_range`, `color_halt_range`, randomness, `gradient_length` |
-| `GameOfLifeEffect` | `GameOfLifeSettings` | `decay`, `color`, `color_type`, `scale` |
-| `TwinkleEffect` | `TwinkleSettings` | `twinkle_chars`, `density` |
-| `FireEffect` | `FireSettings` | `intensity`, `wind_direction`, `wind_strength`, `use_char_color`, `swell`, `turbulence` |
-| `FireworkEffect` | `FireworkSettings` | `firework_type`, `color_enabled`, `color_type`, `rate` |
-| `JuliaEffect` | — | none |
-| `DrawLinesEffect` | `DrawLinesSettings` | `char`, `thin` |
-| `BoidsEffect` | `BoidsSettings` | `num_boids`, `color`, `char`, `max_speed`, `perception` |
-| `SandEffect` | `SandSettings` | `color`, `char`, `spawn_rate` |
-| `DiffusionEffect` | `DiffusionSettings` | `color`, `char`, `f`, `k`, `steps_per_frame` |
-| `AutomatonEffect` | `AutomatonSettings` | `color`, `char`, `rule` |
-| `VoronoiEffect` | `VoronoiSettings` | `color`, `char`, `num_seeds`, `seed_speed` |
-| `PerlinEffect` | `PerlinSettings` | `color`, `char`, `octaves`, `speed`, `threshold` |
+| `StaticEffect` | Fills screen with a static character. | — |
+| `OffsetEffect` | Scrolling background in any direction. | `direction` |
+| `NoiseEffect` | Random "TV static" pixels. | `intensity`, `color` |
+| `StarEffect` | Twinkling star field. | `color_type` |
+| `SnowEffect` | Falling snow with accumulation and wind. | `intensity`, `wind`, `collision` |
+| `RainEffect` | Falling rain with lightning and swells. | `intensity`, `wind_direction`, `lightning` |
+| `PlasmaEffect` | Animated sine-wave plasma. | `color`, `characters`, `random_colors` |
+| `MatrixEffect` | Cascading digital rain. | `gradient_length`, `randomness` |
+| `GameOfLifeEffect` | Conway's Game of Life. | `decay`, `color`, `scale` |
+| `TwinkleEffect` | Characters that pulse in brightness. | `density`, `twinkle_chars` |
+| `FireworkEffect` | Exploding fireworks (45+ types). | `firework_type`, `color_type`, `rate` |
+| `FireEffect` | Particle-based fire simulation. | `intensity`, `wind`, `turbulence` |
+| `JuliaEffect` | Animated Julia-set fractal. | — |
+| `WaterEffect` | Rippling water surface. | — |
+| `BoidsEffect` | Flocking bird simulation. | `num_boids`, `max_speed`, `perception` |
+| `SandEffect` | Falling-sand cellular automaton. | `spawn_rate`, `char`, `color` |
+| `DiffusionEffect` | Organic reaction-diffusion patterns. | `f` (feed), `k` (kill), `steps_per_frame` |
+| `AutomatonEffect` | 1D Elementary Cellular Automata (e.g. Rule 30). | `rule`, `char`, `color` |
+| `VoronoiEffect` | Shifting Voronoi cells. | `num_seeds`, `seed_speed` |
+| `PerlinEffect` | Smooth multi-octave noise field. | `octaves`, `speed`, `threshold` |
+| `AudioEffect` | Real-time system audio visualizer. | `mode` (bars, wave, tunnel, etc.), `smoothing` |
 
-## Usage
-
-### Basic — defaults
-
+### Using Presets
+Most effects come with named presets for quick configuration:
 ```python
-from bruhanimate import Screen, EffectRenderer
+from bruhanimate import effect_registry
 
-def demo(screen: Screen):
-    renderer = EffectRenderer(
-        screen=screen,
-        frames=float("inf"),
-        frame_time=0.05,
-        effect_type="snow",
-        background=" ",
-        transparent=False,
-    )
-    renderer.run()
-
-if __name__ == "__main__":
-    Screen.show(demo)
+# Create a 'blizzard' snow effect
+effect = effect_registry.create("snow", buffer, " ", preset="blizzard")
 ```
 
-### With settings
+---
+
+## Renderers
+
+Renderers determine how the effect is presented on the screen.
+
+| Renderer | Description |
+|---|---|
+| `EffectRenderer` | Basic full-screen animation. |
+| `CenterRenderer` | Overlays a static image/text in the center of the effect. |
+| `PanRenderer` | Pans an image across the background effect. |
+| `FocusRenderer` | Zooms into/out of a centered image. |
+| `TerminalRenderer` | **Interactive:** Provides a functional shell overlay on top of the animation. |
+| `BackgroundColorRenderer` | A simple solid color background. |
+
+---
+
+## Usage Example: Custom Snow Animation
 
 ```python
 from bruhanimate import Screen, EffectRenderer, SnowSettings, SnowEffect
 
 def demo(screen: Screen):
+    # Initialize the renderer
     renderer = EffectRenderer(
         screen=screen,
         frames=float("inf"),
@@ -109,109 +148,41 @@ def demo(screen: Screen):
         background=" ",
         transparent=False,
     )
-    # configure via settings at construction
+    
+    # Customize the effect via settings
     renderer.effect = SnowEffect(
         renderer.effect.buffer,
         " ",
-        settings=SnowSettings(intensity=0.01, wind=0.6),
+        settings=SnowSettings(intensity=0.02, wind=0.5, collision=True),
     )
+    
+    # Start the animation
     renderer.run()
 
 if __name__ == "__main__":
     Screen.show(demo)
 ```
 
-### Runtime setters
+---
 
-Settings configure the effect at construction. All effects also expose `set_*` methods for changes mid-animation:
+## Utilities
 
-```python
-renderer.effect.set_wind(0.8)          # SnowEffect
-renderer.effect.set_intensity(0.4)     # FireEffect
-renderer.effect.set_wind_direction("east")  # RainEffect
-renderer.effect.set_color_properties(color=True, random_colors=True)  # PlasmaEffect
-renderer.effect.shuffle_plasma_values()
-```
+- **`bruhimage`:** Convert images to ASCII or generate ASCII text from fonts.
+  - `text_to_image("HELLO", font="slant")`
+  - `get_image("path/to/img.png")`
+- **`Buffer`:** Manually manipulate the 2D grid.
+  - `buffer.put_at(x, y, char, color)`
+- **`Screen`:** Low-level terminal control.
 
-### Effect Registry
+---
 
-Every built-in effect is registered in `effect_registry` — a discoverable, extensible registry that maps effect names to their class, settings class, description, and named presets.
+## Documentation
 
-```python
-from bruhanimate import effect_registry
+For more detailed information, API references, and advanced tutorials, visit the official documentation:
+[https://ethanlchristensen.github.io/bruhanimate/](https://ethanlchristensen.github.io/bruhanimate/)
 
-# List all registered effects
-for name, entry in effect_registry.entries().items():
-    print(name, "—", entry.description)
+---
 
-# List presets for an effect
-print(effect_registry.presets("snow"))
-# {'light': SnowSettings(...), 'moderate': SnowSettings(...), 'blizzard': SnowSettings(...), 'windy': SnowSettings(...)}
+## License
 
-# Create an effect by name with a preset
-effect = effect_registry.create("snow", buffer, " ", preset="blizzard")
-
-# Create an effect with a custom settings object
-from bruhanimate import SnowSettings
-effect = effect_registry.create("snow", buffer, " ", settings=SnowSettings(wind=0.8))
-
-# Register your own effect
-from bruhanimate import EffectRegistry
-effect_registry.register(
-    "myeffect",
-    MyEffect,
-    settings_cls=MySettings,
-    description="Does something cool",
-    presets={"fast": MySettings(speed=10)},
-)
-```
-
-Available built-in presets:
-
-| Effect | Presets |
-|---|---|
-| `offset` | `right`, `left`, `up`, `down` |
-| `noise` | `sparse`, `dense`, `color` |
-| `stars` | `greyscale`, `color` |
-| `plasma` | `greyscale`, `color`, `blocks`, `random` |
-| `gol` | `plain`, `decay`, `color` |
-| `rain` | `drizzle`, `storm`, `monsoon` |
-| `matrix` | `default`, `fast` |
-| `drawlines` | `thin`, `thick` |
-| `snow` | `light`, `moderate`, `blizzard`, `windy` |
-| `twinkle` | `sparse`, `dense` |
-| `firework` | `plain`, `color`, `random` |
-| `fire` | `campfire`, `inferno`, `windy` |
-| `audio` | `bars`, `mirror`, `waveform`, `minimal` |
-
-### Renderers
-
-| Renderer | Description |
-|---|---|
-| `EffectRenderer` | Full-screen effect |
-| `CenterRenderer` | Effect with a centered image overlay |
-| `PanRenderer` | Effect with a panning image |
-| `FocusRenderer` | Effect with a focused/zooming image |
-| `BackgroundColorRenderer` | Solid background color |
-
-```python
-from bruhanimate import Screen, CenterRenderer, bruhimage
-
-def demo(screen: Screen):
-    renderer = CenterRenderer(
-        screen=screen,
-        frames=300,
-        frame_time=1/30,
-        img=bruhimage.text_to_image("RAIN!", padding_top_bottom=1, padding_left_right=2),
-        effect_type="rain",
-        background=" ",
-        transparent=False,
-    )
-    renderer.update_collision(True)
-    renderer.effect.set_swells(True)
-    renderer.effect.set_wind_direction("east")
-    renderer.run()
-
-if __name__ == "__main__":
-    Screen.show(demo)
-```
+This project is licensed under the Apache License 2.0. See the `LICENSE` file for details.
