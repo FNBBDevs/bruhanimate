@@ -59,6 +59,10 @@ def _run(screen):
         ("Aurora", AudioSettings(mode="aurora", color=True, smoothing=0.3)),
         ("Orbit", AudioSettings(mode="orbit", color=True, smoothing=0.2)),
         (
+            "Orbit Gradient",
+            AudioSettings(mode="orbit_gradient", color=True, smoothing=0.2),
+        ),
+        (
             "Scope",
             AudioSettings(mode="scope", color=True, smoothing=0.0, sensitivity=3.0),
         ),

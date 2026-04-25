@@ -433,6 +433,79 @@ else:
     import curses
 
     class Screen:
+        KEY_ESCAPE = -1
+        KEY_F1 = -2
+        KEY_F2 = -3
+        KEY_F3 = -4
+        KEY_F4 = -5
+        KEY_F5 = -6
+        KEY_F6 = -7
+        KEY_F7 = -8
+        KEY_F8 = -9
+        KEY_F9 = -10
+        KEY_F10 = -11
+        KEY_F11 = -12
+        KEY_F12 = -13
+        KEY_F13 = -14
+        KEY_F14 = -15
+        KEY_F15 = -16
+        KEY_F16 = -17
+        KEY_F17 = -18
+        KEY_F18 = -19
+        KEY_F19 = -20
+        KEY_F20 = -21
+        KEY_F21 = -22
+        KEY_F22 = -23
+        KEY_F23 = -24
+        KEY_F24 = -25
+        KEY_PRINT_SCREEN = -100
+        KEY_INSERT = -101
+        KEY_DELETE = -102
+        KEY_HOME = -200
+        KEY_END = -201
+        KEY_LEFT = -203
+        KEY_UP = -204
+        KEY_RIGHT = -205
+        KEY_DOWN = -206
+        KEY_PAGE_UP = -207
+        KEY_PAGE_DOWN = -208
+        KEY_BACK = -300
+        KEY_TAB = -301
+        KEY_BACK_TAB = -302
+        KEY_NUMPAD0 = -400
+        KEY_NUMPAD1 = -401
+        KEY_NUMPAD2 = -402
+        KEY_NUMPAD3 = -403
+        KEY_NUMPAD4 = -404
+        KEY_NUMPAD5 = -405
+        KEY_NUMPAD6 = -406
+        KEY_NUMPAD7 = -407
+        KEY_NUMPAD8 = -408
+        KEY_NUMPAD9 = -409
+        KEY_MULTIPLY = -410
+        KEY_ADD = -411
+        KEY_SUBTRACT = -412
+        KEY_DECIMAL = -413
+        KEY_DIVIDE = -414
+        KEY_CAPS_LOCK = -500
+        KEY_NUM_LOCK = -501
+        KEY_SCROLL_LOCK = -502
+        KEY_SHIFT = -600
+        KEY_CONTROL = -601
+        KEY_MENU = -602
+
+        def get_event(self):
+            c = self.screen.getch()
+            if c != curses.ERR:
+                if c in (curses.KEY_BACKSPACE, 127, 8):
+                    return self.KEY_BACK
+                elif c in (10, 13, curses.KEY_ENTER):
+                    return 10
+                elif c == 27:
+                    return self.KEY_ESCAPE
+                return c
+            return None
+
         def __init__(self, window, height=None):
             self.screen = window
             self.screen.keypad(1)

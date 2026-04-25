@@ -4,15 +4,26 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "bruhanimate"
-version = "0.2.105"
+version = "0.2.106"
 description = "ASCII Termnial Animation Package"
 authors = [ "ethanlchristensen <ethanlchristensen@outlook.com>",]
 license = "Apache License"
 readme = "README.md"
 homepage = "https://github.com/ethanlchristensen/bruhanimate"
 repository = "https://github.com/ethanlchristensen/bruhanimate"
+documentation = "https://ethanlchristensen.github.io/bruhanimate/"
 keywords = [ "python", "terminal", "terminal-animation", "bruhanimate",]
-classifiers = [ "Development Status :: 4 - Beta", "Intended Audience :: Developers", "Programming Language :: Python :: 3", "Operating System :: Unix", "Operating System :: Microsoft :: Windows",]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: Unix",
+    "Operating System :: Microsoft :: Windows",
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/ethanlchristensen/bruhanimate/issues"
 
 [tool.poetry.dependencies]
 python = "^3.13"
@@ -43,6 +54,8 @@ sphinx = "8.1.3"
 furo = "2024.8.6"
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.14.7"
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
 
 
 [tool.ruff]
@@ -58,3 +71,8 @@ exclude = [
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
 ignore = ["E501", "E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "--cov=bruhanimate --cov-report=term-missing"

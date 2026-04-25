@@ -289,10 +289,23 @@ def _populate():
         settings_cls=RainSettings,
         description="Falling rain with wind direction and collision.",
         presets={
-            "drizzle":      RainSettings(intensity=1, wind_direction="none"),
-            "storm":        RainSettings(intensity=3, wind_direction="east", swells=True),
-            "thunderstorm": RainSettings(intensity=3, wind_direction="east", swells=True, lightning=True, lightning_chance=0.03),
-            "monsoon":      RainSettings(intensity=5, wind_direction="east", swells=True, collision=True, lightning=True, lightning_chance=0.05),
+            "drizzle": RainSettings(intensity=1, wind_direction="none"),
+            "storm": RainSettings(intensity=3, wind_direction="east", swells=True),
+            "thunderstorm": RainSettings(
+                intensity=3,
+                wind_direction="east",
+                swells=True,
+                lightning=True,
+                lightning_chance=0.03,
+            ),
+            "monsoon": RainSettings(
+                intensity=5,
+                wind_direction="east",
+                swells=True,
+                collision=True,
+                lightning=True,
+                lightning_chance=0.05,
+            ),
         },
     )
     effect_registry.register(
@@ -476,6 +489,9 @@ def _populate():
             ),
             "aurora": AudioSettings(mode="aurora", color=True, smoothing=0.3),
             "orbit": AudioSettings(mode="orbit", color=True, smoothing=0.2),
+            "orbit_gradient": AudioSettings(
+                mode="orbit_gradient", color=True, smoothing=0.2
+            ),
             "scope": AudioSettings(
                 mode="scope", color=True, smoothing=0.0, sensitivity=3.0
             ),
