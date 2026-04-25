@@ -107,6 +107,12 @@ def main() -> None:
     pyproject = project_root / "pyproject.toml"
     module = project_root / "bruhanimate" / "__init__.py"
 
+    # Validation
+    print("Running ruff...")
+    _run(["poetry", "run", "ruff", "check", "."])
+    print("Running tests...")
+    _run(["poetry", "run", "pytest"])
+
     new_ver = None
     if len(sys.argv) == 2:
         try:

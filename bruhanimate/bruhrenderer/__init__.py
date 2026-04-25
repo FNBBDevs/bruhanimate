@@ -4,6 +4,7 @@ from .center_renderer import CenterRenderer
 from .effect_renderer import EffectRenderer
 from .focus_renderer import FocusRenderer
 from .pan_renderer import PanRenderer
+from .terminal_renderer import TerminalRenderer
 
 __all__ = [
     "BaseRenderer",
@@ -12,4 +13,5 @@ __all__ = [
     "PanRenderer",
     "FocusRenderer",
     "BackgroundColorRenderer",
+    "TerminalRenderer",
 ]

@@ -34,6 +34,7 @@ _FW_CHARS = "*+.·o°"
 _N_STARS = 150
 _N_BALLS = 12
 _TRAIL_LEN = 7
+_GRADIENT_CHARS = " .:-=+*#%@"
 
 # Modes that manage their own buffer state — skip the per-frame clear
 _STATEFUL_MODES = {"spectrum", "rain", "waveform"}
@@ -200,8 +201,9 @@ class AudioEffect(BaseEffect):
         # aurora state
         self._aurora_phase: float = 0.0
 
-        # orbit state — one angle per orbit ring (16 orbits for denser screen coverage)
-        self._orbit_angles: np.ndarray = np.zeros(16)
+        # orbit state — one angle per orbit ring (dynamic up to 128)
+        self._orbit_angles: np.ndarray = np.zeros(128)
+        self._orbit_mags: np.ndarray = np.zeros(128)
 
         # helix state
         self._helix_phase: float = 0.0
@@ -470,6 +472,8 @@ class AudioEffect(BaseEffect):
             self._render_aurora(audio)
         elif self.mode == "orbit":
             self._render_orbit(audio)
+        elif self.mode == "orbit_gradient":
+            self._render_orbit_gradient(audio)
         elif self.mode == "scope":
             self._render_scope(audio)
         elif self.mode == "grid":
@@ -1039,37 +1043,140 @@ class AudioEffect(BaseEffect):
                     self.buffer.put_char(col, y, ch)
 
     def _render_orbit(self, audio: np.ndarray):
-        """Sparse particles scattered at orbital radii; 16 orbits fill the screen with individual dots."""
+        """Orbiting particles with audio-reactive branching spikes; scales with screen dimensions."""
         bars = self._fft_bars(audio)
         cx, cy = self._width // 2, self._height // 2
         max_r = min(cx * 0.92, cy * 1.85)
 
-        n_orbits = min(16, len(bars))
+        # Cap orbits to a much more readable number, maxing out at 32
+        n_orbits = min(len(bars), max(12, min(32, int(self._height * 0.4))))
+
+        # Significantly lower density factor so individual characters are distinguishable
+        density_factor = max(0.5, (self._width + self._height * 2) / 160.0)
 
         for i in range(n_orbits):
             band_idx = int(i * (len(bars) - 1) / max(1, n_orbits - 1))
-            mag = bars[band_idx]
-            if mag < 0.02:
+            raw_mag = bars[band_idx]
+
+            # Decay logic: fast attack, slow decay
+            old_mag = self._orbit_mags[i]
+            if raw_mag > old_mag:
+                mag = raw_mag * 0.8 + old_mag * 0.2  # Fast attack
+            else:
+                mag = old_mag * 0.88  # Slow decay
+            self._orbit_mags[i] = mag
+
+            if mag < 0.01:
                 continue
 
-            omega = 0.012 + (i / n_orbits) * 0.035 + mag * 0.06
+            # Smoother rotation: reduced base speed and mag influence
+            omega = 0.01 + (i / n_orbits) * 0.02 + mag * 0.03
             self._orbit_angles[i] += omega
 
+            # Smoother radius: less extreme expansion/contraction
             base_r = (i + 1) / n_orbits * max_r
-            r = base_r * (0.4 + mag * 0.6)
+            r = base_r * (0.85 + mag * 0.15)
 
             color = self._heat_color(mag) if self.color else None
             ch = bc(self.bar_char, color=color) if color is not None else self.bar_char
 
-            # Sparse individual particles scattered around the orbit — not a solid arc
-            n_particles = max(4, int(r * 0.55 * mag + 4))
+            # Drastically fewer particles for cleaner readability
+            n_particles = max(4, int(r * density_factor * (0.4 + mag * 0.4)))
             base_thetas = self._orbit_angles[i] + np.linspace(
                 0, 2 * math.pi, n_particles, endpoint=False
             )
-            jitter_theta = np.random.uniform(-0.35, 0.35, n_particles)
-            jitter_r = np.random.uniform(-base_r * 0.14, base_r * 0.14, n_particles)
+
+            # Low jitter: tight orbits for a cleaner look
+            jitter_theta = np.random.uniform(-0.06, 0.06, n_particles)
+            jitter_r = np.random.uniform(-base_r * 0.025, base_r * 0.025, n_particles)
             thetas = base_thetas + jitter_theta
             rs = r + jitter_r
+
+            # Branching effect: extrude lines outward based on audio magnitude
+            # Shorter spikes, fewer steps to prevent a solid wall of characters
+            spike_amp = mag * max_r * 0.25
+            steps = min(8, max(1, int(spike_amp * 0.4)))
+
+            if steps > 1:
+                rs_ext = rs[:, None] + np.linspace(0, spike_amp, steps)
+                curve_dirs = np.random.uniform(-0.15, 0.15, (n_particles, 1))
+                thetas_ext = thetas[:, None] + (
+                    curve_dirs * np.linspace(0, 1.0, steps) * mag
+                )
+                rs = rs_ext.flatten()
+                thetas = thetas_ext.flatten()
+
+            xs = (cx + rs * np.cos(thetas)).astype(int)
+            ys = (cy + rs * np.sin(thetas) * 0.5).astype(int)
+            mask = (xs >= 0) & (xs < self._width) & (ys >= 0) & (ys < self._height)
+            for x, y in zip(xs[mask], ys[mask]):
+                self.buffer.put_char(int(x), int(y), ch)
+
+    def _render_orbit_gradient(self, audio: np.ndarray):
+        """Orbiting particles using a character density gradient with branching spikes for different bands."""
+        bars = self._fft_bars(audio)
+        cx, cy = self._width // 2, self._height // 2
+        max_r = min(cx * 0.92, cy * 1.85)
+
+        # Cap orbits to a much more readable number, maxing out at 32
+        n_orbits = min(len(bars), max(12, min(32, int(self._height * 0.4))))
+
+        # Significantly lower density factor so individual characters are distinguishable
+        density_factor = max(0.5, (self._width + self._height * 2) / 160.0)
+
+        for i in range(n_orbits):
+            band_idx = int(i * (len(bars) - 1) / max(1, n_orbits - 1))
+            raw_mag = bars[band_idx]
+
+            # Decay logic: fast attack, slow decay
+            old_mag = self._orbit_mags[i]
+            if raw_mag > old_mag:
+                mag = raw_mag * 0.8 + old_mag * 0.2  # Fast attack
+            else:
+                mag = old_mag * 0.88  # Slow decay
+            self._orbit_mags[i] = mag
+
+            if mag < 0.01:
+                continue
+
+            omega = 0.01 + (i / n_orbits) * 0.02 + mag * 0.03
+            self._orbit_angles[i] += omega
+
+            base_r = (i + 1) / n_orbits * max_r
+            r = base_r * (0.85 + mag * 0.15)
+
+            color = self._heat_color(mag) if self.color else None
+
+            # Select character based on radius/band (inner = light, outer = heavy)
+            char_idx = int((i / max(1, n_orbits - 1)) * (len(_GRADIENT_CHARS) - 1))
+            base_char = _GRADIENT_CHARS[char_idx]
+
+            ch = bc(base_char, color=color) if color is not None else base_char
+
+            # Drastically fewer particles for cleaner readability
+            n_particles = max(4, int(r * density_factor * (0.4 + mag * 0.4)))
+            base_thetas = self._orbit_angles[i] + np.linspace(
+                0, 2 * math.pi, n_particles, endpoint=False
+            )
+
+            jitter_theta = np.random.uniform(-0.06, 0.06, n_particles)
+            jitter_r = np.random.uniform(-base_r * 0.025, base_r * 0.025, n_particles)
+            thetas = base_thetas + jitter_theta
+            rs = r + jitter_r
+
+            # Branching effect: extrude lines outward based on audio magnitude
+            # Shorter spikes, fewer steps to prevent a solid wall of characters
+            spike_amp = mag * max_r * 0.25
+            steps = min(8, max(1, int(spike_amp * 0.4)))
+
+            if steps > 1:
+                rs_ext = rs[:, None] + np.linspace(0, spike_amp, steps)
+                curve_dirs = np.random.uniform(-0.15, 0.15, (n_particles, 1))
+                thetas_ext = thetas[:, None] + (
+                    curve_dirs * np.linspace(0, 1.0, steps) * mag
+                )
+                rs = rs_ext.flatten()
+                thetas = thetas_ext.flatten()
 
             xs = (cx + rs * np.cos(thetas)).astype(int)
             ys = (cy + rs * np.sin(thetas) * 0.5).astype(int)
